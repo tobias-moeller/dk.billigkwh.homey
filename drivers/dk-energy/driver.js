@@ -1,6 +1,7 @@
 'use strict';
 
 const { Driver } = require('homey');
+const { v4 } = require('uuid');
 
 class MyDriver extends Driver {
 
@@ -18,16 +19,26 @@ class MyDriver extends Driver {
    */
   async onPairListDevices() {
     return [
-      // Example device data, note that `store` is optional
-      // {
-      //   name: 'My Device',
-      //   data: {
-      //     id: 'my-device',
-      //   },
-      //   store: {
-      //     address: '127.0.0.1',
-      //   },
-      // },
+      {
+        name: 'DK-Energy',
+        data: {
+          id: v4(),
+      },
+      capabilities: [
+        'meter_price_h0',
+        'meter_price_h1',
+        'meter_price_h2',
+        'meter_price_h3',
+        'meter_price_h4',
+        'meter_price_h5',
+        'meter_price_h6',
+        'meter_price_h7',
+        'meter_price_this_day_avg',
+        'meter_price_this_day_lowest',
+        'meter_price_this_day_highest',
+      ],
+      
+    }
     ];
   }
 
