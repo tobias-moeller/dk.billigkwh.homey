@@ -1,1 +1,3 @@
-# dk.billigkwh.homey
+# BilligKWH
+
+Adds energy prices from billigkwh
