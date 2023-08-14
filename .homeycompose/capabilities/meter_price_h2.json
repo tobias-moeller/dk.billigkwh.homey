@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Price + 2 hour",
+    "da": "Pris + 2 time"
+  },
+  "uiComponent": "sensor",
+  "icon": "/assets/tariff.svg",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "units": {
+    "en": "dkk",
+    "da": "kr"
+  },
+  "decimals": 2
+}
