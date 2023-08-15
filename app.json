@@ -62,7 +62,7 @@
         {
           "id": "location",
           "type": "dropdown",
-          "value": "location",
+          "value": "Dk1",
           "label": {
             "en": "Location",
             "da": "Område"
@@ -85,9 +85,9 @@
           ]
         },
         {
-          "id": "net-company",
+          "id": "net_company",
           "type": "dropdown",
-          "value": "net-company",
+          "value": "radius_c",
           "label": {
             "en": "Net company",
             "da": "Net selskab"
@@ -285,9 +285,9 @@
           ]
         },
         {
-          "id": "el-product",
+          "id": "el_product",
           "type": "dropdown",
-          "value": "el-product",
+          "value": "spotpris",
           "label": {
             "en": "El Product",
             "da": "Elprodukt"
@@ -598,28 +598,12 @@
         },
         {
           "id": "redafg",
-          "type": "dropdown",
-          "value": "redafg",
+          "type": "checkbox",
+          "value": false,
           "label": {
-            "en": "Reducet el charge",
-            "da": "Reduceret elafgift"
-          },
-          "values": [
-            {
-              "id": "no",
-              "label": {
-                "en": "No",
-                "da": "Nej"
-              }
-            },
-            {
-              "id": "yes",
-              "label": {
-                "en": "Yes > 4000 kWh",
-                "da": "Ja > 4000 kWh"
-              }
-            }
-          ]
+            "en": "Reducet el charge > 4000 kWh",
+            "da": "Reduceret elafgift > 4000 kWh"
+          }
         }
       ],
       "id": "dk-energy"

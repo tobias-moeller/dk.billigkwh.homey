@@ -33,7 +33,7 @@
     {
       "id": "location",
       "type": "dropdown",
-      "value": "location",
+      "value": "Dk1",
       "label": { 
         "en": "Location",
         "da": "Område"
@@ -56,9 +56,9 @@
       ]
     },
     {
-      "id": "net-company",
+      "id": "net_company",
       "type": "dropdown",
-      "value": "net-company",
+      "value": "radius_c",
       "label": { 
         "en": "Net company",
         "da": "Net selskab"
@@ -256,9 +256,9 @@
       ]
     },
     {
-      "id": "el-product",
+      "id": "el_product",
       "type": "dropdown",
-      "value": "el-product",
+      "value": "spotpris",
       "label": { 
         "en": "El Product",
         "da": "Elprodukt"
