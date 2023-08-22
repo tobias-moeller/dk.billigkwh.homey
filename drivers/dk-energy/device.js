@@ -14,41 +14,47 @@ class MyDevice extends Device {
   async onInit() {
 	await this.destroyListeners();
 	this.restarting = false;
+	this.device = this;
 
-	const settings = await this.getSettings();
-    const pureData = await this.fetchPricesFromApi(
-		settings.location, 
-		settings.net_company, 
-		settings.el_product, 
-		settings.redafg
-		);
+	this.priceValues = {
+		"h0" : null,
+		"h1" : null,
+		"h2" : null,
+		"h3" : null,
+		"h4" : null,
+		"h5" : null,
+		"h6" : null,
+		"h7" : null,
+		"today_lowest" : 0,
+		"today_highest" : 0,
+		"today_avg" : 0,
+		"tomorrow_lowest" : 0,
+		"tomorrow_highest" : 0,
+		"tomorrow_avg" : 0,
+	}
 
-	this.storePurePrices(pureData);
-	const mappedData = this.mapPrices(pureData);
-	this.setSensorValues(mappedData);
+    await this.getAndStorePricesFromApi();
+	this.setSensorValues();
 
 	this.eventListenerHour = async () => {
 		this.log('New hour event received');
 		const settings = await this.getSettings();
-		const mappedData = this.mapPrices(settings.prices);
-		this.setSensorValues(mappedData);
+		this.mapPrices(settings.prices);
+		this.setSensorValues();
+		this.log("Sensor values is now updated")
+
+		// Trigger Flows
+		await this.priceAvgTrigger();
 	};
 	this.homey.on('everyhour', this.eventListenerHour);
 
 	this.eventListenerDay = async () => {
 		this.log('New day event received');
-		const pureData = await this.fetchPricesFromApi(
-			settings.location, 
-			settings.net_company, 
-			settings.el_product, 
-			settings.redafg
-			);
-	
-		this.storePurePrices(pureData);
+		await this.getAndStorePricesFromApi();
 	};
-	this.homey.on('everyday', this.eventListenerHour);
+	this.homey.on('everyday', this.eventListenerDay);
 
-	this.log('MyDevice has been initialized');
+	this.log('Energy-device has been initialized');
   }
 
   async destroyListeners() {
@@ -56,15 +62,31 @@ class MyDevice extends Device {
 	if (this.eventListenerDay) this.homey.removeListener('everyday', this.eventListenerDay);
   }
 
-  async storePurePrices(data){
+  async getAndStorePricesFromApi() {
+	const settings = await this.getSettings();
+	const data = await this.fetchPricesFromApi(
+		settings.location, 
+		settings.net_company, 
+		settings.el_product, 
+		settings.redafg
+		);
+
 	await this.setSettings({"prices" : data});
+	this.mapPrices(data);
+
+	// This trigger flow new-prices recieved
+	await this.newPricesReceivedTrigger();
+
+	this.log("Stored new price data");
+
+	return data;
   }
 
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
   async onAdded() {
-    this.log('MyDevice has been added');
+    this.log('Energy-device has been added');
   }
 
   /**
@@ -76,7 +98,7 @@ class MyDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   async onSettings({ oldSettings, newSettings, changedKeys }) {
-    this.log('MyDevice settings where changed');
+    this.log('Energy-device settings where changed');
 	this.restartDevice(1000);
   }
 
@@ -96,7 +118,7 @@ class MyDevice extends Device {
    * @param {string} name The new name
    */
   async onRenamed(name) {
-    this.log('MyDevice was renamed');
+    this.log('Energy-device was renamed');
   }
 
   /**
@@ -104,75 +126,76 @@ class MyDevice extends Device {
    */
   async onDeleted() {
 	this.destroyListeners();
-    this.log('MyDevice has been deleted');
+    this.log('Energy-device has been deleted');
   }
 
-  setSensorValues(mappedData){
-	for (const [key, value] of Object.entries(mappedData)) {
-		this.setCapabilityValue(key, value);
-		this.log(key + " Is set to: " + value);
-	}
+  setSensorValues(){
+	this.setCapabilityValue("meter_price_h0", this.priceValues["h0"]);
+	this.setCapabilityValue("meter_price_h1", this.priceValues["h1"]);
+	this.setCapabilityValue("meter_price_h2", this.priceValues["h2"]);
+	this.setCapabilityValue("meter_price_h3", this.priceValues["h3"]);
+	this.setCapabilityValue("meter_price_h4", this.priceValues["h4"]);
+	this.setCapabilityValue("meter_price_h5", this.priceValues["h5"]);
+	this.setCapabilityValue("meter_price_h6", this.priceValues["h6"]);
+	this.setCapabilityValue("meter_price_h7", this.priceValues["h7"]);
+	this.setCapabilityValue("meter_price_this_day_lowest", this.priceValues["today_lowest"]);
+	this.setCapabilityValue("meter_price_this_day_highest", this.priceValues["today_highest"]);
+	this.setCapabilityValue("meter_price_this_day_avg", this.priceValues["today_avg"]);
   }
 
   mapPrices(data){
-	const mappedData = {
-		"meter_price_h0" : null,
-		"meter_price_h1" : null,
-		"meter_price_h2" : null,
-		"meter_price_h3" : null,
-		"meter_price_h4" : null,
-		"meter_price_h5" : null,
-		"meter_price_h6" : null,
-		"meter_price_h7" : null,
-		"meter_price_this_day_lowest" : null,
-		"meter_price_this_day_highest" : null,
-		"meter_price_this_day_avg" : null
-	}
-
 	const today = this.getDanishTime();
 	const date = this.getDanishTime();
 	date.setHours(0,0,0,0);
 	const todaysTimestamp = this.toTimestamp(date);
 
 	const todaysPrices = this.getPricesArray(data, todaysTimestamp);
-	if (todaysPrices == null) {
-		throw Error("Cant get todays prices");
-	}
-
-	let mappedIndexCounter = 0;
-	for (let i = today.getHours(); i < Object.keys(todaysPrices).length; i++){
-		mappedData["meter_price_h" + mappedIndexCounter] = todaysPrices[i];
-		if (mappedIndexCounter == 7){
-			break;
+	if (todaysPrices != null) {
+		// Reset h values to null
+		for (let i = 0; i < 8; i++){
+			this.priceValues["h" + i] = null;
 		}
 
-		mappedIndexCounter++;
-	}
-
-	// We need next days prices to fill out
-	if (mappedData["meter_price_h7"] == null) {
-		date.setDate(date.getDate() + 1);
-		
-		const tomorrowTimestamp = this.toTimestamp(date);
-		const tomorrowPrices =  this.getPricesArray(data, tomorrowTimestamp);
-		if (todaysPrices == null) {
-			throw Error("Cant get tomorrows prices");
-		}
-
-		for (let i = 0; i < Object.keys(tomorrowPrices).length; i++){
-			mappedData["meter_price_h" + mappedIndexCounter] = tomorrowPrices[i];
+		let mappedIndexCounter = 0;
+		for (let i = today.getHours(); i < Object.keys(todaysPrices).length; i++){
+			this.priceValues["h" + mappedIndexCounter] = todaysPrices[i];
 			if (mappedIndexCounter == 7){
 				break;
 			}
 			mappedIndexCounter++;
 		}
+		this.priceValues["today_lowest"] = Math.min(...todaysPrices);
+		this.priceValues["today_highest"] = Math.max(...todaysPrices);
+		this.priceValues["today_avg"] = parseFloat((todaysPrices.reduce((a, b) => a + b, 0) / todaysPrices.length).toFixed(2));
+
+		// We need next days prices to fill out
+		date.setDate(date.getDate() + 1);
+		const tomorrowTimestamp = this.toTimestamp(date);
+		const tomorrowPrices =  this.getPricesArray(data, tomorrowTimestamp);
+		if (tomorrowPrices != null) {
+			if (this.priceValues["h7"] == null) {
+				for (let i = 0; i < Object.keys(tomorrowPrices).length; i++){
+					this.priceValues["h" + mappedIndexCounter] = tomorrowPrices[i];
+					if (mappedIndexCounter == 7){
+						break;
+					}
+					mappedIndexCounter++;
+				}
+			} 
+			this.priceValues["tomorrow_lowest"] = Math.min(...todaysPrices);
+			this.priceValues["tomorrow_highest"] = Math.max(...todaysPrices);
+			this.priceValues["tomorrow_avg"] = parseFloat((todaysPrices.reduce((a, b) => a + b, 0) / todaysPrices.length).toFixed(2));
+		}else {
+			this.priceValues["tomorrow_lowest"] = null;
+			this.priceValues["tomorrow_highest"] = null;
+			this.priceValues["tomorrow_avg"] = null;
+		}
+	} else {
+		this.priceValues["today_lowest"] = null;
+		this.priceValues["today_highest"] = null;
+		this.priceValues["today_avg"] = null;
 	}
-
-	mappedData["meter_price_this_day_lowest"] = Math.min(...todaysPrices);
-	mappedData["meter_price_this_day_highest"] = Math.max(...todaysPrices);
-	mappedData["meter_price_this_day_avg"] = todaysPrices.reduce((a, b) => a + b, 0) / todaysPrices.length;
-
-	return mappedData;
+	this.log("Mapped prices succesfully");
   }
 
   getPricesArray(data, timestamp){
@@ -206,6 +229,7 @@ class MyDevice extends Device {
   }
 
   async fetchPricesFromApi(location, netCompany, product, redafg){
+		this.log("Fetching prices from api");
 		const options = {
 			hostname: "billigkwh.dk",
 			port: 443,
@@ -214,7 +238,6 @@ class MyDevice extends Device {
 			},
 			method: 'GET',
 		};
-
 		return await this._makeRequest(options, "");
 	}
 
@@ -263,6 +286,41 @@ class MyDevice extends Device {
 		});
     }
 
+	// FLOW TRIGGERS
+
+	async newPricesReceivedTrigger() {
+		const tokens = {
+			"todays_price_lowest" : this.priceValues["today_lowest"] || 0,
+			"todays_price_highest" : this.priceValues["today_highest"] || 0,
+			"todays_price_avg" : this.priceValues["today_avg"] || 0,
+			"tomorrow_price_lowest" : this.priceValues["tomorrow_lowest"] || 0,
+			"tomorrow_price_highest" : this.priceValues["tomorrow_highest"] || 0,
+			"tomorrow_price_avg" : this.priceValues["tomorrow_avg"] || 0
+		}
+		let state = {};
+		this.driver.ready().then(() => {
+			this.driver.triggerNewPricesReceivedFlow(this.device, tokens, state);
+		});
+	}
+
+	async priceAvgTrigger() {
+		const tokens = {
+			"price_now": this.priceValues["h0"],
+			"price_avg": this.priceValues["today_avg"]
+		}
+		let state = {};
+
+		if (this.priceValues["h0"] > this.priceValues["today_avg"]){
+			this.driver.ready().then(() => {
+				this.driver.triggerPriceHigherAvgFlow(this.device, tokens, state);
+			});
+		}
+		else if(this.priceValues["h0"] < this.priceValues["today_avg"]){
+			this.driver.ready().then(() => {
+				this.driver.triggerPriceLessAvgFlow(this.device, tokens, state);
+			});
+		}
+	}
 }
 
 module.exports = MyDevice;

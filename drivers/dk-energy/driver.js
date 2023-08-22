@@ -9,6 +9,9 @@ class MyDriver extends Driver {
    * onInit is called when the driver is initialized.
    */
   async onInit() {
+    this._devicesReceivedNewPrices = this.homey.flow.getDeviceTriggerCard("new-prices-received");
+    this._devicesPriceHigherAvg = this.homey.flow.getDeviceTriggerCard("price-is-higher-than-avg-price");
+    this._devicesPriceLessAvg = this.homey.flow.getDeviceTriggerCard("price-is-less-than-avg-price");
     this.log('MyDriver has been initialized');
   }
 
@@ -40,6 +43,25 @@ class MyDriver extends Driver {
       
     }
     ];
+  }
+
+  // FLOW WHEN CARDS
+  triggerNewPricesReceivedFlow(device, tokens, state) {
+    this._devicesReceivedNewPrices.trigger(device, tokens, state)
+    .then(this.log("Flow 'new-prices-received' triggered"))
+    .catch(this.error);
+  }
+
+  triggerPriceHigherAvgFlow(device, tokens, state) {
+    this._devicesPriceHigherAvg.trigger(device, tokens, state)
+    .then(this.log("Flow 'price-is-higher-than-avg-price' triggered"))
+    .catch(this.error);
+  }
+
+  triggerPriceLessAvgFlow(device, tokens, state) {
+    this._devicesPriceLessAvg.trigger(device, tokens, state)
+    .then(this.log("Flow 'price-is-less-than-avg-price' triggered"))
+    .catch(this.error);
   }
 
 }

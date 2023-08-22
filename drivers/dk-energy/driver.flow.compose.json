@@ -1,0 +1,145 @@
+{
+  "triggers": [
+    {
+      "id": "new-prices-received",
+      "title": {
+        "en": "New prices received",
+        "da": "Nye priser modtaget"
+      },
+      "hint": {
+        "en": "Next days prices recieved",
+        "da": "I morgens priser er modtaget"
+      },
+      "tokens": [
+        {
+          "type": "number",
+          "name": "todays_price_lowest",
+          "title": {
+            "en": "todays lowest price",
+            "da": "dagens laveste pris"
+          },
+          "example": {
+            "en": "1.4"
+          }
+        },
+        {
+          "type": "number",
+          "name": "todays_price_highest",
+          "title": {
+            "en": "todays highest price",
+            "da": "dagens højeste pris"
+          },
+          "example": {
+            "en": "4.5"
+          }
+        },
+        {
+          "type": "number",
+          "name": "todays_price_avg",
+          "title": {
+            "en": "todays average price",
+            "da": "dagens gennemsnits pris"
+          },
+          "example": {
+            "en": "3.1"
+          }
+        },
+        {
+          "type": "number",
+          "name": "tomorrow_price_lowest",
+          "title": {
+            "en": "tomorrow lowest price",
+            "da": "Imorgen laveste pris"
+          },
+          "example": {
+            "en": "1.2"
+          }
+        },
+        {
+          "type": "number",
+          "name": "tomorrow_price_highest",
+          "title": {
+            "en": "tomorrow highest price",
+            "da": "Imorgen højeste pris"
+          },
+          "example": {
+            "en": "6.8"
+          }
+        },
+        {
+          "type": "number",
+          "name": "tomorrow_price_avg",
+          "title": {
+            "en": "tomorrow average price",
+            "da": "imorgen gennemsnits pris"
+          },
+          "example": {
+            "en": "3.4"
+          }
+        }
+      ]
+    },
+    {
+      "id": "price-is-higher-than-avg-price",
+      "title": {
+        "en": "Price is higher than avg price",
+        "da": "Prisen er højere end gennemsnits prisen"
+      },
+      "tokens": [
+        {
+          "type": "number",
+          "name": "price_now",
+          "title": {
+            "en": "price now",
+            "da": "pris nu"
+          },
+          "example": {
+            "en": "2.31"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price_avg",
+          "title": {
+            "en": "average price",
+            "da": "gennemsnit prisen"
+          },
+          "example": {
+            "en": "4.3"
+          }
+        }
+      ]
+    },
+    {
+      "id": "price-is-less-than-avg-price",
+      "title": {
+        "en": "Price is less than avg price",
+        "da": "Prisen er mindre end gennemsnits prisen"
+      },
+      "tokens": [
+        {
+          "type": "number",
+          "name": "price_now",
+          "title": {
+            "en": "price now",
+            "da": "price nu"
+          },
+          "example": {
+            "en": "2.32"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price_avg",
+          "title": {
+            "en": "average price",
+            "da": "gennemsnit prisen"
+          },
+          "example": {
+            "en": "4.3"
+          }
+        }
+      ]
+    }
+  ]
+}

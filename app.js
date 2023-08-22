@@ -16,6 +16,7 @@ class MyApp extends Homey.App {
   async onUninit() {
 		this.log('App onUninit called');
 		this.homey.removeAllListeners('everyhour');
+    this.homey.removeAllListeners('everyday');
 	}
 
   everyHour() {
@@ -37,17 +38,19 @@ class MyApp extends Homey.App {
     // Pull everday between 14-15
     const now = new Date();
     const tomorrow = new Date();
-    if (tomorrow.getHours() > 14){
+    if (tomorrow.getHours() > 12){
       tomorrow.setDate(now.getDate() + 1);
     }
-    tomorrow.setHours(14);
+    tomorrow.setHours(12);
     const timeToNextDay = tomorrow - now;
     this.homey.setTimeout(() => {
       this.homey.setInterval(async () => {
         this.homey.emit('everyday', true);
       }, 24 * 60 * 60 * 1000);
+    //}, 5000);
       this.homey.emit('everyday', true);
     }, timeToNextDay);
+  //}, 5000);
     this.log('everyDay job started');
   }
 
