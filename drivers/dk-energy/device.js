@@ -216,15 +216,7 @@ class MyDevice extends Device {
   getDanishTime(){
 	const timeDifference = 2;
 	const date = new Date();
-	const totalHours = date.getHours() + timeDifference;
-	if (totalHours > 23){
-		date.setDate(date.getDate() + 1);
-		const val = totalHours - 24;
-		date.setHours(date.getHours() + val);
-	}
-	else {
-		date.setHours(date.getHours() + timeDifference);
-	}
+	date.setHours(date.getHours() + timeDifference);
 	return date;
   }
 
