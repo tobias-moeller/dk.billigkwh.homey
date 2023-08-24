@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
+  "brandColor": "#df5020",
   "platforms": [
     "local"
   ],
@@ -197,6 +198,20 @@
         "title": {
           "en": "Price is lower than average price",
           "da": "Prisen er lavere end gennemsnits prisen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          }
+        ]
+      },
+      {
+        "id": "price-is-higher-than-average-price",
+        "title": {
+          "en": "Price is higher than average price",
+          "da": "Prisen er højere end gennemsnits prisen"
         },
         "args": [
           {
