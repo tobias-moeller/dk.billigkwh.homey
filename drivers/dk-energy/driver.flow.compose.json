@@ -141,5 +141,21 @@
         }
       ]
     }
+  ],
+  "conditions": [
+    {
+      "id": "price-is-lower-than-average-price",
+      "title": {
+        "en": "Price is lower than average price",
+        "da": "Prisen er lavere end gennemsnits prisen"
+      }
+    },
+    {
+      "id": "price-is-higher-than-average-price",
+      "title": {
+        "en": "Price is higher than average price",
+        "da": "Prisen er højere end gennemsnits prisen"
+      }
+    }
   ]
 }

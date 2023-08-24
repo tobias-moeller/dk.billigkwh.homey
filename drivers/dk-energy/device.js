@@ -313,6 +313,16 @@ class MyDevice extends Device {
 			});
 		}
 	}
+
+	// AND CARDS
+	async priceLessThanAvgCondition(args){
+		return this.priceValues["h0"] < this.priceValues["today_avg"];
+	}
+
+	async priceHigherThanAvgCondition(args){
+		return this.priceValues["h0"] > this.priceValues["today_avg"];
+	}
 }
+
 
 module.exports = MyDevice;

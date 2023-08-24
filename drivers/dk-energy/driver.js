@@ -9,9 +9,19 @@ class MyDriver extends Driver {
    * onInit is called when the driver is initialized.
    */
   async onInit() {
+
+    // When cards
     this._devicesReceivedNewPrices = this.homey.flow.getDeviceTriggerCard("new-prices-received");
     this._devicesPriceHigherAvg = this.homey.flow.getDeviceTriggerCard("price-is-higher-than-avg-price");
     this._devicesPriceLessAvg = this.homey.flow.getDeviceTriggerCard("price-is-less-than-avg-price");
+
+    // And cards
+    const priceLessThanAvgCondition = this.homey.flow.getConditionCard('price-is-lower-than-average-price');
+		priceLessThanAvgCondition.registerRunListener((args) => args.device.priceLessThanAvgCondition(args));
+
+    const priceHigherThanAvgCondition = this.homey.flow.getConditionCard('price-is-higher-than-average-price');
+		priceHigherThanAvgCondition.registerRunListener((args) => args.device.priceHigherThanAvgCondition(args));
+    
     this.log('MyDriver has been initialized');
   }
 

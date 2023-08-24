@@ -190,6 +190,22 @@
           }
         ]
       }
+    ],
+    "conditions": [
+      {
+        "id": "price-is-lower-than-average-price",
+        "title": {
+          "en": "Price is lower than average price",
+          "da": "Prisen er lavere end gennemsnits prisen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          }
+        ]
+      }
     ]
   },
   "drivers": [
