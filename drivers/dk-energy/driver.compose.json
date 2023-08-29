@@ -65,7 +65,7 @@
       },
       "values": [
         {
-          "id": "None",
+          "id": "none",
           "label": {
              "en": "Without net company",
              "da": "Uden netselskab"
@@ -468,14 +468,14 @@
             }
         },
         {
-          "id": "energi_go_spot_energi",
+          "id": "go-energi_go_spot_energi",
           "label": {
              "en": "go'energi - go'kvartal energi",
              "da": "go'energi - go'kvartal energi"
             }
         },
         {
-          "id": "energi_go_spot_maaned",
+          "id": "go-energi_go_spot_maaned",
           "label": {
              "en": "go'energi - go'måned energi",
              "da": "go'energi - go'måned energi"
