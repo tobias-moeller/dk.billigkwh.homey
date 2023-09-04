@@ -14,6 +14,9 @@ class MyDriver extends Driver {
     this._devicesReceivedNewPrices = this.homey.flow.getDeviceTriggerCard("new-prices-received");
     this._devicesPriceHigherAvg = this.homey.flow.getDeviceTriggerCard("price-is-higher-than-avg-price");
     this._devicesPriceLessAvg = this.homey.flow.getDeviceTriggerCard("price-is-less-than-avg-price");
+    this._devicesPriceLowest = this.homey.flow.getDeviceTriggerCard("price-is-lowest");
+    this._devicesPriceHighest = this.homey.flow.getDeviceTriggerCard("price-is-highest");
+    this._devicesPriceNegative = this.homey.flow.getDeviceTriggerCard("price-is-negative");
 
     // And cards
     const priceLessThanAvgCondition = this.homey.flow.getConditionCard('price-is-lower-than-average-price');
@@ -71,6 +74,24 @@ class MyDriver extends Driver {
   triggerPriceLessAvgFlow(device, tokens, state) {
     this._devicesPriceLessAvg.trigger(device, tokens, state)
     .then(this.log("Flow 'price-is-less-than-avg-price' triggered"))
+    .catch(this.error);
+  }
+
+  triggerPriceIsLowestFlow(device, tokens, state) {
+    this._devicesPriceLowest.trigger(device, tokens, state)
+    .then(this.log("Flow 'price-is-lowest' triggered"))
+    .catch(this.error);
+  }
+
+  triggerPriceIsHighestFlow(device, tokens, state) {
+    this._devicesPriceHighest.trigger(device, tokens, state)
+    .then(this.log("Flow 'price-is-highest' triggered"))
+    .catch(this.error);
+  }
+
+  triggerPriceIsNegativeFlow(device, tokens, state) {
+    this._devicesPriceNegative.trigger(device, tokens, state)
+    .then(this.log("Flow 'price-is-negative' triggered"))
     .catch(this.error);
   }
 

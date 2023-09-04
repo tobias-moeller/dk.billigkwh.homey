@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "dk.billigkwh.homey",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#df5020",
@@ -180,6 +180,99 @@
             },
             "example": {
               "en": "4.3"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          }
+        ]
+      },
+      {
+        "id": "price-is-lowest",
+        "title": {
+          "en": "Price is lowest",
+          "da": "Prisen er lavest"
+        },
+        "hint": {
+          "en": "Lowest price hour of the day",
+          "da": "Laveste time pris på dagen"
+        },
+        "tokens": [
+          {
+            "type": "number",
+            "name": "price_now",
+            "title": {
+              "en": "Price now",
+              "da": "Prisen nu"
+            },
+            "example": {
+              "en": "2.41"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          }
+        ]
+      },
+      {
+        "id": "price-is-highest",
+        "title": {
+          "en": "Price is highest",
+          "da": "Prisen er højest"
+        },
+        "hint": {
+          "en": "Highest price hour of the day",
+          "da": "Højeste time pris på dagen"
+        },
+        "tokens": [
+          {
+            "type": "number",
+            "name": "price_now",
+            "title": {
+              "en": "Price now",
+              "da": "Pris nu"
+            },
+            "example": {
+              "en": "4.71"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          }
+        ]
+      },
+      {
+        "id": "price-is-negative",
+        "title": {
+          "en": "Price is negative",
+          "da": "Prisen er negativ"
+        },
+        "hint": {
+          "en": "Price is less than 0 kr",
+          "da": "Prisen er mindre end 0 kr"
+        },
+        "tokens": [
+          {
+            "type": "number",
+            "name": "price_now",
+            "title": {
+              "en": "Price now",
+              "da": "Pris nu"
+            },
+            "example": {
+              "en": "-1.32"
             }
           }
         ],

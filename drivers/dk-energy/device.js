@@ -25,6 +25,7 @@ class MyDevice extends Device {
 		"h5" : null,
 		"h6" : null,
 		"h7" : null,
+		"today_prices" : null,
 		"today_lowest" : 0,
 		"today_highest" : 0,
 		"today_avg" : 0,
@@ -45,6 +46,7 @@ class MyDevice extends Device {
 
 		// Trigger Flows
 		await this.priceAvgTrigger();
+		await this.priceIsLowestHighestTrigger();
 	};
 	this.homey.on('everyhour', this.eventListenerHour);
 
@@ -164,6 +166,7 @@ class MyDevice extends Device {
 			}
 			mappedIndexCounter++;
 		}
+		this.priceValues["today_prices"] = todaysPrices;
 		this.priceValues["today_lowest"] = Math.min(...todaysPrices);
 		this.priceValues["today_highest"] = Math.max(...todaysPrices);
 		this.priceValues["today_avg"] = parseFloat((todaysPrices.reduce((a, b) => a + b, 0) / todaysPrices.length).toFixed(2));
@@ -191,6 +194,7 @@ class MyDevice extends Device {
 			this.priceValues["tomorrow_avg"] = null;
 		}
 	} else {
+		this.priceValues["today_prices"] = null;
 		this.priceValues["today_lowest"] = null;
 		this.priceValues["today_highest"] = null;
 		this.priceValues["today_avg"] = null;
@@ -311,6 +315,44 @@ class MyDevice extends Device {
 			this.driver.ready().then(() => {
 				this.driver.triggerPriceLessAvgFlow(this.device, tokens, state);
 			});
+		}
+	}
+
+	async priceIsLowestHighestTrigger() {
+		if (this.priceValues["today_prices"] != null){
+			const date = this.getDanishTime();
+			const index_low = this.priceValues["today_prices"].indexOf(this.priceValues["today_lowest"]);
+			const index_high = this.priceValues["today_prices"].indexOf(this.priceValues["today_highest"]);
+
+			const tokens = {
+				"price_now" : this.priceValues["h0"] || 0,
+			}
+			let state = {};
+			if (date.getHours() == index_low) {
+				
+				this.driver.ready().then(() => {
+					this.driver.triggerPriceIsLowestFlow(this.device, tokens, state);
+				});
+			}
+			else if (date.getHours() == index_high){
+				this.driver.ready().then(() => {
+					this.driver.triggerPriceIsHighestFlow(this.device, tokens, state);
+				});
+			}
+		}
+	}
+
+	async priceIsNegativeTrigger() {
+		if (this.priceValues["h0"] != null ) {
+			if(this.priceValues["h0"] < 0) {
+				const tokens = {
+					"price_now" : this.priceValues["h0"] || 0,
+				}
+				let state = {};
+				this.driver.ready().then(() => {
+					this.driver.triggerPriceIsNegativeFlow(this.device, tokens, state);
+				});
+			}
 		}
 	}
 
