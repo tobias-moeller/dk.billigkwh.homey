@@ -70,7 +70,7 @@ class MyDevice extends Device {
 		settings.location, 
 		settings.net_company, 
 		settings.el_product, 
-		settings.redafg
+		Number(settings.redafg)
 		);
 
 	await this.setSettings({"prices" : data});
