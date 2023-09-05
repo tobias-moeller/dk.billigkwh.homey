@@ -212,6 +212,52 @@
           }
         }
       ]
+    },
+    {
+      "id": "price-is-lowest-between",
+      "title": {
+        "en": "Price is lowest between"
+      },
+      "titleFormatted": {
+        "en": "Price is lowest between [[from]] to [[to]]",
+        "da": "Prisen er lavest mellem [[from]] til [[to]]"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "from",
+          "placeholder": {
+            "en": "clock",
+            "da": "kl"
+          },
+          "min": 0,
+          "max": 23,
+          "step": 1
+        },
+        {
+          "type": "number",
+          "name": "to",
+          "placeholder": {
+            "en": "clock",
+            "da": "kl"
+          },
+          "min": 0,
+          "max": 23,
+          "step": 1
+        }
+      ],
+      "tokens": [
+        {
+          "type": "number",
+          "name": "price",
+          "title": {
+            "en": "price"
+          },
+          "example": {
+            "en": "2.32"
+          }
+        }
+      ]
     }
   ],
   "conditions": [

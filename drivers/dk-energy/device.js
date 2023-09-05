@@ -47,6 +47,7 @@ class MyDevice extends Device {
 		// Trigger Flows
 		await this.priceAvgTrigger();
 		await this.priceIsLowestHighestTrigger();
+		await this.priceLowestBetweenTrigger();
 	};
 	this.homey.on('everyhour', this.eventListenerHour);
 
@@ -354,6 +355,53 @@ class MyDevice extends Device {
 				});
 			}
 		}
+	}
+
+
+	async priceLowestBetweenTrigger(){
+		if (this.priceValues["h0"] != null){
+			const tokens = {
+				"price" : this.priceValues["h0"] || 0,
+			}
+			let state = {};
+			this.driver.ready().then(() => {
+				this.driver.triggerPriceLowestBetweenFlow(this.device, tokens, state);
+			});
+		}
+	}
+
+	async priceLowestBetween(args){
+		const fromClock = args["from"];
+		const toClock = args["to"];
+
+		if (fromClock >= toClock){
+			throw Error("From clock cant be greater or eqaul to clock");
+		}
+
+		const date = this.getDanishTime();
+		const nowClock = date.getHours();
+		const todaysPrices = this.priceValues["today_prices"];
+
+		let lowValue = null;
+		let lowIndex = null;
+		for (let i = 0; i < todaysPrices.length; i++) {
+			if (i < fromClock){
+				continue;
+			}
+			else if (i > toClock){
+				break;
+			}
+			else {
+				if (lowValue == null || todaysPrices[i] < lowValue) {
+					lowValue = todaysPrices[i];
+					lowIndex = i;
+				}
+			}
+		  }
+		if(lowIndex == nowClock) {
+			return true;
+		}
+		return false;
 	}
 
 	// AND CARDS
