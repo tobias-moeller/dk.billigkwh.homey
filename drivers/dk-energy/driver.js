@@ -24,6 +24,12 @@ class MyDriver extends Driver {
 
     const priceHigherThanAvgCondition = this.homey.flow.getConditionCard('price-is-higher-than-average-price');
 		priceHigherThanAvgCondition.registerRunListener((args) => args.device.priceHigherThanAvgCondition(args));
+
+    const priceOverValueCondition = this.homey.flow.getConditionCard('price-now-is-over');
+		priceOverValueCondition.registerRunListener((args) => args.device.priceOverValueCondition(args));
+
+    const priceUnderValueCondition = this.homey.flow.getConditionCard('price-now-is-under');
+		priceUnderValueCondition.registerRunListener((args) => args.device.priceUnderValueCondition(args));
     
     this.log('MyDriver has been initialized');
   }

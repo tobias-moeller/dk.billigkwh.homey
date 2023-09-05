@@ -313,6 +313,72 @@
             "filter": "driver_id=dk-energy"
           }
         ]
+      },
+      {
+        "id": "price-now-is-over",
+        "title": {
+          "en": "Price now is over",
+          "da": "Prisen er over"
+        },
+        "titleFormatted": {
+          "en": "Price now is over [[price]] kroner",
+          "da": "Prisen er over [[price]] kroner"
+        },
+        "hint": {
+          "en": "Price is over the selected value",
+          "da": "Prisen er over den valgte værdi"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          },
+          {
+            "type": "number",
+            "name": "price",
+            "placeholder": {
+              "en": "price",
+              "da": "pris"
+            },
+            "min": 0,
+            "max": 50,
+            "step": 0.01
+          }
+        ]
+      },
+      {
+        "id": "price-now-is-under",
+        "title": {
+          "en": "Price now is under",
+          "da": "Price now is under"
+        },
+        "titleFormatted": {
+          "en": "Price now is under [[price]] kroner",
+          "da": "Prisen er under [[price]] kroner"
+        },
+        "hint": {
+          "en": "Price now is under the selected value",
+          "da": "Prisen nu er under den valgte værdi"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          },
+          {
+            "type": "number",
+            "name": "price",
+            "placeholder": {
+              "en": "price",
+              "da": "pris"
+            },
+            "min": 0,
+            "max": 50,
+            "step": 0.01
+          }
+        ]
       }
     ]
   },

@@ -358,11 +358,31 @@ class MyDevice extends Device {
 
 	// AND CARDS
 	async priceLessThanAvgCondition(args){
-		return this.priceValues["h0"] < this.priceValues["today_avg"];
+		if (this.priceValues["h0"] != null && this.priceValues["today_avg"] != null){
+			return this.priceValues["h0"] < this.priceValues["today_avg"];
+		}
+		return false;
 	}
 
 	async priceHigherThanAvgCondition(args){
-		return this.priceValues["h0"] > this.priceValues["today_avg"];
+		if (this.priceValues["h0"] != null && this.priceValues["today_avg"] != null){
+			return this.priceValues["h0"] > this.priceValues["today_avg"];
+		}
+		return false;
+	}
+
+	async priceOverValueCondition(args){
+		if (this.priceValues["h0"] != null){
+			return this.priceValues["h0"] > args["price"];
+		}
+		return false;
+	}
+
+	async priceUnderValueCondition(args){
+		if (this.priceValues["h0"] != null){
+			return this.priceValues["h0"] < args["price"];
+		}
+		return false;
 	}
 }
 

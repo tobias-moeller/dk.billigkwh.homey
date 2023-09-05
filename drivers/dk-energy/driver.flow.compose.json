@@ -228,6 +228,62 @@
         "en": "Price is higher than average price",
         "da": "Prisen er højere end gennemsnits prisen"
       }
+    },
+    {
+      "id": "price-now-is-over",
+      "title": {
+        "en": "Price now is over",
+        "da": "Prisen er over"
+      },
+      "titleFormatted": {
+        "en": "Price is over [[price]] kroner",
+        "da": "Prisen er over [[price]] kroner"
+      },
+      "hint": {
+        "en": "Price is over the selected value",
+        "da": "Prisen er over den valgte værdi"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "price",
+          "placeholder": {
+            "en": "price",
+            "da": "pris"
+          },
+          "min": 0,
+          "max": 50,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "id": "price-now-is-under",
+      "title": {
+        "en": "Price now is under",
+        "da": "Price now is under"
+      },
+      "titleFormatted": {
+        "en": "Price is under [[price]] kroner",
+        "da": "Prisen er under [[price]] kroner"
+      },
+      "hint": {
+        "en": "Price is under the selected value",
+        "da": "Prisen er under den valgte værdi"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "price",
+          "placeholder": {
+            "en": "price",
+            "da": "pris"
+          },
+          "min": 0,
+          "max": 50,
+          "step": 0.01
+        }
+      ]
     }
   ]
 }
