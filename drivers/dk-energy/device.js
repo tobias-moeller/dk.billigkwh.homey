@@ -388,7 +388,7 @@ class MyDevice extends Device {
 			if (i < fromClock){
 				continue;
 			}
-			else if (i > toClock){
+			else if (i >= toClock){
 				break;
 			}
 			else {

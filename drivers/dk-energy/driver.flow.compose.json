@@ -122,7 +122,7 @@
           "name": "price_now",
           "title": {
             "en": "price now",
-            "da": "price nu"
+            "da": "pris nu"
           },
           "example": {
             "en": "2.32"
@@ -220,7 +220,7 @@
       },
       "titleFormatted": {
         "en": "Price is lowest between [[from]] to [[to]]",
-        "da": "Prisen er lavest mellem [[from]] til [[to]]"
+        "da": "Prisen er lavest mellem kl [[from]] til kl [[to]]"
       },
       "args": [
         {
