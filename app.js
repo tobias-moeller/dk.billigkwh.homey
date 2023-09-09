@@ -27,7 +27,7 @@ class MyApp extends Homey.App {
       this.homey.setInterval(async () => {
         this.homey.emit('everyhour', true);
       }, 60 * 60 * 1000);
-      // }, 5000);
+       //}, 5000);
       this.homey.emit('everyhour', true);
     }, timeToNextHour);
     //}, 5000);

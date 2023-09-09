@@ -36,7 +36,7 @@ class MyDevice extends Device {
 
     await this.getAndStorePricesFromApi();
 	this.setSensorValues();
-
+	
 	this.eventListenerHour = async () => {
 		this.log('New hour event received');
 		const settings = await this.getSettings();
@@ -45,6 +45,8 @@ class MyDevice extends Device {
 		this.log("Sensor values is now updated")
 
 		// Trigger Flows
+		await this.newNewHourStartedTrigger();
+		await this.priceIsNegativeTrigger();
 		await this.priceAvgTrigger();
 		await this.priceIsLowestHighestTrigger();
 		await this.priceLowestBetweenTrigger();
@@ -344,6 +346,7 @@ class MyDevice extends Device {
 	}
 
 	async priceIsNegativeTrigger() {
+		this.log(this.priceValues);
 		if (this.priceValues["h0"] != null ) {
 			if(this.priceValues["h0"] < 0) {
 				const tokens = {
@@ -402,6 +405,16 @@ class MyDevice extends Device {
 			return true;
 		}
 		return false;
+	}
+
+	async newNewHourStartedTrigger() {
+		const tokens = {
+			"price" : this.priceValues["h0"] || 0,
+		}
+		let state = {};
+		this.driver.ready().then(() => {
+			this.driver.triggerNewHourFlow(this.device, tokens, state);
+		});
 	}
 
 	// AND CARDS

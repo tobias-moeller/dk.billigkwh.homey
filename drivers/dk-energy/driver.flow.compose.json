@@ -15,8 +15,8 @@
           "type": "number",
           "name": "todays_price_lowest",
           "title": {
-            "en": "todays lowest price",
-            "da": "dagens laveste pris"
+            "en": "Todays lowest price",
+            "da": "Dagens laveste pris"
           },
           "example": {
             "en": "1.4"
@@ -26,8 +26,8 @@
           "type": "number",
           "name": "todays_price_highest",
           "title": {
-            "en": "todays highest price",
-            "da": "dagens højeste pris"
+            "en": "Todays highest price",
+            "da": "Dagens højeste pris"
           },
           "example": {
             "en": "4.5"
@@ -37,8 +37,8 @@
           "type": "number",
           "name": "todays_price_avg",
           "title": {
-            "en": "todays average price",
-            "da": "dagens gennemsnits pris"
+            "en": "Todays average price",
+            "da": "Dagens gennemsnits pris"
           },
           "example": {
             "en": "3.1"
@@ -48,7 +48,7 @@
           "type": "number",
           "name": "tomorrow_price_lowest",
           "title": {
-            "en": "tomorrow lowest price",
+            "en": "Tomorrow lowest price",
             "da": "Imorgen laveste pris"
           },
           "example": {
@@ -59,7 +59,7 @@
           "type": "number",
           "name": "tomorrow_price_highest",
           "title": {
-            "en": "tomorrow highest price",
+            "en": "Tomorrow highest price",
             "da": "Imorgen højeste pris"
           },
           "example": {
@@ -70,8 +70,8 @@
           "type": "number",
           "name": "tomorrow_price_avg",
           "title": {
-            "en": "tomorrow average price",
-            "da": "imorgen gennemsnits pris"
+            "en": "Tomorrow average price",
+            "da": "Imorgen gennemsnits pris"
           },
           "example": {
             "en": "3.4"
@@ -90,8 +90,8 @@
           "type": "number",
           "name": "price_now",
           "title": {
-            "en": "price now",
-            "da": "pris nu"
+            "en": "Price",
+            "da": "Pris"
           },
           "example": {
             "en": "2.31"
@@ -101,8 +101,8 @@
           "type": "number",
           "name": "price_avg",
           "title": {
-            "en": "average price",
-            "da": "gennemsnit prisen"
+            "en": "Average price",
+            "da": "Gennemsnit prisen"
           },
           "example": {
             "en": "4.3"
@@ -121,8 +121,8 @@
           "type": "number",
           "name": "price_now",
           "title": {
-            "en": "price now",
-            "da": "pris nu"
+            "en": "Price",
+            "da": "Pris"
           },
           "example": {
             "en": "2.32"
@@ -132,8 +132,8 @@
           "type": "number",
           "name": "price_avg",
           "title": {
-            "en": "average price",
-            "da": "gennemsnit prisen"
+            "en": "Average price",
+            "da": "Gennemsnit prisen"
           },
           "example": {
             "en": "4.3"
@@ -156,8 +156,8 @@
           "type": "number",
           "name": "price_now",
           "title": {
-            "en": "Price now",
-            "da": "Prisen nu"
+            "en": "Price",
+            "da": "Pris"
           },
           "example": {
             "en": "2.41"
@@ -180,8 +180,8 @@
           "type": "number",
           "name": "price_now",
           "title": {
-            "en": "Price now",
-            "da": "Pris nu"
+            "en": "Price",
+            "da": "Pris"
           },
           "example": {
             "en": "4.71"
@@ -204,8 +204,8 @@
           "type": "number",
           "name": "price_now",
           "title": {
-            "en": "Price now",
-            "da": "Pris nu"
+            "en": "Price",
+            "da": "Pris"
           },
           "example": {
             "en": "-1.32"
@@ -251,10 +251,35 @@
           "type": "number",
           "name": "price",
           "title": {
-            "en": "price"
+            "en": "Price",
+            "da": "Pris"
           },
           "example": {
             "en": "2.32"
+          }
+        }
+      ]
+    },
+    {
+      "id": "new-hour-started",
+      "title": {
+        "en": "New hour started",
+        "da": "Ny time er startet"
+      },
+      "hint": {
+        "en": "Triggers every hour",
+        "da": "Kører hver gang en ny time er startet"
+      },
+      "tokens": [
+        {
+          "type": "number",
+          "name": "price",
+          "title": {
+            "en": "Price",
+            "da": "Pris"
+          },
+          "example": {
+            "en": "2.31"
           }
         }
       ]
