@@ -4,5 +4,8 @@
   },
   "1.0.2": {
     "en": "New when flows added, bug in reduced fee is fixed"
+  },
+  "1.0.3": {
+    "en": "Fixed bug with reduced price, added new flow cards"
   }
 }
