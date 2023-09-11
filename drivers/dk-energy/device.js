@@ -445,6 +445,27 @@ class MyDevice extends Device {
 		}
 		return false;
 	}
+
+	async priceUnderAvgFromToCondition(args){
+		const fromTime = args["from"];
+		const toTime = args["to"];
+
+		if(fromTime >= toTime) {
+			throw Error("From time cant be greater or equal to time");
+		}
+		if(this.priceValues["today_prices"] == null || this.priceValues["h0"] == null){
+			throw Error("Dont have prices to calculate");
+		}
+
+		const priceArayBetweenTime = this.priceValues["today_prices"].slice(fromTime, toTime);
+
+		const average = parseFloat((priceArayBetweenTime.reduce((a, b) => a + b, 0) / priceArayBetweenTime.length).toFixed(2));
+
+		if (this.priceValues["h0"] < average){
+			return true;
+		}
+		return false;
+	}
 }
 
 

@@ -34,6 +34,9 @@ class MyDriver extends Driver {
 
     const priceUnderValueCondition = this.homey.flow.getConditionCard('price-now-is-under');
 		priceUnderValueCondition.registerRunListener((args) => args.device.priceUnderValueCondition(args));
+
+    const priceUnderAvgFromToCondition = this.homey.flow.getConditionCard('price-this-hour-is-under-average-price-from-to');
+		priceUnderAvgFromToCondition.registerRunListener((args) => args.device.priceUnderAvgFromToCondition(args));
     
     this.log('MyDriver has been initialized');
   }
