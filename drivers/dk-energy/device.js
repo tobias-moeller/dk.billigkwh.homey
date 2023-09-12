@@ -50,6 +50,7 @@ class MyDevice extends Device {
 		await this.priceAvgTrigger();
 		await this.priceIsLowestHighestTrigger();
 		await this.priceLowestBetweenTrigger();
+		await this.lowestPeriodStartsBetweenTrigger();
 	};
 	this.homey.on('everyhour', this.eventListenerHour);
 
@@ -346,7 +347,6 @@ class MyDevice extends Device {
 	}
 
 	async priceIsNegativeTrigger() {
-		this.log(this.priceValues);
 		if (this.priceValues["h0"] != null ) {
 			if(this.priceValues["h0"] < 0) {
 				const tokens = {
@@ -359,7 +359,6 @@ class MyDevice extends Device {
 			}
 		}
 	}
-
 
 	async priceLowestBetweenTrigger(){
 		if (this.priceValues["h0"] != null){
@@ -420,6 +419,53 @@ class MyDevice extends Device {
 		this.driver.ready().then(() => {
 			this.driver.triggerNewHourFlow(this.device, tokens, state);
 		});
+	}
+
+	async lowestPeriodStartsBetweenTrigger(){
+		if (this.priceValues["today_prices"] != null){
+			const tokens = {}
+			let state = {};
+			this.driver.ready().then(() => {
+				this.driver.triggerLowestPeriodStartsBetweenFlow(this.device, tokens, state);
+			});
+		}
+	}
+
+	async lowestPeriodStartsBetween(args){
+		const period = args["period"];
+		const fromTime = args["from"];
+		const toTime = args["to"];
+		const todaysPrices = this.priceValues["today_prices"];
+
+		let avg_index = null;
+		let avg_value = null;
+
+		for (let i = 0; i < todaysPrices.length; i++) {
+			if (i < fromTime + period){
+				continue;
+			}
+			else if (i > toTime){
+				break;
+			}
+			else {
+				let start_index = i - period;
+				const tempArray = todaysPrices.slice(start_index, i);
+				let tempAvg = parseFloat((tempArray.reduce((a, b) => a + b, 0) / tempArray.length));
+
+				if(avg_value == null || avg_value > tempAvg) {
+					avg_index = start_index;
+					avg_value = tempAvg;
+				}
+			}
+		}
+		
+		const date = this.getDanishTime();
+		const currentHour = date.getHours();
+
+		if (currentHour == avg_index){
+			return true;
+		}
+		return false;
 	}
 
 	// AND CARDS

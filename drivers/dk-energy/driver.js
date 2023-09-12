@@ -22,6 +22,9 @@ class MyDriver extends Driver {
     this._devicesPriceLowestBetween = this.homey.flow.getDeviceTriggerCard("price-is-lowest-between");
     this._devicesPriceLowestBetween.registerRunListener(async (args ) => args.device.priceLowestBetween(args));
 
+    this._devicesLowestperiodStartsBetween = this.homey.flow.getDeviceTriggerCard("lowest-price-period-starts-between");
+    this._devicesLowestperiodStartsBetween.registerRunListener(async (args ) => args.device.lowestPeriodStartsBetween(args));
+
     // And cards
     const priceLessThanAvgCondition = this.homey.flow.getConditionCard('price-is-lower-than-average-price');
 		priceLessThanAvgCondition.registerRunListener((args) => args.device.priceLessThanAvgCondition(args));
@@ -117,6 +120,12 @@ class MyDriver extends Driver {
   triggerNewHourFlow(device, tokens, state) {
     this._devicesNewHour.trigger(device, tokens, state)
     .then(this.log("Flow 'new-hour-started' triggered"))
+    .catch(this.error);
+  }
+
+  triggerLowestPeriodStartsBetweenFlow(device, tokens, state) {
+    this._devicesLowestperiodStartsBetween.trigger(device, tokens, state)
+    .then(this.log("Flow 'lowest-price-period-starts-between' triggered"))
     .catch(this.error);
   }
 
