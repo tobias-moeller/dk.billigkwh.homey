@@ -279,7 +279,62 @@
             "da": "Pris"
           },
           "example": {
+            "en": "2.21"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price+1",
+          "title": {
+            "en": "Price + 1 hour",
+            "da": "Pris + 1 time"
+          },
+          "example": {
             "en": "2.31"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price+2",
+          "title": {
+            "en": "Price + 2 hour",
+            "da": "Pris + 2 time"
+          },
+          "example": {
+            "en": "2.01"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price+3",
+          "title": {
+            "en": "Price + 3 hour",
+            "da": "Pris + 3 time"
+          },
+          "example": {
+            "en": "1.98"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price+4",
+          "title": {
+            "en": "Price + 4 hour",
+            "da": "Pris + 4 time"
+          },
+          "example": {
+            "en": "1.99"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price+5",
+          "title": {
+            "en": "Price + 5 hour",
+            "da": "Pris + 5 time"
+          },
+          "example": {
+            "en": "2.06"
           }
         }
       ]

@@ -410,6 +410,11 @@ class MyDevice extends Device {
 	async newNewHourStartedTrigger() {
 		const tokens = {
 			"price" : this.priceValues["h0"] || 0,
+			"price+1" : this.priceValues["h1"] || 0,
+			"price+2" : this.priceValues["h2"] || 0,
+			"price+3" : this.priceValues["h3"] || 0,
+			"price+4" : this.priceValues["h4"] || 0,
+			"price+5" : this.priceValues["h5"] || 0,
 		}
 		let state = {};
 		this.driver.ready().then(() => {
