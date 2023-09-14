@@ -36,7 +36,7 @@ class MyDevice extends Device {
 
     await this.getAndStorePricesFromApi();
 	this.setSensorValues();
-	
+
 	this.eventListenerHour = async () => {
 		this.log('New hour event received');
 		const settings = await this.getSettings();
@@ -51,6 +51,7 @@ class MyDevice extends Device {
 		await this.priceIsLowestHighestTrigger();
 		await this.priceLowestBetweenTrigger();
 		await this.lowestPeriodStartsBetweenTrigger();
+		await this.lowestPricePeriodTrigger();
 	};
 	this.homey.on('everyhour', this.eventListenerHour);
 
@@ -435,9 +436,21 @@ class MyDevice extends Device {
 		const period = args["period"];
 		const fromTime = args["from"];
 		const toTime = args["to"];
-		const todaysPrices = this.priceValues["today_prices"];
+		
+		let avg_indexes = this.calculateLowestPeriod(period, fromTime, toTime);
+		
+		const date = this.getDanishTime();
+		const currentHour = date.getHours();
+		this.log(avg_indexes);
+		if (currentHour == avg_indexes[0]){
+			return true;
+		}
+		return false;
+	}
 
-		let avg_index = null;
+	calculateLowestPeriod(period, fromTime, toTime){
+		const todaysPrices = this.priceValues["today_prices"];
+		let avg_indexes = null;
 		let avg_value = null;
 
 		for (let i = 0; i < todaysPrices.length; i++) {
@@ -453,19 +466,41 @@ class MyDevice extends Device {
 				let tempAvg = parseFloat((tempArray.reduce((a, b) => a + b, 0) / tempArray.length));
 
 				if(avg_value == null || avg_value > tempAvg) {
-					avg_index = start_index;
+					avg_indexes = [];
+					for(let a = start_index; a < i; a++){
+						avg_indexes.push(a);
+					}
 					avg_value = tempAvg;
 				}
 			}
 		}
+		return avg_indexes;
+	}
+
+	async lowestPricePeriod(args){
+		const period = args["period"];
+		const fromTime = 0;
+		const toTime = 23;
+		
+		let avg_indexes = this.calculateLowestPeriod(period, fromTime, toTime);
 		
 		const date = this.getDanishTime();
 		const currentHour = date.getHours();
-
-		if (currentHour == avg_index){
+		this.log(avg_indexes);
+		if (currentHour == avg_indexes[0]){
 			return true;
 		}
 		return false;
+	}
+
+	async lowestPricePeriodTrigger(){
+		if (this.priceValues["today_prices"] != null){
+			const tokens = {}
+			let state = {};
+			this.driver.ready().then(() => {
+				this.driver.triggerLowestPricePeriodFlow(this.device, tokens, state);
+			});
+		}
 	}
 
 	// AND CARDS
@@ -514,6 +549,40 @@ class MyDevice extends Device {
 
 		if (this.priceValues["h0"] < average){
 			return true;
+		}
+		return false;
+	}
+
+	async lowestPricePeriodCondition(args){
+		const period = args["period"];
+		const fromTime = 0;
+		const toTime = 23;
+
+		const indexes = this.calculateLowestPeriod(period, fromTime, toTime);
+		const date = this.getDanishTime();
+		const current_hour = date.getHours();
+
+		for(let i = 0; i < indexes.length; i++){
+			if (current_hour == indexes[i]) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	async lowestPricePeriodBetweenCondition(args){
+		const period = args["period"];
+		const fromTime = args["from"];
+		const toTime = args["to"];
+
+		const indexes = this.calculateLowestPeriod(period, fromTime, toTime);
+		const date = this.getDanishTime();
+		const current_hour = date.getHours();
+
+		for(let i = 0; i < indexes.length; i++){
+			if (current_hour == indexes[i]) {
+				return true;
+			}
 		}
 		return false;
 	}

@@ -22,8 +22,11 @@ class MyDriver extends Driver {
     this._devicesPriceLowestBetween = this.homey.flow.getDeviceTriggerCard("price-is-lowest-between");
     this._devicesPriceLowestBetween.registerRunListener(async (args ) => args.device.priceLowestBetween(args));
 
-    this._devicesLowestperiodStartsBetween = this.homey.flow.getDeviceTriggerCard("lowest-price-period-starts-between");
-    this._devicesLowestperiodStartsBetween.registerRunListener(async (args ) => args.device.lowestPeriodStartsBetween(args));
+    this._devicesLowestPeriodStartsBetween = this.homey.flow.getDeviceTriggerCard("lowest-price-period-starts-between");
+    this._devicesLowestPeriodStartsBetween.registerRunListener(async (args ) => args.device.lowestPeriodStartsBetween(args));
+    
+    this._devicesLowestPricePeriod = this.homey.flow.getDeviceTriggerCard("lowest-price-period");
+    this._devicesLowestPricePeriod.registerRunListener(async (args ) => args.device.lowestPricePeriod(args));
 
     // And cards
     const priceLessThanAvgCondition = this.homey.flow.getConditionCard('price-is-lower-than-average-price');
@@ -40,6 +43,12 @@ class MyDriver extends Driver {
 
     const priceUnderAvgFromToCondition = this.homey.flow.getConditionCard('price-this-hour-is-under-average-price-from-to');
 		priceUnderAvgFromToCondition.registerRunListener((args) => args.device.priceUnderAvgFromToCondition(args));
+
+    const pricePeriodLowestCondition = this.homey.flow.getConditionCard('the-lowest-price-period');
+		pricePeriodLowestCondition.registerRunListener((args) => args.device.lowestPricePeriodCondition(args));
+
+    const pricePeriodLowestBetweenCondition = this.homey.flow.getConditionCard('the-lowest-price-period-between');
+		pricePeriodLowestBetweenCondition.registerRunListener((args) => args.device.lowestPricePeriodBetweenCondition(args));
     
     this.log('MyDriver has been initialized');
   }
@@ -124,8 +133,14 @@ class MyDriver extends Driver {
   }
 
   triggerLowestPeriodStartsBetweenFlow(device, tokens, state) {
-    this._devicesLowestperiodStartsBetween.trigger(device, tokens, state)
+    this._devicesLowestPeriodStartsBetween.trigger(device, tokens, state)
     .then(this.log("Flow 'lowest-price-period-starts-between' triggered"))
+    .catch(this.error);
+  }
+
+  triggerLowestPricePeriodFlow(device, tokens, state) {
+    this._devicesLowestPricePeriod.trigger(device, tokens, state)
+    .then(this.log("Flow 'lowest-price-period' triggered"))
     .catch(this.error);
   }
 
