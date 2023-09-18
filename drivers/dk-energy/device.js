@@ -189,10 +189,10 @@ class MyDevice extends Device {
 					}
 					mappedIndexCounter++;
 				}
-			} 
-			this.priceValues["tomorrow_lowest"] = Math.min(...todaysPrices);
-			this.priceValues["tomorrow_highest"] = Math.max(...todaysPrices);
-			this.priceValues["tomorrow_avg"] = parseFloat((todaysPrices.reduce((a, b) => a + b, 0) / todaysPrices.length).toFixed(2));
+			}
+			this.priceValues["tomorrow_lowest"] = Math.min(...tomorrowPrices);
+			this.priceValues["tomorrow_highest"] = Math.max(...tomorrowPrices);
+			this.priceValues["tomorrow_avg"] = parseFloat((tomorrowPrices.reduce((a, b) => a + b, 0) / tomorrowPrices.length).toFixed(2));
 		}else {
 			this.priceValues["tomorrow_lowest"] = null;
 			this.priceValues["tomorrow_highest"] = null;
@@ -214,6 +214,9 @@ class MyDevice extends Device {
 			prices = data[i]["priser"];
 			break;
 		}
+	}
+	if(prices[0] == null){
+		return null;
 	}
 	return prices;
   }
@@ -448,8 +451,11 @@ class MyDevice extends Device {
 		return false;
 	}
 
-	calculateLowestPeriod(period, fromTime, toTime){
-		const todaysPrices = this.priceValues["today_prices"];
+	calculateLowestPeriod(period, fromTime, toTime, tomorrow = false){
+		let todaysPrices = this.priceValues["today_prices"];
+		if (tomorrow) {
+			todaysPrices = this.priceValues["tomorrow_prices"];
+		}
 		let avg_indexes = null;
 		let avg_value = null;
 
