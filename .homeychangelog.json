@@ -13,5 +13,8 @@
   },
   "1.1.1": {
     "en": "Small bug in new prices recieved fixed"
+  },
+  "1.1.2": {
+    "en": "After midnight crash fixed"
   }
 }
