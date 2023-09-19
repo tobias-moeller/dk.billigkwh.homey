@@ -215,6 +215,9 @@ class MyDevice extends Device {
 			break;
 		}
 	}
+	if (prices == null) {
+		return null;
+	}
 	if(prices[0] == null){
 		return null;
 	}
