@@ -228,9 +228,18 @@ class MyDevice extends Device {
     return date.toISOString().split('.')[0]+"Z";
   }
 
+  isSummerTime(dateToTest) {
+    	let jan = new Date(dateToTest.getFullYear(), 0, 1).getTimezoneOffset();
+    	let jul = new Date(dateToTest.getFullYear(), 6, 1).getTimezoneOffset();
+    	return Math.max(jan, jul) !== dateToTest.getTimezoneOffset();    
+	}
+
   getDanishTime(){
-	const timeDifference = 2;
 	const date = new Date();
+	let timeDifference = 1;
+	if(this.isSummerTime(date)) {
+		timeDifference = 2;
+	}
 	date.setHours(date.getHours() + timeDifference);
 	return date;
   }
