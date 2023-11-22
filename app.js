@@ -34,14 +34,31 @@ class MyApp extends Homey.App {
     this.log('everyHour job started');
   }
 
+
+  isSummerTime(dateToTest) {
+    let jan = new Date(dateToTest.getFullYear(), 0, 1).getTimezoneOffset();
+    let jul = new Date(dateToTest.getFullYear(), 6, 1).getTimezoneOffset();
+    return Math.max(jan, jul) !== dateToTest.getTimezoneOffset();    
+  }
+
+  getDanishTime(){
+    const date = new Date();
+    let timeDifference = 1;
+    if(this.isSummerTime(date)) {
+      timeDifference = 2;
+    }
+    date.setHours(date.getHours() + timeDifference);
+    return date;
+  }
+
   everyDay() {
-    // Pull everday between 14-15
-    const now = new Date();
-    const tomorrow = new Date();
-    if (tomorrow.getHours() > 12){
+    // Pull everday between 14-15 DK TIME
+    const now = this.getDanishTime();
+    const tomorrow = this.getDanishTime();
+    if (tomorrow.getHours() > 14){
       tomorrow.setDate(now.getDate() + 1);
     }
-    tomorrow.setHours(12);
+    tomorrow.setHours(14);
     const timeToNextDay = tomorrow - now;
     this.homey.setTimeout(() => {
       this.homey.setInterval(async () => {
