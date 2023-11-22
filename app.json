@@ -1293,13 +1293,6 @@
               }
             },
             {
-              "id": "grow_energy_zero_hero_netto_49",
-              "label": {
-                "en": "Grow Energy - Zero Hero Netto 49",
-                "da": "Grow Energy - Zero Hero Netto 49"
-              }
-            },
-            {
               "id": "looad",
               "label": {
                 "en": "LOOAD - Looad Energy",
@@ -1314,13 +1307,6 @@
               }
             },
             {
-              "id": "jysk_energi_det-grønne-liv",
-              "label": {
-                "en": "Jysk Energi - Det Grønne Liv",
-                "da": "Jysk Energi - Det Grønne Liv"
-              }
-            },
-            {
               "id": "energynordic_nordicflex",
               "label": {
                 "en": "Energy Nordic - Nordic Flex+",
@@ -1332,13 +1318,6 @@
               "label": {
                 "en": "Greenbow - Elaftale",
                 "da": "Greenbow - Elaftale"
-              }
-            },
-            {
-              "id": "grow_energy_zero_hero_one",
-              "label": {
-                "en": "Grow Energy - Zero Hero One",
-                "da": "Grow Energy - Zero Hero One"
               }
             },
             {
@@ -1542,6 +1521,34 @@
               "label": {
                 "en": "Ø-Strøm - GrønSpotEL",
                 "da": "Ø-Strøm - GrønSpotEL"
+              }
+            },
+            {
+              "id": "struer_flex",
+              "label": {
+                "en": "Struer Energi - Flex",
+                "da": "Struer Energi - Flex"
+              }
+            },
+            {
+              "id": "vesthimmerlands_fri_el_spot",
+              "label": {
+                "en": "Vesthimmerlands El-Forsyning - Fri el spot",
+                "da": "Vesthimmerlands El-Forsyning - Fri el spot"
+              }
+            },
+            {
+              "id": "vestforsyning_plus",
+              "label": {
+                "en": "Vestforsyning - PLUS",
+                "da": "Vestforsyning - PLUS"
+              }
+            },
+            {
+              "id": "vestforsyning_spot",
+              "label": {
+                "en": "Vestforsyning - SPOT",
+                "da": "Vestforsyning - SPOT"
               }
             }
           ]
