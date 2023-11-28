@@ -25,5 +25,8 @@
   },
   "1.1.5": {
     "en": "Fecth prices bug fixed. New elproducts added and expired removed"
+  },
+  "1.1.6": {
+    "en": "Updated advanced settings. New elproducts"
   }
 }

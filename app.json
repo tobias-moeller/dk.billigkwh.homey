@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "dk.billigkwh.homey",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#7DC245",
@@ -799,276 +799,276 @@
           },
           "values": [
             {
-              "id": "none",
+              "id": "aal_el_net_c",
               "label": {
-                "en": "Without net company",
-                "da": "Uden netselskab"
-              }
-            },
-            {
-              "id": "radius_c",
-              "label": {
-                "en": "Radius C",
-                "da": "Radius C"
-              }
-            },
-            {
-              "id": "rah_c",
-              "label": {
-                "en": "RAH C",
-                "da": "RAH C"
-              }
-            },
-            {
-              "id": "konstant_c",
-              "label": {
-                "en": "Konstant C",
-                "da": "Konstant C"
+                "da": "Aal El-Net A M B A",
+                "en": "Aal El-Net A M B A"
               }
             },
             {
               "id": "cerius_c",
               "label": {
-                "en": "Cerius C",
-                "da": "Cerius C"
-              }
-            },
-            {
-              "id": "n1_c",
-              "label": {
-                "en": "N1 C",
-                "da": "N1 C"
+                "da": "Cerius C",
+                "en": "Cerius C"
               }
             },
             {
               "id": "dinel_c",
               "label": {
-                "en": "Dinel C",
-                "da": "Dinel C"
-              }
-            },
-            {
-              "id": "trefor_el-net_c",
-              "label": {
-                "en": "Trefor El-net C",
-                "da": "Trefor El-net C"
-              }
-            },
-            {
-              "id": "trefor_el-net_oest_c",
-              "label": {
-                "en": "Trefor El-net East C",
-                "da": "Trefor El-net øst C"
-              }
-            },
-            {
-              "id": "elektrus_c",
-              "label": {
-                "en": "Elektrus C",
-                "da": "Elektrus C"
-              }
-            },
-            {
-              "id": "elnet_midt_c",
-              "label": {
-                "en": "Elnet midt C",
-                "da": "Elnet midt C"
-              }
-            },
-            {
-              "id": "hurup_elvrk_net_c",
-              "label": {
-                "en": "Hurup Elværk Net C",
-                "da": "Hurup Elværk Net C"
-              }
-            },
-            {
-              "id": "veksel",
-              "label": {
-                "en": "Veksel C",
-                "da": "Veksel C"
-              }
-            },
-            {
-              "id": "vores_elnet",
-              "label": {
-                "en": "Vores Elnet C",
-                "da": "Vores Elnet C"
-              }
-            },
-            {
-              "id": "netselskabet_elvaerk_c",
-              "label": {
-                "en": "Netselskabet Elværk C",
-                "da": "Netselskabet Elværk C"
-              }
-            },
-            {
-              "id": "nord_energi_net",
-              "label": {
-                "en": "Nord Energi Net",
-                "da": "Nord Energi Net"
-              }
-            },
-            {
-              "id": "noe_net",
-              "label": {
-                "en": "Nordvestjysk Elforsyning (NOE Net)",
-                "da": "Nordvestjysk Elforsyning (NOE Net)"
-              }
-            },
-            {
-              "id": "ikast_el_net_as_c",
-              "label": {
-                "en": "Ikast El Net A/S",
-                "da": "Ikast El Net A/S"
-              }
-            },
-            {
-              "id": "flow_elnet",
-              "label": {
-                "en": "Flow Elnet",
-                "da": "Flow Elnet"
-              }
-            },
-            {
-              "id": "elinor",
-              "label": {
-                "en": "Elinor A/S",
-                "da": "Elinor A/S"
-              }
-            },
-            {
-              "id": "hammel_elforsyning_net_as",
-              "label": {
-                "en": "Hammel elforsyning Net A/S",
-                "da": "Hammel elforsyning Net A/S"
-              }
-            },
-            {
-              "id": "tarm_elværk_net_as",
-              "label": {
-                "en": "Tarm Elværk Net A/S",
-                "da": "Tarm Elværk Net A/S"
+                "da": "Dinel C",
+                "en": "Dinel C"
               }
             },
             {
               "id": "el-net_kongerslev",
               "label": {
-                "en": "El-net Kongerslev",
-                "da": "El-net Kongerslev"
+                "da": "El-net Kongerslev",
+                "en": "El-net Kongerslev"
               }
             },
             {
-              "id": "ravdex",
+              "id": "elektrus_c",
               "label": {
-                "en": "Ravdex",
-                "da": "Ravdex"
+                "da": "Elektrus C",
+                "en": "Elektrus C"
               }
             },
             {
-              "id": "zeanet",
+              "id": "elinor",
               "label": {
-                "en": "Zeanet",
-                "da": "Zeanet"
+                "da": "Elinord A/S",
+                "en": "Elinord A/S"
               }
             },
             {
-              "id": "nke-elnet",
+              "id": "elnet_midt_c",
               "label": {
-                "en": "NKE-Elnet",
-                "da": "NKE-Elnet"
+                "da": "Elnet midt C",
+                "en": "Elnet midt C"
               }
             },
             {
-              "id": "l-net",
+              "id": "flow_elnet",
               "label": {
-                "en": "L-Net",
-                "da": "L-Net"
+                "da": "Flow Elnet",
+                "en": "Flow Elnet"
               }
             },
             {
               "id": "forsyning_elnet",
               "label": {
-                "en": "Forsyning Elnet A/S",
-                "da": "Forsyning Elnet A/S"
+                "da": "Forsyning Elnet A/S",
+                "en": "Forsyning Elnet A/S"
               }
             },
             {
               "id": "gev_elnet_c",
               "label": {
-                "en": "GEV Elnet A/S",
-                "da": "GEV Elnet A/S"
+                "da": "GEV Elnet A/S",
+                "en": "GEV Elnet A/S"
+              }
+            },
+            {
+              "id": "hammel_elforsyning_net_as",
+              "label": {
+                "da": "Hammel Elforsyning Net A/S",
+                "en": "Hammel Elforsyning Net A/S"
               }
             },
             {
               "id": "hjerting_transformatorforening",
               "label": {
-                "en": "Hjerting Transformatorforening",
-                "da": "Hjerting Transformatorforening"
+                "da": "Hjerting Transformatorforening",
+                "en": "Hjerting Transformatorforening"
+              }
+            },
+            {
+              "id": "hurup_elvrk_net_c",
+              "label": {
+                "da": "Hurup Elværk Net C",
+                "en": "Hurup Elværk Net C"
+              }
+            },
+            {
+              "id": "ikast_el_net_as_c",
+              "label": {
+                "da": "Ikast El Net A/S",
+                "en": "Ikast El Net A/S"
               }
             },
             {
               "id": "kimbrer_c",
               "label": {
-                "en": "Kimbrer Elnet C",
-                "da": "Kimbrer Elnet C"
+                "da": "Kimbrer Elnet C",
+                "en": "Kimbrer Elnet C"
+              }
+            },
+            {
+              "id": "konstant_c",
+              "label": {
+                "da": "Konstant C",
+                "en": "Konstant C"
+              }
+            },
+            {
+              "id": "l-net",
+              "label": {
+                "da": "L-Net",
+                "en": "L-Net"
               }
             },
             {
               "id": "laesoe_elnet_c",
               "label": {
-                "en": "Læsø Elnet A/S",
-                "da": "Læsø Elnet A/S"
+                "da": "Læsø Elnet A/S",
+                "en": "Læsø Elnet A/S"
               }
             },
             {
               "id": "midtfyns_elforsyning_c",
               "label": {
-                "en": "Midtfyns Elforsyning A.m.b.A",
-                "da": "Midtfyns Elforsyning A.m.b.A"
+                "da": "Midtfyns Elforsyning A.m.b.A",
+                "en": "Midtfyns Elforsyning A.m.b.A"
+              }
+            },
+            {
+              "id": "n1_c",
+              "label": {
+                "da": "N1 C",
+                "en": "N1 C"
+              }
+            },
+            {
+              "id": "nke-elnet",
+              "label": {
+                "da": "NKE-Elnet",
+                "en": "NKE-Elnet"
               }
             },
             {
               "id": "nakskov_elnet_e",
               "label": {
-                "en": "Nakskov Elnet A/S",
-                "da": "Nakskov Elnet A/S"
+                "da": "Nakskov Elnet A/S",
+                "en": "Nakskov Elnet A/S"
               }
             },
             {
               "id": "netselskabet_elvaerk_331_c",
               "label": {
-                "en": "Netselskabet Elværk A/S - 331 C",
-                "da": "Netselskabet Elværk A/S - 331 C"
+                "da": "Netselskabet Elværk A/S - 331 C",
+                "en": "Netselskabet Elværk A/S - 331 C"
+              }
+            },
+            {
+              "id": "netselskabet_elvaerk_c",
+              "label": {
+                "da": "Netselskabet Elværk C",
+                "en": "Netselskabet Elværk C"
+              }
+            },
+            {
+              "id": "nord_energi_net",
+              "label": {
+                "da": "Nord Energi Net",
+                "en": "Nord Energi Net"
+              }
+            },
+            {
+              "id": "noe_net",
+              "label": {
+                "da": "Nordvestjysk Elforsyning (NOE Net)",
+                "en": "Nordvestjysk Elforsyning (NOE Net)"
+              }
+            },
+            {
+              "id": "rah_c",
+              "label": {
+                "da": "RAH C",
+                "en": "RAH C"
+              }
+            },
+            {
+              "id": "radius_c",
+              "label": {
+                "da": "Radius C",
+                "en": "Radius C"
+              }
+            },
+            {
+              "id": "ravdex",
+              "label": {
+                "da": "Ravdex",
+                "en": "Ravdex"
               }
             },
             {
               "id": "sunds_net",
               "label": {
-                "en": "Sunds Net A.m.b.a",
-                "da": "Sunds Net A.m.b.a"
+                "da": "Sunds Net A.m.b.a",
+                "en": "Sunds Net A.m.b.a"
+              }
+            },
+            {
+              "id": "tarm_elværk_net_as",
+              "label": {
+                "da": "Tarm Elværk Net A/S",
+                "en": "Tarm Elværk Net A/S"
+              }
+            },
+            {
+              "id": "trefor_el-net_oest_c",
+              "label": {
+                "da": "Trefor El-Net Øst C",
+                "en": "Trefor El-Net Øst C"
+              }
+            },
+            {
+              "id": "trefor_el-net_c",
+              "label": {
+                "da": "Trefor El-net C",
+                "en": "Trefor El-net C"
+              }
+            },
+            {
+              "id": "none",
+              "label": {
+                "da": "Uden netselskab",
+                "en": "Uden netselskab"
+              }
+            },
+            {
+              "id": "veksel",
+              "label": {
+                "da": "Veksel C",
+                "en": "Veksel C"
               }
             },
             {
               "id": "videbaek_elnet_c",
               "label": {
-                "en": "Videbæk Elnet A/S",
-                "da": "Videbæk Elnet A/S"
+                "da": "Videbæk Elnet A/S",
+                "en": "Videbæk Elnet A/S"
               }
             },
             {
               "id": "vildbjerg_elnet_c",
               "label": {
-                "en": "Vildbjerg Elnet A/S",
-                "da": "Vildbjerg Elnet A/S"
+                "da": "Vildbjerg Elnet A/S",
+                "en": "Vildbjerg Elnet A/S"
               }
             },
             {
-              "id": "aal_el_net_c",
+              "id": "vores_elnet",
               "label": {
-                "en": "Aal El-Net A M B A",
-                "da": "Aal El-Net A M B A"
+                "da": "Vores Elnet C",
+                "en": "Vores Elnet C"
+              }
+            },
+            {
+              "id": "zeanet",
+              "label": {
+                "da": "Zeanet",
+                "en": "Zeanet"
               }
             }
           ]
@@ -1083,472 +1083,486 @@
           },
           "values": [
             {
-              "id": "spotpris",
-              "label": {
-                "en": "No El Product - Pure Spotprice",
-                "da": "Intet Elprodukt - Ren Spotpris"
-              }
-            },
-            {
-              "id": "nettopower",
-              "label": {
-                "en": "Nettopower",
-                "da": "Nettopower"
-              }
-            },
-            {
-              "id": "velkommen",
-              "label": {
-                "en": "Velkommen",
-                "da": "Velkommen"
-              }
-            },
-            {
-              "id": "vindstoed_danskvind",
-              "label": {
-                "en": "Vindstød - DanskVind",
-                "da": "Vindstød - DanskVind"
-              }
-            },
-            {
-              "id": "vindstoed_vestroem",
-              "label": {
-                "en": "Vindstød - VEstrøm",
-                "da": "Vindstød - VEstrøm"
-              }
-            },
-            {
-              "id": "vindstoed_spotvind",
-              "label": {
-                "en": "Vindstød - SpotVind",
-                "da": "Vindstød - SpotVind"
-              }
-            },
-            {
-              "id": "vindstoed_elforbundet",
-              "label": {
-                "en": "Vindstød - Elforbundet",
-                "da": "Vindstød - Elforbundet"
-              }
-            },
-            {
-              "id": "ewii_groen_indkoebspris",
-              "label": {
-                "en": "EWII - Grøn Indkøbspris",
-                "da": "EWII - Grøn Indkøbspris"
-              }
-            },
-            {
               "id": "aura_flexel",
               "label": {
-                "en": "AURA - FlexEl",
-                "da": "AURA - FlexEl"
-              }
-            },
-            {
-              "id": "ok_el_flex",
-              "label": {
-                "en": "OK - OK El Flex",
-                "da": "OK - OK El Flex"
-              }
-            },
-            {
-              "id": "groen_ok_el_flex",
-              "label": {
-                "en": "OK - Grøn OK El Flex",
-                "da": "OK - Grøn OK El Flex"
-              }
-            },
-            {
-              "id": "groen_ok_el_spot",
-              "label": {
-                "en": "OK - Grøn OK El Spot",
-                "da": "OK - Grøn OK El Spot"
-              }
-            },
-            {
-              "id": "ok_el_spot",
-              "label": {
-                "en": "OK - OK El Spot",
-                "da": "OK - OK El Spot"
-              }
-            },
-            {
-              "id": "norlys_flexel",
-              "label": {
-                "en": "Norlys - FlexEl",
-                "da": "Norlys - FlexEl"
-              }
-            },
-            {
-              "id": "andel_energi_variabel_pris",
-              "label": {
-                "en": "Andel Energi - Variabel pris",
-                "da": "Andel Energi - Variabel pris"
-              }
-            },
-            {
-              "id": "sef_energi_as_fleksvind",
-              "label": {
-                "en": "SEF Energi - FleksVIND",
-                "da": "SEF Energi - FleksVIND"
-              }
-            },
-            {
-              "id": "clever",
-              "label": {
-                "en": "Clever - Clever Power",
-                "da": "Clever - Clever Power"
-              }
-            },
-            {
-              "id": "kernfull",
-              "label": {
-                "en": "Kärnfull",
-                "da": "Kärnfull"
-              }
-            },
-            {
-              "id": "modstroem_g",
-              "label": {
-                "en": "Modstrøm - Grundprodukt",
-                "da": "Modstrøm - Grundprodukt"
-              }
-            },
-            {
-              "id": "verdo_variabel_timepris",
-              "label": {
-                "en": "Verdo - Variabel Timepris",
-                "da": "Verdo - Variabel Timepris"
-              }
-            },
-            {
-              "id": "jysk_energi_fdm-stroem",
-              "label": {
-                "en": "Jysk Energi - FDM Strøm",
-                "da": "Jysk Energi - FDM Strøm"
-              }
-            },
-            {
-              "id": "oe_stroem",
-              "label": {
-                "en": "Ø-Strøm - SpotEL",
-                "da": "Ø-Strøm - SpotEL"
-              }
-            },
-            {
-              "id": "energi_fyn_spotel",
-              "label": {
-                "en": "Energi Fyn - SpotEL",
-                "da": "Energi Fyn - SpotEL"
+                "da": "AURA - FlexEl",
+                "en": "AURA - FlexEl"
               }
             },
             {
               "id": "andel_energi_timeenergi",
               "label": {
-                "en": "Andel Energi - TimeEnergi",
-                "da": "Andel Energi - TimeEnergi"
+                "da": "Andel Energi - TimeEnergi",
+                "en": "Andel Energi - TimeEnergi"
               }
             },
             {
-              "id": "forsyning_helsingoer_kronborg_el",
+              "id": "andel_energi_variabel_pris",
               "label": {
-                "en": "Forsyning Helsingør - Kronborg El",
-                "da": "Forsyning Helsingør - Kronborg El"
-              }
-            },
-            {
-              "id": "forsyning_helsingoer_kronborg_el_plus",
-              "label": {
-                "en": "Forsyning Helsingør - Kronborg El+",
-                "da": "Forsyning Helsingør - Kronborg El+"
+                "da": "Andel Energi - Variabel pris",
+                "en": "Andel Energi - Variabel pris"
               }
             },
             {
               "id": "bornholms_energi_og_forsyning",
               "label": {
-                "en": "Bornholms Energi & Forsyning - Det Frie Valg",
-                "da": "Bornholms Energi & Forsyning - Det Frie Valg"
+                "da": "Bornholms Energi & Forsyning - Det frie valg",
+                "en": "Bornholms Energi & Forsyning - Det frie valg"
               }
             },
             {
-              "id": "go-energi_go_spot_energi",
+              "id": "clever",
               "label": {
-                "en": "go'energi - go'kvartal energi",
-                "da": "go'energi - go'kvartal energi"
-              }
-            },
-            {
-              "id": "go-energi_go_spot_maaned",
-              "label": {
-                "en": "go'energi - go'måned energi",
-                "da": "go'energi - go'måned energi"
-              }
-            },
-            {
-              "id": "nordisk_energy",
-              "label": {
-                "en": "Nordisk Energy",
-                "da": "Nordisk Energy"
-              }
-            },
-            {
-              "id": "looad",
-              "label": {
-                "en": "LOOAD - Looad Energy",
-                "da": "LOOAD - Looad Energy"
-              }
-            },
-            {
-              "id": "energidrift",
-              "label": {
-                "en": "Energidrift - Privat, Grøn Strøm, Variabel",
-                "da": "Energidrift - Privat, Grøn Strøm, Variabel"
-              }
-            },
-            {
-              "id": "energynordic_nordicflex",
-              "label": {
-                "en": "Energy Nordic - Nordic Flex+",
-                "da": "Energy Nordic - Nordic Flex+"
-              }
-            },
-            {
-              "id": "greenbow_elaftale",
-              "label": {
-                "en": "Greenbow - Elaftale",
-                "da": "Greenbow - Elaftale"
-              }
-            },
-            {
-              "id": "gronelforsyning_gronflex",
-              "label": {
-                "en": "Grøn El-Forsyning -Grøn Flex",
-                "da": "Grøn El-Forsyning -Grøn Flex"
-              }
-            },
-            {
-              "id": "nrgi_time",
-              "label": {
-                "en": "NRGi - NGRi Time",
-                "da": "NRGi - NGRi Time"
-              }
-            },
-            {
-              "id": "stromlinet_solenergi",
-              "label": {
-                "en": "Strømlinet - Solenergi",
-                "da": "Strømlinet - Solenergi"
-              }
-            },
-            {
-              "id": "stromlinet_vindenergi",
-              "label": {
-                "en": "Strømlinet - Vindenergi",
-                "da": "Strømlinet - Vindenergi"
-              }
-            },
-            {
-              "id": "b_energy",
-              "label": {
-                "en": "b.energy",
-                "da": "b.energy"
+                "da": "Clever - Clever Power",
+                "en": "Clever - Clever Power"
               }
             },
             {
               "id": "dansk_stroem_flex",
               "label": {
-                "en": "Dansk Strøm - FLEX",
-                "da": "Dansk Strøm - FLEX"
+                "da": "Dansk Strøm - FLEX",
+                "en": "Dansk Strøm - FLEX"
               }
             },
             {
               "id": "edison_variabel",
               "label": {
-                "en": "EDISON - Variabel",
-                "da": "EDISON - Variabel"
+                "da": "EDISON - Variabel",
+                "en": "EDISON - Variabel"
+              }
+            },
+            {
+              "id": "ewii_groen_fremtid",
+              "label": {
+                "da": "EWII - Grøn Fremtid",
+                "en": "EWII - Grøn Fremtid"
+              }
+            },
+            {
+              "id": "ewii_groen_indkoebspris",
+              "label": {
+                "da": "EWII - Grøn Indkøbspris",
+                "en": "EWII - Grøn Indkøbspris"
               }
             },
             {
               "id": "elektron",
               "label": {
-                "en": "Elektron",
-                "da": "Elektron"
+                "da": "Elektron",
+                "en": "Elektron"
+              }
+            },
+            {
+              "id": "energi_fyn_spotel",
+              "label": {
+                "da": "Energi Fyn - SpotEL",
+                "en": "Energi Fyn - SpotEL"
               }
             },
             {
               "id": "energi_viborg",
               "label": {
-                "en": "Energi Viborg",
-                "da": "Energi Viborg"
+                "da": "Energi Viborg",
+                "en": "Energi Viborg"
               }
             },
             {
               "id": "stromplus_49",
               "label": {
-                "en": "Energi+ - Strøm+ 39",
-                "da": "Energi+ - Strøm+ 39"
+                "da": "Energi+ - Strøm+ 39",
+                "en": "Energi+ - Strøm+ 39"
               }
             },
             {
               "id": "stromplus_prisgaranti",
               "label": {
-                "en": "Energi+ - Strøm+ Prisgaranti",
-                "da": "Energi+ - Strøm+ Prisgaranti"
+                "da": "Energi+ - Strøm+ Prisgaranti",
+                "en": "Energi+ - Strøm+ Prisgaranti"
+              }
+            },
+            {
+              "id": "energidrift",
+              "label": {
+                "da": "Energidrift - Privat, Grøn Strøm, Variabel",
+                "en": "Energidrift - Privat, Grøn Strøm, Variabel"
               }
             },
             {
               "id": "energiselskabet_elg",
               "label": {
-                "en": "Energiselskabet ELG",
-                "da": "Energiselskabet ELG"
+                "da": "Energiselskabet Elg",
+                "en": "Energiselskabet Elg"
+              }
+            },
+            {
+              "id": "energynordic_nordicflex",
+              "label": {
+                "da": "Energy Nordic - Nordic FLEX+",
+                "en": "Energy Nordic - Nordic FLEX+"
               }
             },
             {
               "id": "forskel_spotel",
               "label": {
-                "en": "Forskel - SpotEl",
-                "da": "Forskel - SpotEl"
+                "da": "Forskel - SpotEl",
+                "en": "Forskel - SpotEl"
+              }
+            },
+            {
+              "id": "forsyning_helsingoer_kronborg_el",
+              "label": {
+                "da": "Forsyning Helsingør - Kronborg El",
+                "en": "Forsyning Helsingør - Kronborg El"
+              }
+            },
+            {
+              "id": "forsyning_helsingoer_kronborg_el_plus",
+              "label": {
+                "da": "Forsyning Helsingør - Kronborg El+",
+                "en": "Forsyning Helsingør - Kronborg El+"
               }
             },
             {
               "id": "forsyningen",
               "label": {
-                "en": "Forsyningen",
-                "da": "Forsyningen"
+                "da": "Forsyningen",
+                "en": "Forsyningen"
               }
             },
             {
               "id": "frederikshavn-spot-el",
               "label": {
-                "en": "Frederikshavn Spot El",
-                "da": "Frederikshavn Spot El"
+                "da": "Frederikshavn Spot El",
+                "en": "Frederikshavn Spot El"
               }
             },
             {
               "id": "frederikshavn-spot-el-miljo",
               "label": {
-                "en": "Frederikshavn Spot El Miljø",
-                "da": "Frederikshavn Spot El Miljø"
-              }
-            },
-            {
-              "id": "gasel_borspris",
-              "label": {
-                "en": "Gasel - El til børspris",
-                "da": "Gasel - El til børspris"
+                "da": "Frederikshavn Spot El Miljø",
+                "en": "Frederikshavn Spot El Miljø"
               }
             },
             {
               "id": "gasel",
               "label": {
-                "en": "Gasel - El til indkøbspris",
-                "da": "Gasel - El til indkøbspris"
+                "da": "Gasel - El til indkøbspris",
+                "en": "Gasel - El til indkøbspris"
               }
             },
             {
-              "id": "iwatt_Variabel",
+              "id": "gasel_borspris",
               "label": {
-                "en": "iWatt - Variabel",
-                "da": "iWatt - Variabel"
+                "da": "Gasel - el til børspris",
+                "en": "Gasel - el til børspris"
+              }
+            },
+            {
+              "id": "greenbow_elaftale",
+              "label": {
+                "da": "Greenbow - Elaftale",
+                "en": "Greenbow - Elaftale"
+              }
+            },
+            {
+              "id": "gronelforsyning_gronflex",
+              "label": {
+                "da": "Grøn El-Forsyning - Grøn Flex",
+                "en": "Grøn El-Forsyning - Grøn Flex"
+              }
+            },
+            {
+              "id": "jysk_energi_fdm-stroem",
+              "label": {
+                "da": "Jysk Energi - FDM Strøm",
+                "en": "Jysk Energi - FDM Strøm"
               }
             },
             {
               "id": "jysk_energi_variabel_strom",
               "label": {
-                "en": "Jysk Energi - Variabel Strøm",
-                "da": "Jysk Energi - Variabel Strøm"
+                "da": "Jysk Energi - Variabel Strøm",
+                "en": "Jysk Energi - Variabel Strøm"
+              }
+            },
+            {
+              "id": "kernfull",
+              "label": {
+                "da": "Kärnfull",
+                "en": "Kärnfull"
+              }
+            },
+            {
+              "id": "looad",
+              "label": {
+                "da": "LOOAD - Looad Energy",
+                "en": "LOOAD - Looad Energy"
               }
             },
             {
               "id": "lokal_energi",
               "label": {
-                "en": "Lokal Energi - Lokal Variabel",
-                "da": "Lokal Energi - Lokal Variabel"
+                "da": "Lokal Energi - Lokal Variabel",
+                "en": "Lokal Energi - Lokal Variabel"
+              }
+            },
+            {
+              "id": "modstroem_g",
+              "label": {
+                "da": "Modstrøm - Grundprodukt",
+                "en": "Modstrøm - Grundprodukt"
+              }
+            },
+            {
+              "id": "nrgi_time",
+              "label": {
+                "da": "NRGi - NRGi Time",
+                "en": "NRGi - NRGi Time"
               }
             },
             {
               "id": "nef",
               "label": {
-                "en": "Nef - El til kostpris",
-                "da": "Nef - El til kostpris"
+                "da": "Nef - El til kostpris",
+                "en": "Nef - El til kostpris"
+              }
+            },
+            {
+              "id": "nordisk_energy",
+              "label": {
+                "da": "Nordisk Energy",
+                "en": "Nordisk Energy"
               }
             },
             {
               "id": "groen_nordisk",
               "label": {
-                "en": "Nordiskel - Grøn Nordisk",
-                "da": "Nordiskel - Grøn Nordisk"
+                "da": "Nordiskel - Grøn Nordisk",
+                "en": "Nordiskel - Grøn Nordisk"
+              }
+            },
+            {
+              "id": "norlys_flexel",
+              "label": {
+                "da": "Norlys - FlexEl",
+                "en": "Norlys - FlexEl"
+              }
+            },
+            {
+              "id": "groen_ok_el_flex",
+              "label": {
+                "da": "OK - Grøn OK El Flex",
+                "en": "OK - Grøn OK El Flex"
+              }
+            },
+            {
+              "id": "groen_ok_el_spot",
+              "label": {
+                "da": "OK - Grøn OK El Spotpris",
+                "en": "OK - Grøn OK El Spotpris"
+              }
+            },
+            {
+              "id": "ok_el_flex",
+              "label": {
+                "da": "OK - OK El Flex",
+                "en": "OK - OK El Flex"
+              }
+            },
+            {
+              "id": "ok_el_spot",
+              "label": {
+                "da": "OK - OK El Spotpris",
+                "en": "OK - OK El Spotpris"
               }
             },
             {
               "id": "preasy",
               "label": {
-                "en": "PREASY - Marked",
-                "da": "PREASY - Marked"
+                "da": "PREASY - Marked",
+                "en": "PREASY - Marked"
               }
             },
             {
-              "id": "samstrom",
+              "id": "spotpris",
               "label": {
-                "en": "Samstrøm - REN SPOT",
-                "da": "Samstrøm - REN SPOT"
+                "da": "Ren spotpris",
+                "en": "Ren spotpris"
+              }
+            },
+            {
+              "id": "sef_energi_as_dyrenes-energi",
+              "label": {
+                "da": "SEF Energi - DyrenesEnergi",
+                "en": "SEF Energi - DyrenesEnergi"
+              }
+            },
+            {
+              "id": "sef_energi_as_fleksvind",
+              "label": {
+                "da": "SEF Energi - FleksVIND",
+                "en": "SEF Energi - FleksVIND"
               }
             },
             {
               "id": "sk-energi_flex-el",
               "label": {
-                "en": "SK Energi - Flex El",
-                "da": "SK Energi - Flex El"
+                "da": "SK Energi - Flex El",
+                "en": "SK Energi - Flex El"
               }
             },
             {
-              "id": "stromtid_klimahelt",
+              "id": "samstrom",
               "label": {
-                "en": "Strømtid - Klimahelt",
-                "da": "Strømtid - Klimahelt"
-              }
-            },
-            {
-              "id": "vest_energi",
-              "label": {
-                "en": "Vest Energi",
-                "da": "Vest Energi"
-              }
-            },
-            {
-              "id": "oe_groen_stroem",
-              "label": {
-                "en": "Ø-Strøm - GrønSpotEL",
-                "da": "Ø-Strøm - GrønSpotEL"
+                "da": "Samstrøm - REN SPOT",
+                "en": "Samstrøm - REN SPOT"
               }
             },
             {
               "id": "struer_flex",
               "label": {
-                "en": "Struer Energi - Flex",
-                "da": "Struer Energi - Flex"
+                "da": "Struer Energi - Flex",
+                "en": "Struer Energi - Flex"
               }
             },
             {
-              "id": "vesthimmerlands_fri_el_spot",
+              "id": "stromlinet_solenergi",
               "label": {
-                "en": "Vesthimmerlands El-Forsyning - Fri el spot",
-                "da": "Vesthimmerlands El-Forsyning - Fri el spot"
+                "da": "Strømlinet - Solenergi",
+                "en": "Strømlinet - Solenergi"
+              }
+            },
+            {
+              "id": "stromlinet_vindenergi",
+              "label": {
+                "da": "Strømlinet - Vindenergi",
+                "en": "Strømlinet - Vindenergi"
+              }
+            },
+            {
+              "id": "velkommen",
+              "label": {
+                "da": "Velkommen",
+                "en": "Velkommen"
+              }
+            },
+            {
+              "id": "verdo_variabel_timepris",
+              "label": {
+                "da": "Verdo - Variabel Timepris",
+                "en": "Verdo - Variabel Timepris"
+              }
+            },
+            {
+              "id": "vest_energi",
+              "label": {
+                "da": "Vest Energi",
+                "en": "Vest Energi"
               }
             },
             {
               "id": "vestforsyning_plus",
               "label": {
-                "en": "Vestforsyning - PLUS",
-                "da": "Vestforsyning - PLUS"
+                "da": "Vestforsyning - PLUS",
+                "en": "Vestforsyning - PLUS"
               }
             },
             {
               "id": "vestforsyning_spot",
               "label": {
-                "en": "Vestforsyning - SPOT",
-                "da": "Vestforsyning - SPOT"
+                "da": "Vestforsyning - SPOT",
+                "en": "Vestforsyning - SPOT"
+              }
+            },
+            {
+              "id": "vesthimmerlands_fri_el_spot",
+              "label": {
+                "da": "Vesthimmerlands El-Forsyning - Fri el spot",
+                "en": "Vesthimmerlands El-Forsyning - Fri el spot"
+              }
+            },
+            {
+              "id": "vindstoed_danskvind",
+              "label": {
+                "da": "Vindstød - DanskVind",
+                "en": "Vindstød - DanskVind"
+              }
+            },
+            {
+              "id": "vindstoed_elforbundet",
+              "label": {
+                "da": "Vindstød - Elforbundet",
+                "en": "Vindstød - Elforbundet"
+              }
+            },
+            {
+              "id": "vindstoed_spotvind",
+              "label": {
+                "da": "Vindstød - SpotVind",
+                "en": "Vindstød - SpotVind"
+              }
+            },
+            {
+              "id": "vindstoed_vestroem",
+              "label": {
+                "da": "Vindstød - VEstrøm",
+                "en": "Vindstød - VEstrøm"
+              }
+            },
+            {
+              "id": "b_energy",
+              "label": {
+                "da": "b.energy",
+                "en": "b.energy"
+              }
+            },
+            {
+              "id": "go-energi_go_spot_energi",
+              "label": {
+                "da": "go'energi - go'kvartal energi",
+                "en": "go'energi - go'kvartal energi"
+              }
+            },
+            {
+              "id": "go-energi_go_spot_maaned",
+              "label": {
+                "da": "go'energi - go'måned energi",
+                "en": "go'energi - go'måned energi"
+              }
+            },
+            {
+              "id": "iwatt_Variabel",
+              "label": {
+                "da": "iWatt - Variabel",
+                "en": "iWatt - Variabel"
+              }
+            },
+            {
+              "id": "nettopower",
+              "label": {
+                "da": "nettopower",
+                "en": "nettopower"
+              }
+            },
+            {
+              "id": "stromtid_klimahelt",
+              "label": {
+                "da": "strømtid - Klimahelt",
+                "en": "strømtid - Klimahelt"
+              }
+            },
+            {
+              "id": "oe_groen_stroem",
+              "label": {
+                "da": "Ø-Strøm - GrønSpotEL",
+                "en": "Ø-Strøm - GrønSpotEL"
+              }
+            },
+            {
+              "id": "oe_stroem",
+              "label": {
+                "da": "Ø-Strøm - SpotEL",
+                "en": "Ø-Strøm - SpotEL"
               }
             }
           ]
