@@ -1181,6 +1181,13 @@
               }
             },
             {
+              "id": "stromplus_prisgaranti_intro",
+              "label": {
+                "da": "Energi+ - Strøm+ Prisgaranti Intro",
+                "en": "Energi+ - Strøm+ Prisgaranti Intro"
+              }
+            },
+            {
               "id": "energidrift",
               "label": {
                 "da": "Energidrift - Privat, Grøn Strøm, Variabel",
@@ -1440,6 +1447,13 @@
               }
             },
             {
+              "id": "vedvarende",
+              "label": {
+                "da": "Vedvarende",
+                "en": "Vedvarende"
+              }
+            },
+            {
               "id": "velkommen",
               "label": {
                 "da": "Velkommen",
@@ -1458,6 +1472,20 @@
               "label": {
                 "da": "Vest Energi",
                 "en": "Vest Energi"
+              }
+            },
+            {
+              "id": "vest_energi_spot",
+              "label": {
+                "da": "Vestenergi - Spot",
+                "en": "Vestenergi - Spot"
+              }
+            },
+            {
+              "id": "vest_energi_spot_intro",
+              "label": {
+                "da": "Vestenergi - Spot Intro",
+                "en": "Vestenergi - Spot Intro"
               }
             },
             {
