@@ -34,5 +34,8 @@
   },
   "2.0.0": {
     "en": "New capabilties + refactoring of flow cards "
+  },
+  "2.0.1": {
+    "en": "Added error message due update crash"
   }
 }
