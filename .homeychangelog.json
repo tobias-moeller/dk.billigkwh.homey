@@ -37,5 +37,8 @@
   },
   "2.0.1": {
     "en": "Added error message due update crash"
+  },
+  "2.0.2": {
+    "en": "Make device unavaible after update"
   }
 }
