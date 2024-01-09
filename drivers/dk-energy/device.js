@@ -17,23 +17,12 @@ class MyDevice extends Device {
     this.prices = [];
 
     await this.getPrices();
-    try{
-      this.setMeterPrices();
-    }
-    catch(error){
-      throw new Error("Enheden skal geninstalleres pga update");
-    }
-    
+    this.setMeterPrices();
 
     // Every hour
     this.eventListenerHour = async () => {
       this.log("New hour event received");
-      try{
-        this.setMeterPrices();
-      }
-      catch(error){
-        throw new Error("Enheden skal geninstalleres pga update");
-      }
+      this.setMeterPrices();
 
       // Trigger flow cards
       this.triggerPriceHigherOrLessThanAvgFlowCard();
@@ -128,16 +117,25 @@ class MyDevice extends Device {
     const dailyStats = this.getDailyStats(todaysTimestamp);
 
     // Set daily stats
+
     this.setCapabilityValue("meter_price_this_day_lowest", dailyStats.min);
-    this.setCapabilityValue(
+    const lowestHourPromise = this.setCapabilityValue(
       "meter_price_this_day_lowest_hour",
       dailyStats.minHour
     );
+    lowestHourPromise.catch((error) => {
+      throw Error("Enheden skal geninstalleres grundet opdatering");
+    });
+
     this.setCapabilityValue("meter_price_this_day_highest", dailyStats.max);
-    this.setCapabilityValue(
+    const highestHourPromise = this.setCapabilityValue(
       "meter_price_this_day_highest_hour",
       dailyStats.maxHour
     );
+    highestHourPromise.catch((error) => {
+      throw Error("Enheden skal geninstalleres grundet opdatering");
+    });
+
     this.setCapabilityValue("meter_price_this_day_avg", dailyStats.average);
 
     this.log("Meter prices has been set");
