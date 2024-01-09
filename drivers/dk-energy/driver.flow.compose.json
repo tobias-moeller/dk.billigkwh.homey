@@ -4,11 +4,11 @@
       "id": "new-prices-received",
       "title": {
         "en": "New prices received",
-        "da": "Nye priser modtaget"
+        "da": "Nye priser modtages"
       },
       "hint": {
-        "en": "Next days prices recieved",
-        "da": "I morgens priser er modtaget"
+        "en": "New prices is recieved",
+        "da": "Nye priser er modtages"
       },
       "tokens": [
         {
@@ -38,7 +38,7 @@
           "name": "todays_price_avg",
           "title": {
             "en": "Todays average price",
-            "da": "Dagens gennemsnits pris"
+            "da": "Dagens gennemsnitspris"
           },
           "example": {
             "en": "3.1"
@@ -49,7 +49,7 @@
           "name": "tomorrow_price_lowest",
           "title": {
             "en": "Tomorrow lowest price",
-            "da": "Imorgen laveste pris"
+            "da": "I morgen laveste pris"
           },
           "example": {
             "en": "1.2"
@@ -60,7 +60,7 @@
           "name": "tomorrow_price_highest",
           "title": {
             "en": "Tomorrow highest price",
-            "da": "Imorgen højeste pris"
+            "da": "I morgen højeste pris"
           },
           "example": {
             "en": "6.8"
@@ -71,7 +71,7 @@
           "name": "tomorrow_price_avg",
           "title": {
             "en": "Tomorrow average price",
-            "da": "Imorgen gennemsnits pris"
+            "da": "I morgen gennemsnitspris"
           },
           "example": {
             "en": "3.4"
@@ -83,7 +83,7 @@
       "id": "price-is-higher-than-avg-price",
       "title": {
         "en": "Price is higher than avg price",
-        "da": "Prisen er højere end gennemsnits prisen"
+        "da": "Prisen er større end gennemsnitsprisen"
       },
       "tokens": [
         {
@@ -102,7 +102,7 @@
           "name": "price_avg",
           "title": {
             "en": "Average price",
-            "da": "Gennemsnit prisen"
+            "da": "Gennemsnitspris"
           },
           "example": {
             "en": "4.3"
@@ -114,7 +114,7 @@
       "id": "price-is-less-than-avg-price",
       "title": {
         "en": "Price is less than avg price",
-        "da": "Prisen er mindre end gennemsnits prisen"
+        "da": "Prisen er mindre end gennemsnitsprisen"
       },
       "tokens": [
         {
@@ -133,7 +133,7 @@
           "name": "price_avg",
           "title": {
             "en": "Average price",
-            "da": "Gennemsnit prisen"
+            "da": "Gennemsnitspris"
           },
           "example": {
             "en": "4.3"
@@ -145,11 +145,11 @@
       "id": "price-is-lowest",
       "title": {
         "en": "Price is lowest",
-        "da": "Prisen er lavest"
+        "da": "Den billigste time begynder"
       },
       "hint": {
         "en": "Lowest price hour of the day",
-        "da": "Laveste time pris på dagen"
+        "da": "Den billigste time på dagen"
       },
       "tokens": [
         {
@@ -169,11 +169,11 @@
       "id": "price-is-highest",
       "title": {
         "en": "Price is highest",
-        "da": "Prisen er højest"
+        "da": "Den dyreste time begynder"
       },
       "hint": {
         "en": "Highest price hour of the day",
-        "da": "Højeste time pris på dagen"
+        "da": "Den dyreste time på dagen"
       },
       "tokens": [
         {
@@ -219,16 +219,20 @@
         "en": "Price is lowest between"
       },
       "titleFormatted": {
-        "en": "Price is lowest between [[from]] to [[to]]",
-        "da": "Prisen er lavest mellem kl [[from]] til kl [[to]]"
+        "en": "Price is lowest between clock [[from]] to  clock[[to]]",
+        "da": "Prisen er billigst mellem kl [[from]] til kl [[to]]"
+      },
+      "hint": {
+        "en": "Triggers when the lowest price hour start",
+        "da": "Udløses når den billigste time begynder"
       },
       "args": [
         {
           "type": "number",
           "name": "from",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,
@@ -238,8 +242,8 @@
           "type": "number",
           "name": "to",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,
@@ -249,7 +253,7 @@
       "tokens": [
         {
           "type": "number",
-          "name": "price",
+          "name": "price_now",
           "title": {
             "en": "Price",
             "da": "Pris"
@@ -268,7 +272,7 @@
       },
       "hint": {
         "en": "Triggers every hour",
-        "da": "Kører hver gang en ny time er startet"
+        "da": "Kører hver gang en ny time er begyndt"
       },
       "tokens": [
         {
@@ -297,8 +301,8 @@
           "type": "number",
           "name": "price+2",
           "title": {
-            "en": "Price + 2 hour",
-            "da": "Pris + 2 time"
+            "en": "Price + 2 hours",
+            "da": "Pris + 2 timer"
           },
           "example": {
             "en": "2.01"
@@ -308,8 +312,8 @@
           "type": "number",
           "name": "price+3",
           "title": {
-            "en": "Price + 3 hour",
-            "da": "Pris + 3 time"
+            "en": "Price + 3 hours",
+            "da": "Pris + 3 timer"
           },
           "example": {
             "en": "1.98"
@@ -319,8 +323,8 @@
           "type": "number",
           "name": "price+4",
           "title": {
-            "en": "Price + 4 hour",
-            "da": "Pris + 4 time"
+            "en": "Price + 4 hours",
+            "da": "Pris + 4 timer"
           },
           "example": {
             "en": "1.99"
@@ -330,8 +334,8 @@
           "type": "number",
           "name": "price+5",
           "title": {
-            "en": "Price + 5 hour",
-            "da": "Pris + 5 time"
+            "en": "Price + 5 hours",
+            "da": "Pris + 5 timer"
           },
           "example": {
             "en": "2.06"
@@ -345,8 +349,8 @@
         "en": "Lowest price period starts between"
       },
       "titleFormatted": {
-        "en": "Lowest price periode [[period]] between [[from]] to [[to]] starts",
-        "da": "Den billigste periode på [[period]] mellem [[from]] til [[to]] starter"
+        "en": "Lowest price periode [[period]] between [[from]] to [[to]] begins",
+        "da": "Den billigste periode på [[period]] timer mellem kl [[from]] til kl [[to]] begynder"
       },
       "hint": {
         "en": "A period is the lowest average price for x consecutive hours",
@@ -357,8 +361,8 @@
           "type": "number",
           "name": "period",
           "placeholder": {
-            "en": "hours",
-            "da": "timer"
+            "en": "Hours",
+            "da": "Timer"
           },
           "min": 0,
           "max": 23,
@@ -368,8 +372,8 @@
           "type": "number",
           "name": "from",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,
@@ -379,8 +383,8 @@
           "type": "number",
           "name": "to",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,
@@ -395,7 +399,7 @@
       },
       "titleFormatted": {
         "en": "Lowest price periode [[period]] starts",
-        "da": "Den billigste periode på [[period]] starter"
+        "da": "Den billigste periode på [[period]] timer begynder"
       },
       "hint": {
         "en": "A period is the lowest average price for x consecutive hours",
@@ -406,8 +410,8 @@
           "type": "number",
           "name": "period",
           "placeholder": {
-            "en": "hours",
-            "da": "timer"
+            "en": "Hours",
+            "da": "Timer"
           },
           "min": 1,
           "max": 23,
@@ -421,14 +425,14 @@
       "id": "price-is-lower-than-average-price",
       "title": {
         "en": "Price is lower than average price",
-        "da": "Prisen er lavere end gennemsnits prisen"
+        "da": "Prisen er !{{lavere|højere}} end gennemsnitsprisen"
       }
     },
     {
       "id": "price-is-higher-than-average-price",
       "title": {
         "en": "Price is higher than average price",
-        "da": "Prisen er højere end gennemsnits prisen"
+        "da": "Prisen er !{{højere|lavere}} end gennemsnitsprisen"
       }
     },
     {
@@ -438,20 +442,20 @@
         "da": "Prisen er over"
       },
       "titleFormatted": {
-        "en": "Price is over [[price]] kroner",
-        "da": "Prisen er over [[price]] kroner"
+        "en": "Price is !{{over|under}} [[price]] kroner",
+        "da": "Prisen er !{{over|under}} [[price]] kroner"
       },
       "hint": {
-        "en": "Price is over the selected value",
-        "da": "Prisen er over den valgte værdi"
+        "en": "Price is !{{over|under}} the selected value",
+        "da": "Prisen er !{{over|under}} den valgte værdi"
       },
       "args": [
         {
           "type": "number",
           "name": "price",
           "placeholder": {
-            "en": "price",
-            "da": "pris"
+            "en": "Price",
+            "da": "Pris"
           },
           "min": 0,
           "max": 50,
@@ -466,20 +470,20 @@
         "da": "Price now is under"
       },
       "titleFormatted": {
-        "en": "Price is under [[price]] kroner",
-        "da": "Prisen er under [[price]] kroner"
+        "en": "Price is !{{under|over}} [[price]] kroner",
+        "da": "Prisen er !{{under|over}} [[price]] kroner"
       },
       "hint": {
-        "en": "Price is under the selected value",
-        "da": "Prisen er under den valgte værdi"
+        "en": "Price is !{{under|over}} the selected value",
+        "da": "Prisen er !{{under|over}} den valgte værdi"
       },
       "args": [
         {
           "type": "number",
           "name": "price",
           "placeholder": {
-            "en": "price",
-            "da": "pris"
+            "en": "Price",
+            "da": "Pris"
           },
           "min": 0,
           "max": 50,
@@ -493,16 +497,16 @@
         "en": "Price this hour is under average price from to"
       },
       "titleFormatted": {
-        "en": "Price is under average from [[from]] to [[to]]",
-        "da": "Prisen er under gennemsnitsprisen mellem [[from]] til [[to]]"
+        "en": "Price is !{{under|over}} average from clock [[from]] to clok [[to]]",
+        "da": "Prisen er !{{under|over}} gennemsnitsprisen mellem kl [[from]] til kl [[to]]"
       },
       "args": [
         {
           "type": "number",
           "name": "from",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,
@@ -512,8 +516,8 @@
           "type": "number",
           "name": "to",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,
@@ -527,8 +531,8 @@
         "en": "The lowest price period"
       },
       "titleFormatted": {
-        "en": "The lowest price period for [[period]]",
-        "da": "Er i den billigste periode på [[period]]"
+        "en": "The lowest price period for [[period]] hours",
+        "da": "Er !{{|ikke}} i den billigste periode på [[period]] timer"
       },
       "hint": {
         "en": "A period is the lowest average price for x consecutive hours",
@@ -539,8 +543,8 @@
           "type": "number",
           "name": "period",
           "placeholder": {
-            "en": "hours",
-            "da": "timer"
+            "en": "Hours",
+            "da": "Timer"
           },
           "min": 1,
           "max": 23,
@@ -554,8 +558,8 @@
         "en": "The lowest price period between"
       },
       "titleFormatted": {
-        "en": "The lowest price period for [[period]] between [[from]] to [[to]]",
-        "da": "Er i den billigste periode på [[period]] mellem [[from]] til [[to]]"
+        "en": "The lowest price period for [[period]] hours between [[from]] to [[to]]",
+        "da": "Er !{{|ikke}} i den billigste periode på [[period]] timer mellem kl [[from]] til kl [[to]]"
       },
       "hint": {
         "en": "A period is the lowest average price for x consecutive hours",
@@ -566,8 +570,8 @@
           "type": "number",
           "name": "period",
           "placeholder": {
-            "en": "hours",
-            "da": "timer"
+            "en": "Hours",
+            "da": "Timer"
           },
           "min": 1,
           "max": 23,
@@ -577,8 +581,8 @@
           "type": "number",
           "name": "from",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,
@@ -588,8 +592,8 @@
           "type": "number",
           "name": "to",
           "placeholder": {
-            "en": "clock",
-            "da": "kl"
+            "en": "Clock",
+            "da": "Klokken"
           },
           "min": 0,
           "max": 23,

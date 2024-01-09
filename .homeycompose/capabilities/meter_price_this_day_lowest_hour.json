@@ -1,0 +1,17 @@
+{
+    "type": "number",
+    "title": {
+      "en": "Lowest price hour this day",
+      "da": "Laveste pris time i dag"
+    },
+    "uiComponent": "sensor",
+    "icon": "/assets/clock-hour.svg",
+    "getable": true,
+    "setable": false,
+    "insights": true,
+    "units": {
+      "en": "clock",
+      "da": "kl"
+    },
+    "decimals": 0
+  }

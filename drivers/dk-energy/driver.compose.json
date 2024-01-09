@@ -58,7 +58,7 @@
     {
       "id": "net_company",
       "type": "dropdown",
-      "value": "radius_c",
+      "value": "none",
       "label": { 
         "en": "Net company",
         "da": "Net selskab"

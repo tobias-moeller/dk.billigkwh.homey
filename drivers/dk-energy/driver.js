@@ -10,7 +10,7 @@ class MyDriver extends Driver {
    */
   async onInit() {
 
-    // When cards
+    //// When cards
     this._devicesReceivedNewPrices = this.homey.flow.getDeviceTriggerCard("new-prices-received");
     this._devicesPriceHigherAvg = this.homey.flow.getDeviceTriggerCard("price-is-higher-than-avg-price");
     this._devicesPriceLessAvg = this.homey.flow.getDeviceTriggerCard("price-is-less-than-avg-price");
@@ -20,35 +20,35 @@ class MyDriver extends Driver {
     this._devicesNewHour = this.homey.flow.getDeviceTriggerCard("new-hour-started");
 
     this._devicesPriceLowestBetween = this.homey.flow.getDeviceTriggerCard("price-is-lowest-between");
-    this._devicesPriceLowestBetween.registerRunListener(async (args ) => args.device.priceLowestBetween(args));
+    this._devicesPriceLowestBetween.registerRunListener(async (args ) => args.device.priceLowestBetweenListener(args));
 
     this._devicesLowestPeriodStartsBetween = this.homey.flow.getDeviceTriggerCard("lowest-price-period-starts-between");
-    this._devicesLowestPeriodStartsBetween.registerRunListener(async (args ) => args.device.lowestPeriodStartsBetween(args));
+    this._devicesLowestPeriodStartsBetween.registerRunListener(async (args ) => args.device.lowestPeriodStartsBetweenListener(args));
     
     this._devicesLowestPricePeriod = this.homey.flow.getDeviceTriggerCard("lowest-price-period");
-    this._devicesLowestPricePeriod.registerRunListener(async (args ) => args.device.lowestPricePeriod(args));
+    this._devicesLowestPricePeriod.registerRunListener(async (args ) => args.device.lowestPricePeriodListener(args));
 
     // And cards
     const priceLessThanAvgCondition = this.homey.flow.getConditionCard('price-is-lower-than-average-price');
-		priceLessThanAvgCondition.registerRunListener((args) => args.device.priceLessThanAvgCondition(args));
+		priceLessThanAvgCondition.registerRunListener((args) => args.device.priceLessThanAvgListener(args));
 
     const priceHigherThanAvgCondition = this.homey.flow.getConditionCard('price-is-higher-than-average-price');
-		priceHigherThanAvgCondition.registerRunListener((args) => args.device.priceHigherThanAvgCondition(args));
+		priceHigherThanAvgCondition.registerRunListener((args) => args.device.priceHigherThanAvgListener(args));
 
     const priceOverValueCondition = this.homey.flow.getConditionCard('price-now-is-over');
-		priceOverValueCondition.registerRunListener((args) => args.device.priceOverValueCondition(args));
+		priceOverValueCondition.registerRunListener((args) => args.device.priceOverValueListener(args));
 
     const priceUnderValueCondition = this.homey.flow.getConditionCard('price-now-is-under');
-		priceUnderValueCondition.registerRunListener((args) => args.device.priceUnderValueCondition(args));
+		priceUnderValueCondition.registerRunListener((args) => args.device.priceUnderValueListener(args));
 
     const priceUnderAvgFromToCondition = this.homey.flow.getConditionCard('price-this-hour-is-under-average-price-from-to');
-		priceUnderAvgFromToCondition.registerRunListener((args) => args.device.priceUnderAvgFromToCondition(args));
+		priceUnderAvgFromToCondition.registerRunListener((args) => args.device.priceUnderAvgBetweenClockListener(args));
 
     const pricePeriodLowestCondition = this.homey.flow.getConditionCard('the-lowest-price-period');
-		pricePeriodLowestCondition.registerRunListener((args) => args.device.lowestPricePeriodCondition(args));
+		pricePeriodLowestCondition.registerRunListener((args) => args.device.pricePeriodLowestListener(args));
 
     const pricePeriodLowestBetweenCondition = this.homey.flow.getConditionCard('the-lowest-price-period-between');
-		pricePeriodLowestBetweenCondition.registerRunListener((args) => args.device.lowestPricePeriodBetweenCondition(args));
+		pricePeriodLowestBetweenCondition.registerRunListener((args) => args.device.lowestPricePeriodBetweenListener(args));
     
     this.log('MyDriver has been initialized');
   }
@@ -77,6 +77,8 @@ class MyDriver extends Driver {
         'meter_price_this_day_avg',
         'meter_price_this_day_lowest',
         'meter_price_this_day_highest',
+        'meter_price_this_day_lowest_hour',
+        'meter_price_this_day_highest_hour',
       ],
       
     }

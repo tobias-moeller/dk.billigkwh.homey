@@ -1,99 +1,62 @@
-'use strict';
+"use strict";
 
-const { Device } = require('homey');
-const https = require('https');
-const util = require('util');
+const { Device } = require("homey");
+const https = require("https");
+const util = require("util");
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
 class MyDevice extends Device {
-
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
-	await this.destroyListeners();
-	this.restarting = false;
-	this.device = this;
+    await this.destroyListeners();
+    this.restarting = false;
+    this.device = this;
+    this.prices = [];
 
-	this.priceValues = {
-		"h0" : null,
-		"h1" : null,
-		"h2" : null,
-		"h3" : null,
-		"h4" : null,
-		"h5" : null,
-		"h6" : null,
-		"h7" : null,
-		"today_prices" : null,
-		"today_lowest" : 0,
-		"today_highest" : 0,
-		"today_avg" : 0,
-		"tomorrow_lowest" : 0,
-		"tomorrow_highest" : 0,
-		"tomorrow_avg" : 0,
-	}
+    await this.getPrices();
+    this.setMeterPrices();
 
-    await this.getAndStorePricesFromApi();
-	this.setSensorValues();
+    // Every hour
+    this.eventListenerHour = async () => {
+      this.log("New hour event received");
+      this.setMeterPrices();
 
-	this.eventListenerHour = async () => {
-		this.log('New hour event received');
-		const settings = await this.getSettings();
-		this.mapPrices(settings.prices);
-		this.setSensorValues();
-		this.log("Sensor values is now updated")
+      // Trigger flow cards
+      this.triggerPriceHigherOrLessThanAvgFlowCard();
+      this.triggerPriceIsLowestFlowCard();
+      this.triggerPriceIsNegativeFlowCard();
+      this.triggerNewHourFlowCard();
+      this.triggerPriceLowestBetweenFlowCard();
+      this.triggerLowestPeriodStartsBetweenFlowCard();
+      this.triggerLowestPricePeriodFlowCard();
+    };
+    this.homey.on("everyhour", this.eventListenerHour);
 
-		// Trigger Flows
-		await this.newNewHourStartedTrigger();
-		await this.priceIsNegativeTrigger();
-		await this.priceAvgTrigger();
-		await this.priceIsLowestHighestTrigger();
-		await this.priceLowestBetweenTrigger();
-		await this.lowestPeriodStartsBetweenTrigger();
-		await this.lowestPricePeriodTrigger();
-	};
-	this.homey.on('everyhour', this.eventListenerHour);
+    // Every day
+    this.eventListenerDay = async () => {
+      this.log("New day event received");
+      await this.getPrices();
+    };
+    this.homey.on("everyday", this.eventListenerDay);
 
-	this.eventListenerDay = async () => {
-		this.log('New day event received');
-		await this.getAndStorePricesFromApi();
-	};
-	this.homey.on('everyday', this.eventListenerDay);
-
-	this.log('Energy-device has been initialized');
+    this.log("Energy-device has been initialized");
   }
 
   async destroyListeners() {
-	if (this.eventListenerHour) this.homey.removeListener('everyhour', this.eventListenerHour);
-	if (this.eventListenerDay) this.homey.removeListener('everyday', this.eventListenerDay);
-  }
-
-  async getAndStorePricesFromApi() {
-	const settings = await this.getSettings();
-	const data = await this.fetchPricesFromApi(
-		settings.location, 
-		settings.net_company, 
-		settings.el_product, 
-		Number(settings.redafg)
-		);
-
-	await this.setSettings({"prices" : data});
-	this.mapPrices(data);
-
-	// This trigger flow new-prices recieved
-	await this.newPricesReceivedTrigger();
-
-	this.log("Stored new price data");
-
-	return data;
+    if (this.eventListenerHour)
+      this.homey.removeListener("everyhour", this.eventListenerHour);
+    if (this.eventListenerDay)
+      this.homey.removeListener("everyday", this.eventListenerDay);
   }
 
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
   async onAdded() {
-    this.log('Energy-device has been added');
+    this.log("Energy-device has been added");
   }
 
   /**
@@ -105,19 +68,22 @@ class MyDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   async onSettings({ oldSettings, newSettings, changedKeys }) {
-    this.log('Energy-device settings where changed');
-	this.restartDevice(1000);
+    this.log("Energy-device settings where changed");
+    this.log("Netcompany: " + newSettings.net_company);
+    this.log("Location: " + newSettings.location);
+    this.log("Product: " + newSettings.el_product);
+    this.log("Redafg: " + Number(newSettings.redafg));
+    this.restartDevice(1000);
   }
 
   async restartDevice(delay) {
-	if (this.restarting) return;
-	this.restarting = true;
-	await this.destroyListeners();
-	const dly = delay || 2000;
-	this.log(`Device will restart in ${dly / 1000} seconds`);
-	// this.setUnavailable('Device is restarting. Wait a few minutes!');
-	await setTimeoutPromise(dly).then(() => this.onInit());
-}
+    if (this.restarting) return;
+    this.restarting = true;
+    await this.destroyListeners();
+    const dly = delay || 2000;
+    this.log(`Device will restart in ${dly / 1000} seconds`);
+    await setTimeoutPromise(dly).then(() => this.onInit());
+  }
 
   /**
    * onRenamed is called when the user updates the device's name.
@@ -125,486 +91,772 @@ class MyDevice extends Device {
    * @param {string} name The new name
    */
   async onRenamed(name) {
-    this.log('Energy-device was renamed');
+    this.log("Energy-device was renamed to: " + name);
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
-	this.destroyListeners();
-    this.log('Energy-device has been deleted');
+    this.destroyListeners();
+    this.log("Energy-device has been deleted");
   }
 
-  setSensorValues(){
-	this.setCapabilityValue("meter_price_h0", this.priceValues["h0"]);
-	this.setCapabilityValue("meter_price_h1", this.priceValues["h1"]);
-	this.setCapabilityValue("meter_price_h2", this.priceValues["h2"]);
-	this.setCapabilityValue("meter_price_h3", this.priceValues["h3"]);
-	this.setCapabilityValue("meter_price_h4", this.priceValues["h4"]);
-	this.setCapabilityValue("meter_price_h5", this.priceValues["h5"]);
-	this.setCapabilityValue("meter_price_h6", this.priceValues["h6"]);
-	this.setCapabilityValue("meter_price_h7", this.priceValues["h7"]);
-	this.setCapabilityValue("meter_price_this_day_lowest", this.priceValues["today_lowest"]);
-	this.setCapabilityValue("meter_price_this_day_highest", this.priceValues["today_highest"]);
-	this.setCapabilityValue("meter_price_this_day_avg", this.priceValues["today_avg"]);
+  setMeterPrices() {
+    const meterPrices = this.getMeterPricesForNextHours();
+    for (let i = 0; i < meterPrices.length; i++) {
+      this.setCapabilityValue("meter_price_h" + i, meterPrices[i]);
+    }
+
+    // Get timestamp for today
+    let todaysDate = this.getDanishDate();
+    todaysDate.setHours(0, 0, 0, 0);
+    const todaysTimestamp = this.toTimestamp(todaysDate);
+
+    // Get daily stats
+    const dailyStats = this.getDailyStats(todaysTimestamp);
+
+    // Set daily stats
+    this.setCapabilityValue("meter_price_this_day_lowest", dailyStats.min);
+    this.setCapabilityValue(
+      "meter_price_this_day_lowest_hour",
+      dailyStats.minHour
+    );
+    this.setCapabilityValue("meter_price_this_day_highest", dailyStats.max);
+    this.setCapabilityValue(
+      "meter_price_this_day_highest_hour",
+      dailyStats.maxHour
+    );
+    this.setCapabilityValue("meter_price_this_day_avg", dailyStats.average);
+
+    this.log("Meter prices has been set");
   }
 
-  mapPrices(data){
-	const today = this.getDanishTime();
-	const date = this.getDanishTime();
-	date.setHours(0,0,0,0);
-	const todaysTimestamp = this.toTimestamp(date);
+  getDailyStats(timestamp) {
+    const timestampPrices = this.getPricesByTimestamp(timestamp);
 
-	const todaysPrices = this.getPricesArray(data, todaysTimestamp);
-	if (todaysPrices != null) {
-		// Reset h values to null
-		for (let i = 0; i < 8; i++){
-			this.priceValues["h" + i] = null;
-		}
+    if (timestampPrices == null) {
+      return {
+        average: 0,
+        min: 0,
+        minHour: 0,
+        max: 0,
+        maxHour: 0,
+      };
+    }
 
-		let mappedIndexCounter = 0;
-		for (let i = today.getHours(); i < Object.keys(todaysPrices).length; i++){
-			this.priceValues["h" + mappedIndexCounter] = todaysPrices[i];
-			if (mappedIndexCounter == 7){
-				break;
-			}
-			mappedIndexCounter++;
-		}
-		this.priceValues["today_prices"] = todaysPrices;
-		this.priceValues["today_lowest"] = Math.min(...todaysPrices);
-		this.priceValues["today_highest"] = Math.max(...todaysPrices);
-		this.priceValues["today_avg"] = parseFloat((todaysPrices.reduce((a, b) => a + b, 0) / todaysPrices.length).toFixed(2));
+    // Calculate average
+    let dailyStats = {};
+    dailyStats.average = parseFloat(
+      (
+        timestampPrices.reduce((a, b) => a + b, 0) / timestampPrices.length
+      ).toFixed(2)
+    );
 
-		// We need next days prices to fill out
-		date.setDate(date.getDate() + 1);
-		const tomorrowTimestamp = this.toTimestamp(date);
-		const tomorrowPrices =  this.getPricesArray(data, tomorrowTimestamp);
-		if (tomorrowPrices != null) {
-			if (this.priceValues["h7"] == null) {
-				for (let i = 0; i < Object.keys(tomorrowPrices).length; i++){
-					this.priceValues["h" + mappedIndexCounter] = tomorrowPrices[i];
-					if (mappedIndexCounter == 7){
-						break;
-					}
-					mappedIndexCounter++;
-				}
-			}
-			this.priceValues["tomorrow_lowest"] = Math.min(...tomorrowPrices);
-			this.priceValues["tomorrow_highest"] = Math.max(...tomorrowPrices);
-			this.priceValues["tomorrow_avg"] = parseFloat((tomorrowPrices.reduce((a, b) => a + b, 0) / tomorrowPrices.length).toFixed(2));
-		}else {
-			this.priceValues["tomorrow_lowest"] = null;
-			this.priceValues["tomorrow_highest"] = null;
-			this.priceValues["tomorrow_avg"] = null;
-		}
-	} else {
-		this.priceValues["today_prices"] = null;
-		this.priceValues["today_lowest"] = null;
-		this.priceValues["today_highest"] = null;
-		this.priceValues["today_avg"] = null;
-	}
-	this.log("Mapped prices succesfully");
+    // Calculate min price and find hour
+    for (let i = 0; i < Object.keys(timestampPrices).length; i++) {
+      if (dailyStats.min == null || dailyStats.min > timestampPrices[i]) {
+        dailyStats.min = timestampPrices[i];
+        dailyStats.minHour = i;
+      }
+    }
+
+    // Calculate max price and find hour
+    for (let i = 0; i < Object.keys(timestampPrices).length; i++) {
+      if (dailyStats.max == null || dailyStats.max < timestampPrices[i]) {
+        dailyStats.max = timestampPrices[i];
+        dailyStats.maxHour = i;
+      }
+    }
+    return dailyStats;
   }
 
-  getPricesArray(data, timestamp){
-	let prices = null;
-	for (let i = 0; i < Object.keys(data).length; i++){
-		if(data[i]["dato"] == timestamp){
-			prices = data[i]["priser"];
-			break;
-		}
-	}
-	if (prices == null) {
-		return null;
-	}
-	if(prices[0] == null){
-		return null;
-	}
-	return prices;
+  getMeterPricesForNextHours() {
+    // Get timestamp for today
+    let todaysDate = this.getDanishDate();
+    todaysDate.setHours(0, 0, 0, 0);
+    const todaysTimestamp = this.toTimestamp(todaysDate);
+
+    // Get prices for today
+    const todaysPrices = this.getPricesByTimestamp(todaysTimestamp);
+    const pricesHoursToRetrieve = 8; // Starting from the current hour (0)
+
+    // Refresh date
+    todaysDate = this.getDanishDate();
+
+    // Get prices for the next 8 hours
+    const meterPrices = [];
+    let hourIndexCounter = 0;
+    for (
+      let i = todaysDate.getHours();
+      i < Object.keys(todaysPrices).length;
+      i++
+    ) {
+      meterPrices[hourIndexCounter] = todaysPrices[i];
+      hourIndexCounter++;
+      if (hourIndexCounter >= pricesHoursToRetrieve) {
+        break;
+      }
+    }
+
+    // Get the rest of the prices from the next day
+    if (hourIndexCounter < pricesHoursToRetrieve) {
+      // Get timestamp for tomorrow
+      let tomorrowsDate = this.getDanishDate();
+      tomorrowsDate.setDate(tomorrowsDate.getDate() + 1);
+      tomorrowsDate.setHours(0, 0, 0, 0);
+      const tomorrowsTimestamp = this.toTimestamp(tomorrowsDate);
+
+      // Get prices for tomorrow
+      const tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
+      for (let i = 0; i < Object.keys(tomorrowsPrices).length; i++) {
+        meterPrices[hourIndexCounter] = tomorrowsPrices[i];
+        hourIndexCounter++;
+        if (hourIndexCounter >= pricesHoursToRetrieve) {
+          break;
+        }
+      }
+    }
+    return meterPrices;
   }
 
-  toTimestamp(date){
-    return date.toISOString().split('.')[0]+"Z";
+  getPriceNow() {
+    let todaysDate = this.getDanishDate();
+    todaysDate.setHours(0, 0, 0, 0);
+    const todaysTimestamp = this.toTimestamp(todaysDate);
+
+    const todaysPrices = this.getPricesByTimestamp(todaysTimestamp);
+    const currentHour = this.getDanishDate().getHours();
+    return todaysPrices[currentHour];
+  }
+
+  toTimestamp(date) {
+    return date.toISOString().split(".")[0] + "Z";
+  }
+
+  getPricesByTimestamp(timestamp) {
+    let datePrices = [];
+    for (let i = 0; i < Object.keys(this.prices).length; i++) {
+      if (this.prices[i].dato == timestamp) {
+        datePrices = this.prices[i].priser;
+        break;
+      }
+    }
+    if (datePrices == null || datePrices[0] == null) {
+      this.log("No prices found for timestamp: " + timestamp);
+      return null;
+    }
+    return datePrices;
   }
 
   isSummerTime(dateToTest) {
-    	let jan = new Date(dateToTest.getFullYear(), 0, 1).getTimezoneOffset();
-    	let jul = new Date(dateToTest.getFullYear(), 6, 1).getTimezoneOffset();
-    	return Math.max(jan, jul) !== dateToTest.getTimezoneOffset();    
-	}
-
-  getDanishTime(){
-	const date = new Date();
-	let timeDifference = 1;
-	if(this.isSummerTime(date)) {
-		timeDifference = 2;
-	}
-	date.setHours(date.getHours() + timeDifference);
-	return date;
+    let jan = new Date(dateToTest.getFullYear(), 0, 1).getTimezoneOffset();
+    let jul = new Date(dateToTest.getFullYear(), 6, 1).getTimezoneOffset();
+    return Math.max(jan, jul) !== dateToTest.getTimezoneOffset();
   }
 
-  async fetchPricesFromApi(location, netCompany, product, redafg){
-		this.log("Fetching prices from api");
-		const options = {
-			hostname: "billigkwh.dk",
-			port: 443,
-			path: "/api/Priser/HentPriser?sted=" + location + "&netselskab=" + netCompany + "&produkt=" + product + "&redafg=" + redafg,
-			headers: {
-			},
-			method: 'GET',
-		};
-		return await this._makeRequest(options, "");
-	}
+  getDanishDate() {
+    const date = new Date();
+    let timeDifference = 1;
+    if (this.isSummerTime(date)) {
+      timeDifference = 2;
+    }
+    date.setHours(date.getHours() + timeDifference);
+    return date;
+  }
 
-  async _makeRequest(options, data, timeout) {
-		try {
-			const result = await this._makeHttpsRequest(options, data, timeout);
-			const contentType = result.headers['content-type'];
-			if (!/application\/json/.test(contentType)) {
-				throw Error(`Expected json but received ${contentType}: ${result.body}`);
-			}
-			if (result.statusCode !== 200) {
-				throw Error(`HTTP request Failed. Status Code: ${result.statusCode}`);
-			}
-			const json = JSON.parse(result.body);
-			return Promise.resolve(json);
-		} catch (error) {
-			return Promise.reject(error);
-		}
-	}
+  async getPrices() {
+    const location = this.getSetting("location");
+    const netCompany = this.getSetting("net_company");
+    const product = this.getSetting("el_product");
+    const redafg = Number(this.getSetting("redafg"));
+    const data = await this.getPricesFromApi(
+      location,
+      netCompany,
+      product,
+      redafg
+    );
+    if (data.errorMessage) {
+      throw new Error(data.errorMessage);
+    }
+    this.prices = data;
 
-    _makeHttpsRequest(options, postData, timeout){
-        return new Promise((resolve, reject) => {
-			const opts = options;
-			opts.timeout = timeout || this.timeout;
-			const req = https.request(opts, (res) => {
-				let resBody = '';
-				res.on('data', (chunk) => {
-					resBody += chunk;
-				});
-				res.once('end', () => {
-					if (!res.complete) {
-						return reject(Error('The connection was terminated while the message was still being sent'));
-					}
-					res.body = resBody;
-					return resolve(res);
-				});
-			});
-			req.on('error', (e) => {
-				req.destroy();
-				return reject(e);
-			});
-			req.on('timeout', () => {
-				req.destroy();
-			});
-			req.end(postData);
-		});
+    // Trigger flow card
+    this.triggerNewPricesRecievedFlowCard();
+  }
+
+  async getPricesFromApi(location, netCompany, product, redafg) {
+    const options = {
+      hostname: "billigkwh.dk",
+      port: 443,
+      path:
+        "/api/Priser/HentPriser?sted=" +
+        location +
+        "&netselskab=" +
+        netCompany +
+        "&produkt=" +
+        product +
+        "&redafg=" +
+        redafg,
+      method: "GET",
+    };
+    this.log(
+      "Trying to get prices for " +
+        location +
+        " " +
+        netCompany +
+        " " +
+        product +
+        " " +
+        redafg
+    );
+    let retry = 0;
+    let data = null;
+    while (retry < 3) {
+      try {
+        data = await this.httpRequest(options);
+        break;
+      } catch (error) {
+        retry++;
+        this.log(error);
+        this.log(`Retry ${retry} of 3`);
+      }
+    }
+    if (retry >= 3) {
+      throw new Error("Failed to retrieve prices from billigkwh.dk");
+    }
+    this.log("Prices retrieved from billigkwh.dk");
+    return data;
+  }
+
+  async httpRequest(options) {
+    return new Promise((resolve, reject) => {
+      const req = https.request(options, (res) => {
+        let data = "";
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+        res.on("end", () => {
+          resolve(JSON.parse(data));
+        });
+      });
+      req.on("error", (e) => {
+        reject(e);
+      });
+      req.end();
+    });
+  }
+
+  isValidTimeRange(currentHour, periode, from, to) {
+    if (this.hoursBetween(from, to) < periode) {
+      throw new Error("Periode kan ikke være større end tidsintervallet");
     }
 
-	// FLOW TRIGGERS
+    if (from < 15 && to < from) {
+      throw new Error(
+        "Fra tiden kan ikke være før 15:00, da priserne først er tilgængelige fra kl 15:00"
+      );
+    }
+    if (!this.isBetween(currentHour, from, to) || to == currentHour) {
+      this.log(
+        "Skipping flow card: Price is lowest between, not between from and to"
+      );
+      return false;
+    }
+    return true;
+  }
 
-	async newPricesReceivedTrigger() {
-		const tokens = {
-			"todays_price_lowest" : this.priceValues["today_lowest"] || 0,
-			"todays_price_highest" : this.priceValues["today_highest"] || 0,
-			"todays_price_avg" : this.priceValues["today_avg"] || 0,
-			"tomorrow_price_lowest" : this.priceValues["tomorrow_lowest"] || 0,
-			"tomorrow_price_highest" : this.priceValues["tomorrow_highest"] || 0,
-			"tomorrow_price_avg" : this.priceValues["tomorrow_avg"] || 0
-		}
-		let state = {};
-		this.driver.ready().then(() => {
-			this.driver.triggerNewPricesReceivedFlow(this.device, tokens, state);
-		});
-	}
+  hoursBetween(from, to) {
+    if (from <= to) {
+      return to - from;
+    } else {
+      return 24 - from + to;
+    }
+  }
 
-	async priceAvgTrigger() {
-		const tokens = {
-			"price_now": this.priceValues["h0"],
-			"price_avg": this.priceValues["today_avg"]
-		}
-		let state = {};
+  // Calculate lowest price periode between clock
+  calculateIntervalBetweenClock(date, periode, from, to, scanLowest = true) {
+    const combinedPrices = this.getCombinedPricesArray(date, from, to);
+    let avgIndexes = null;
+    let avgValue = null;
 
-		if (this.priceValues["h0"] > this.priceValues["today_avg"]){
-			this.driver.ready().then(() => {
-				this.driver.triggerPriceHigherAvgFlow(this.device, tokens, state);
-			});
-		}
-		else if(this.priceValues["h0"] < this.priceValues["today_avg"]){
-			this.driver.ready().then(() => {
-				this.driver.triggerPriceLessAvgFlow(this.device, tokens, state);
-			});
-		}
-	}
+    if (to < from) {
+      to = this.convertToCombinedIndex(to);
+    }
 
-	async priceIsLowestHighestTrigger() {
-		if (this.priceValues["today_prices"] != null){
-			const date = this.getDanishTime();
-			const index_low = this.priceValues["today_prices"].indexOf(this.priceValues["today_lowest"]);
-			const index_high = this.priceValues["today_prices"].indexOf(this.priceValues["today_highest"]);
+    for (let i = 0; i < combinedPrices.length; i++) {
+      if (i < from + periode) {
+        continue;
+      } else if (i > to) {
+        break;
+      }
+      let startIndex = i - periode;
+      const tempArray = combinedPrices.slice(startIndex, i);
+      let tempAvg = parseFloat(
+        (tempArray.reduce((a, b) => a + b, 0) / tempArray.length).toFixed(2)
+      );
 
-			const tokens = {
-				"price_now" : this.priceValues["h0"] || 0,
-			}
-			let state = {};
-			if (date.getHours() == index_low) {
-				
-				this.driver.ready().then(() => {
-					this.driver.triggerPriceIsLowestFlow(this.device, tokens, state);
-				});
-			}
-			else if (date.getHours() == index_high){
-				this.driver.ready().then(() => {
-					this.driver.triggerPriceIsHighestFlow(this.device, tokens, state);
-				});
-			}
-		}
-	}
+      if (
+        avgValue == null ||
+        (avgValue > tempAvg && scanLowest) ||
+        (avgValue < tempAvg && !scanLowest)
+      ) {
+        avgIndexes = [];
+        for (let j = startIndex; j < i; j++) {
+          avgIndexes.push(j);
+        }
+        avgValue = tempAvg;
+      }
+    }
+    this.log("Found Indexes: " + avgIndexes);
+    return avgIndexes;
+  }
 
-	async priceIsNegativeTrigger() {
-		if (this.priceValues["h0"] != null ) {
-			if(this.priceValues["h0"] < 0) {
-				const tokens = {
-					"price_now" : this.priceValues["h0"] || 0,
-				}
-				let state = {};
-				this.driver.ready().then(() => {
-					this.driver.triggerPriceIsNegativeFlow(this.device, tokens, state);
-				});
-			}
-		}
-	}
+  convertFromCombinedIndex(number) {
+    return number - 24;
+  }
 
-	async priceLowestBetweenTrigger(){
-		if (this.priceValues["h0"] != null){
-			const tokens = {
-				"price" : this.priceValues["h0"] || 0,
-			}
-			let state = {};
-			this.driver.ready().then(() => {
-				this.driver.triggerPriceLowestBetweenFlow(this.device, tokens, state);
-			});
-		}
-	}
+  convertToCombinedIndex(number) {
+    return number + 24;
+  }
 
-	async priceLowestBetween(args){
-		const fromClock = args["from"];
-		const toClock = args["to"];
+  getCombinedPricesArray(date, from, to) {
+    let currentHour = date.getHours();
 
-		if (fromClock >= toClock){
-			throw Error("From clock cant be greater or eqaul to clock");
-		}
+    if (
+      this.isBetween(currentHour, from, to) &&
+      currentHour < to &&
+      currentHour < from
+    ) {
+      this.log("Over midnight detected");
+      date.setDate(date.getDate() - 1);
+    }
 
-		const date = this.getDanishTime();
-		const nowClock = date.getHours();
-		const todaysPrices = this.priceValues["today_prices"];
+    date.setHours(0, 0, 0, 0);
+    const dayOneTimestamp = this.toTimestamp(date);
+    const dayOnePrices = this.getPricesByTimestamp(dayOneTimestamp);
 
-		let lowValue = null;
-		let lowIndex = null;
-		for (let i = 0; i < todaysPrices.length; i++) {
-			if (i < fromClock){
-				continue;
-			}
-			else if (i >= toClock){
-				break;
-			}
-			else {
-				if (lowValue == null || todaysPrices[i] < lowValue) {
-					lowValue = todaysPrices[i];
-					lowIndex = i;
-				}
-			}
-		  }
-		if(lowIndex == nowClock) {
-			return true;
-		}
-		return false;
-	}
+    date.setDate(date.getDate() + 1);
+    const dayTwoTimestamp = this.toTimestamp(date);
+    const dayTwoPrices = this.getPricesByTimestamp(dayTwoTimestamp);
 
-	async newNewHourStartedTrigger() {
-		const tokens = {
-			"price" : this.priceValues["h0"] || 0,
-			"price+1" : this.priceValues["h1"] || 0,
-			"price+2" : this.priceValues["h2"] || 0,
-			"price+3" : this.priceValues["h3"] || 0,
-			"price+4" : this.priceValues["h4"] || 0,
-			"price+5" : this.priceValues["h5"] || 0,
-		}
-		let state = {};
-		this.driver.ready().then(() => {
-			this.driver.triggerNewHourFlow(this.device, tokens, state);
-		});
-	}
+    let combinedPrices = [];
+    for (let i = 0; i < Object.keys(dayOnePrices).length; i++) {
+      combinedPrices.push(dayOnePrices[i]);
+    }
+    if (dayTwoPrices != null) {
+      for (let i = 0; i < Object.keys(dayTwoPrices).length; i++) {
+        combinedPrices.push(dayTwoPrices[i]);
+      }
+    }
+    return combinedPrices;
+  }
 
-	async lowestPeriodStartsBetweenTrigger(){
-		if (this.priceValues["today_prices"] != null){
-			const tokens = {}
-			let state = {};
-			this.driver.ready().then(() => {
-				this.driver.triggerLowestPeriodStartsBetweenFlow(this.device, tokens, state);
-			});
-		}
-	}
+  // Check if the current hour is between the given interval
+  isBetween(currentHour, from, to) {
+    if (from < to) {
+      return currentHour >= from && currentHour < to;
+    } else {
+      return currentHour >= from || currentHour <= to;
+    }
+  }
 
-	async lowestPeriodStartsBetween(args){
-		const period = args["period"];
-		const fromTime = args["from"];
-		const toTime = args["to"];
-		
-		let avg_indexes = this.calculateLowestPeriod(period, fromTime, toTime);
-		
-		const date = this.getDanishTime();
-		const currentHour = date.getHours();
-		this.log(avg_indexes);
-		if (currentHour == avg_indexes[0]){
-			return true;
-		}
-		return false;
-	}
+  // WHEN triggers/listeners
 
-	calculateLowestPeriod(period, fromTime, toTime, tomorrow = false){
-		let todaysPrices = this.priceValues["today_prices"];
-		if (tomorrow) {
-			todaysPrices = this.priceValues["tomorrow_prices"];
-		}
-		let avg_indexes = null;
-		let avg_value = null;
+  // Trigger new prices recieved flow card
+  triggerNewPricesRecievedFlowCard() {
+    this.log("Triggering flow card: New prices recieved");
 
-		for (let i = 0; i < todaysPrices.length; i++) {
-			if (i < fromTime + period){
-				continue;
-			}
-			else if (i > toTime){
-				break;
-			}
-			else {
-				let start_index = i - period;
-				const tempArray = todaysPrices.slice(start_index, i);
-				let tempAvg = parseFloat((tempArray.reduce((a, b) => a + b, 0) / tempArray.length));
+    let date = this.getDanishDate();
+    date.setHours(0, 0, 0, 0);
+    const todaysTimestamp = this.toTimestamp(date);
 
-				if(avg_value == null || avg_value > tempAvg) {
-					avg_indexes = [];
-					for(let a = start_index; a < i; a++){
-						avg_indexes.push(a);
-					}
-					avg_value = tempAvg;
-				}
-			}
-		}
-		return avg_indexes;
-	}
+    date.setDate(date.getDate() + 1);
+    const tomorrowsTimestamp = this.toTimestamp(date);
 
-	async lowestPricePeriod(args){
-		const period = args["period"];
-		const fromTime = 0;
-		const toTime = 23;
-		
-		let avg_indexes = this.calculateLowestPeriod(period, fromTime, toTime);
-		
-		const date = this.getDanishTime();
-		const currentHour = date.getHours();
-		this.log(avg_indexes);
-		if (currentHour == avg_indexes[0]){
-			return true;
-		}
-		return false;
-	}
+    const todayStats = this.getDailyStats(todaysTimestamp);
+    const tomorrowStats = this.getDailyStats(tomorrowsTimestamp);
 
-	async lowestPricePeriodTrigger(){
-		if (this.priceValues["today_prices"] != null){
-			const tokens = {}
-			let state = {};
-			this.driver.ready().then(() => {
-				this.driver.triggerLowestPricePeriodFlow(this.device, tokens, state);
-			});
-		}
-	}
+    const tokens = {
+      todays_price_lowest: todayStats.min,
+      todays_price_highest: todayStats.max,
+      todays_price_avg: todayStats.average,
 
-	// AND CARDS
-	async priceLessThanAvgCondition(args){
-		if (this.priceValues["h0"] != null && this.priceValues["today_avg"] != null){
-			return this.priceValues["h0"] < this.priceValues["today_avg"];
-		}
-		return false;
-	}
+      tomorrow_price_lowest: tomorrowStats.min,
+      tomorrow_price_highest: tomorrowStats.max,
+      tomorrow_price_avg: tomorrowStats.average,
+    };
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerNewPricesReceivedFlow(this.device, tokens, state);
+    });
+  }
 
-	async priceHigherThanAvgCondition(args){
-		if (this.priceValues["h0"] != null && this.priceValues["today_avg"] != null){
-			return this.priceValues["h0"] > this.priceValues["today_avg"];
-		}
-		return false;
-	}
+  // Trigger price higher/less than average price flow card
+  triggerPriceHigherOrLessThanAvgFlowCard() {
+    const currentPrice = this.getPriceNow();
+    const avgPrice = this.getDailyStats(
+      this.toTimestamp(this.getDanishDate())
+    ).average;
+    const tokens = {
+      current_price: currentPrice,
+      average_price: avgPrice,
+    };
 
-	async priceOverValueCondition(args){
-		if (this.priceValues["h0"] != null){
-			return this.priceValues["h0"] > args["price"];
-		}
-		return false;
-	}
+    let state = {};
+    if (currentPrice > avgPrice) {
+      this.log("Triggering flow card: Price is higher than average price");
+      this.driver.ready().then(() => {
+        this.driver.triggerPriceHigherAvgFlow(this.device, tokens, state);
+      });
+    } else if (currentPrice < avgPrice) {
+      this.log("Triggering flow card: Price is less than average price");
+      this.driver.ready().then(() => {
+        this.driver.triggerPriceLessAvgFlow(this.device, tokens, state);
+      });
+    }
+  }
 
-	async priceUnderValueCondition(args){
-		if (this.priceValues["h0"] != null){
-			return this.priceValues["h0"] < args["price"];
-		}
-		return false;
-	}
+  // Trigger price is lowest flow card
+  triggerPriceIsLowestFlowCard() {
+    const todaysDate = this.getDanishDate();
+    const todaysTimestamp = this.toTimestamp(todaysDate);
+    const dailyStats = this.getDailyStats(todaysTimestamp);
 
-	async priceUnderAvgFromToCondition(args){
-		const fromTime = args["from"];
-		const toTime = args["to"];
+    if (todaysDate.getHours() == dailyStats.minHour) {
+      this.log("Triggering flow card: Price is lowest");
+      tokens = { price_now: this.getPriceNow() };
+      let state = {};
+      this.driver.ready().then(() => {
+        this.driver.triggerPriceIsLowestFlow(this.device, tokens, state);
+      });
+    }
+  }
 
-		if(fromTime >= toTime) {
-			throw Error("From time cant be greater or equal to time");
-		}
-		if(this.priceValues["today_prices"] == null || this.priceValues["h0"] == null){
-			throw Error("Dont have prices to calculate");
-		}
+  // Trigger price is highest flow card
+  triggerPriceIsHighestFlowCard() {
+    const todaysDate = this.getDanishDate();
+    const todaysTimestamp = this.toTimestamp(todaysDate);
+    const dailyStats = this.getDailyStats(todaysTimestamp);
 
-		const priceArayBetweenTime = this.priceValues["today_prices"].slice(fromTime, toTime);
+    if (todaysDate.getHours() == dailyStats.maxHour) {
+      this.log("Triggering flow card: Price is highest");
+      tokens = { price_now: this.getPriceNow() };
+      let state = {};
+      this.driver.ready().then(() => {
+        this.driver.triggerPriceIsHighestFlow(this.device, tokens, state);
+      });
+    }
+  }
 
-		const average = parseFloat((priceArayBetweenTime.reduce((a, b) => a + b, 0) / priceArayBetweenTime.length).toFixed(2));
+  // Trigger price is negative flow card
+  triggerPriceIsNegativeFlowCard() {
+    const priceNow = this.getPriceNow();
+    if (priceNow < 0) {
+      this.log("Triggering flow card: Price is negative");
+      tokens = { price_now: priceNow };
+      let state = {};
+      this.driver.ready().then(() => {
+        this.driver.triggerPriceIsNegativeFlow(this.device, tokens, state);
+      });
+    }
+  }
 
-		if (this.priceValues["h0"] < average){
-			return true;
-		}
-		return false;
-	}
+  // Trigger price is lowest between flow card
+  triggerPriceLowestBetweenFlowCard() {
+    this.log("Triggering flow card: Price is lowest between");
+    const tokens = { price_now: this.getPriceNow() };
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerPriceLowestBetweenFlow(this.device, tokens, state);
+    });
+  }
 
-	async lowestPricePeriodCondition(args){
-		const period = args["period"];
-		const fromTime = 0;
-		const toTime = 23;
+  // Flow price is lowest between listener
+  priceLowestBetweenListener(args) {
+    const date = this.getDanishDate();
+    let currentHour = date.getHours();
 
-		const indexes = this.calculateLowestPeriod(period, fromTime, toTime);
-		const date = this.getDanishTime();
-		const current_hour = date.getHours();
+    const period = 1;
+    const from = args.from;
+    const to = args.to;
 
-		for(let i = 0; i < indexes.length; i++){
-			if (current_hour == indexes[i]) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /* Test code */
+    //date.setDate(date.getDate() + 1);
+    //date.setHours(10, 0, 0, 0);
+    //currentHour = 10;
+    /* END */
 
-	async lowestPricePeriodBetweenCondition(args){
-		const period = args["period"];
-		const fromTime = args["from"];
-		const toTime = args["to"];
+    if (!this.isValidTimeRange(currentHour, period, from, to)) {
+      return false;
+    }
 
-		const indexes = this.calculateLowestPeriod(period, fromTime, toTime);
-		const date = this.getDanishTime();
-		const current_hour = date.getHours();
+    const avgIndexes = this.calculateIntervalBetweenClock(
+      date,
+      period,
+      from,
+      to,
+      true
+    );
 
-		for(let i = 0; i < indexes.length; i++){
-			if (current_hour == indexes[i]) {
-				return true;
-			}
-		}
-		return false;
-	}
+    if (avgIndexes[0] > 23) {
+      avgIndexes[0] = this.convertFromCombinedIndex(avgIndexes[0]);
+      this.log(
+        'Converted index from "combined" to "normal" index: ' + avgIndexes[0]
+      );
+    }
+
+    if (currentHour == avgIndexes[0]) {
+      return true;
+    }
+    return false;
+  }
+
+  // Trigger new hour flow card
+  triggerNewHourFlowCard() {
+    this.log("Triggering flow card: New hour started");
+
+    const meterPrices = this.getMeterPricesForNextHours();
+    const tokens = {
+      price: meterPrices[0],
+      "price+1": meterPrices[1],
+      "price+2": meterPrices[2],
+      "price+3": meterPrices[3],
+      "price+4": meterPrices[4],
+      "price+5": meterPrices[5],
+    };
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerNewHourFlow(this.device, tokens, state);
+    });
+  }
+
+  // Trigger lowest price period starts between flow card
+  triggerLowestPeriodStartsBetweenFlowCard() {
+    this.log("Triggering flow card: Price is lowest between");
+    const tokens = { price_now: this.getPriceNow() };
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerLowestPeriodStartsBetweenFlow(
+        this.device,
+        tokens,
+        state
+      );
+    });
+  }
+
+  // Flow lowest price period starts between listener
+  lowestPeriodStartsBetweenListener(args) {
+    const date = this.getDanishDate();
+    let currentHour = date.getHours();
+
+    const period = args.period;
+    const from = args.from;
+    const to = args.to;
+
+    if (!this.isValidTimeRange(currentHour, period, from, to)) {
+      return false;
+    }
+
+    const avgIndexes = this.calculateIntervalBetweenClock(
+      date,
+      period,
+      from,
+      to,
+      true
+    );
+
+    if (avgIndexes[0] > 23) {
+      avgIndexes[0] = this.convertFromCombinedIndex(avgIndexes[0]);
+      this.log(
+        'Converted index from "combined" to "normal" index: ' + avgIndexes[0]
+      );
+    }
+
+    if (currentHour == avgIndexes[0]) {
+      return true;
+    }
+    return false;
+  }
+
+  // Trigger lowest price period flow card
+  triggerLowestPricePeriodFlowCard() {
+    this.log("Triggering flow card: Lowest price period");
+    const tokens = { price_now: this.getPriceNow() };
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerLowestPricePeriodFlow(this.device, tokens, state);
+    });
+  }
+
+  // Flow lowest price period listener
+  lowestPricePeriodListener(args) {
+    const date = this.getDanishDate();
+    let currentHour = date.getHours();
+
+    const period = args.period;
+    const from = 0;
+    const to = 23;
+
+    if (!this.isValidTimeRange(currentHour, period, from, to)) {
+      return false;
+    }
+
+    const avgIndexes = this.calculateIntervalBetweenClock(
+      date,
+      period,
+      from,
+      to,
+      true
+    );
+
+    if (avgIndexes[0] > 23) {
+      avgIndexes[0] = this.convertFromCombinedIndex(avgIndexes[0]);
+      this.log(
+        'Converted index from "combined" to "normal" index: ' + avgIndexes[0]
+      );
+    }
+
+    if (currentHour == avgIndexes[0]) {
+      return true;
+    }
+    return false;
+  }
+
+  // AND listeners
+
+  // Price is less than average Listerner
+  priceLessThanAvgListener(args) {
+    const currentPrice = this.getPriceNow();
+    const avgPrice = this.getDailyStats(
+      this.toTimestamp(this.getDanishDate())
+    ).average;
+    if (currentPrice < avgPrice) {
+      return true;
+    }
+    return false;
+  }
+
+  // Price is higher than average Listerner
+  priceHigherThanAvgListener(args) {
+    const currentPrice = this.getPriceNow();
+    const avgPrice = this.getDailyStats(
+      this.toTimestamp(this.getDanishDate())
+    ).average;
+    if (currentPrice > avgPrice) {
+      return true;
+    }
+    return false;
+  }
+
+  // Price is over value Listener
+  priceOverValueListener(args) {
+    const currentPrice = this.getPriceNow();
+    if (currentPrice > args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  // Price is under value Listener
+  priceUnderValueListener(args) {
+    const currentPrice = this.getPriceNow();
+    if (currentPrice < args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  // Price is under average price between clock Listener
+  priceUnderAvgBetweenClockListener(args) {
+    if (args.from >= args.to) {
+      throw new Error("Fra tiden kan ikke være større end til tiden");
+    }
+    const date = this.getDanishDate();
+    date.setHours(0, 0, 0, 0);
+    const timestamp = this.toTimestamp(date);
+    const pricesBetweenTime = this.getPricesByTimestamp(timestamp).slice(
+      args.from,
+      args.to
+    );
+
+    const avgPrice = parseFloat(
+      (
+        pricesBetweenTime.reduce((a, b) => a + b, 0) / pricesBetweenTime.length
+      ).toFixed(2)
+    );
+
+    if (avgPrice > this.getPriceNow()) {
+      return true;
+    }
+    return false;
+  }
+
+  // Price periode is lowest Listener
+  pricePeriodLowestListener(args) {
+    const date = this.getDanishDate();
+    const currentHour = date.getHours();
+    const period = args.period;
+    const from = 0;
+    const to = 23;
+
+    if (!this.isValidTimeRange(currentHour, period, from, to)) {
+      return false;
+    }
+
+    const avgIndexes = this.calculateIntervalBetweenClock(
+      date,
+      period,
+      from,
+      to,
+      true
+    );
+
+    for (let i = 0; i < avgIndexes.length; i++) {
+      if (avgIndexes[i] > 23) {
+        avgIndexes[i] = this.convertFromCombinedIndex(avgIndexes[i]);
+        this.log(
+          'Converted index from "combined" to "normal" index: ' + avgIndexes[i]
+        );
+        if (currentHour == avgIndexes[i]) {
+          return true;
+        }
+      }
+    }
+  }
+
+  // Price periode is lowest between Listener
+  lowestPricePeriodBetweenListener(args) {
+    const date = this.getDanishDate();
+    const currentHour = date.getHours();
+    const period = args.period;
+    const from = args.from;
+    const to = args.to;
+
+    if (!this.isValidTimeRange(currentHour, period, from, to)) {
+      return false;
+    }
+
+    const avgIndexes = this.calculateIntervalBetweenClock(
+      date,
+      period,
+      from,
+      to,
+      true
+    );
+
+    this.log(avgIndexes);
+    for (let i = 0; i < avgIndexes.length; i++) {
+      if (avgIndexes[i] > 23) {
+        avgIndexes[i] = this.convertFromCombinedIndex(avgIndexes[i]);
+        this.log(
+          'Converted index from "combined" to "normal" index: ' + avgIndexes[i]
+        );
+        if (currentHour == avgIndexes[i]) {
+          return true;
+        }
+      }
+    }
+  }
 }
-
-
 module.exports = MyDevice;
