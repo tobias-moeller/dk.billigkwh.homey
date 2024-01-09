@@ -17,12 +17,23 @@ class MyDevice extends Device {
     this.prices = [];
 
     await this.getPrices();
-    this.setMeterPrices();
+    try{
+      this.setMeterPrices();
+    }
+    catch(error){
+      throw new Error("Enheden skal geninstalleres pga update");
+    }
+    
 
     // Every hour
     this.eventListenerHour = async () => {
       this.log("New hour event received");
-      this.setMeterPrices();
+      try{
+        this.setMeterPrices();
+      }
+      catch(error){
+        throw new Error("Enheden skal geninstalleres pga update");
+      }
 
       // Trigger flow cards
       this.triggerPriceHigherOrLessThanAvgFlowCard();
