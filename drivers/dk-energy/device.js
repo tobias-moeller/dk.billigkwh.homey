@@ -32,6 +32,7 @@ class MyDevice extends Device {
       this.triggerPriceLowestBetweenFlowCard();
       this.triggerLowestPeriodStartsBetweenFlowCard();
       this.triggerLowestPricePeriodFlowCard();
+      this.triggerPricePeriodHigherBetweenFlowCard();
     };
     this.homey.on("everyhour", this.eventListenerHour);
 
@@ -470,6 +471,24 @@ class MyDevice extends Device {
     }
   }
 
+  // Convert string time arguments to number
+  // Example: '10:01' = 11
+  // Example: '10:59' = 11
+  // Example: '11:00' = 11
+  // Example: '23:01 = 0
+  convertStringTimeToNumber(time) {
+    const timeArray = time.split(":");
+    const hour = parseInt(timeArray[0]);
+    const minute = parseInt(timeArray[1]);
+    if (minute > 0) {
+      hour = hour + 1;
+      if (hour > 23) {
+        hour = 0;
+      }
+    }
+    return hour;
+  }
+
   // WHEN triggers/listeners
 
   // Trigger new prices recieved flow card
@@ -508,8 +527,8 @@ class MyDevice extends Device {
       this.toTimestamp(this.getDanishDate())
     ).average;
     const tokens = {
-      current_price: currentPrice,
-      average_price: avgPrice,
+      price_now: currentPrice,
+      price_avg: avgPrice,
     };
 
     let state = {};
@@ -587,8 +606,8 @@ class MyDevice extends Device {
     let currentHour = date.getHours();
 
     const period = 1;
-    const from = args.from;
-    const to = args.to;
+    const from = this.convertStringTimeToNumber(args.from);
+    const to = this.convertStringTimeToNumber(args.to);
 
     /* Test code */
     //date.setDate(date.getDate() + 1);
@@ -660,8 +679,8 @@ class MyDevice extends Device {
     let currentHour = date.getHours();
 
     const period = args.period;
-    const from = args.from;
-    const to = args.to;
+    const from = this.convertStringTimeToNumber(args.from);
+    const to = this.convertStringTimeToNumber(args.to);
 
     if (!this.isValidTimeRange(currentHour, period, from, to)) {
       return false;
@@ -717,6 +736,50 @@ class MyDevice extends Device {
       from,
       to,
       true
+    );
+
+    if (avgIndexes[0] > 23) {
+      avgIndexes[0] = this.convertFromCombinedIndex(avgIndexes[0]);
+      this.log(
+        'Converted index from "combined" to "normal" index: ' + avgIndexes[0]
+      );
+    }
+
+    if (currentHour == avgIndexes[0]) {
+      return true;
+    }
+    return false;
+  }
+
+  // Trigger price period higher between flow card
+  triggerPricePeriodHigherBetweenFlowCard() {
+    this.log("Triggering flow card: Price period higher between");
+    const tokens = {};
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerHighestPeriodeBetweenFlow(this.device, tokens, state);
+    });
+  }
+
+  // Flow price period higher between listener
+  pricePeriodHigherBetweenListener(args) {
+    const date = this.getDanishDate();
+    let currentHour = date.getHours();
+
+    const period = args.period;
+    const from = this.convertStringTimeToNumber(args.from);
+    const to = this.convertStringTimeToNumber(args.to);
+
+    if (!this.isValidTimeRange(currentHour, period, from, to)) {
+      return false;
+    }
+
+    const avgIndexes = this.calculateIntervalBetweenClock(
+      date,
+      period,
+      from,
+      to,
+      false
     );
 
     if (avgIndexes[0] > 23) {
