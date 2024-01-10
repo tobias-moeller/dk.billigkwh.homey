@@ -40,5 +40,8 @@
   },
   "2.0.2": {
     "en": "Make device unavaible after update"
+  },
+  "2.0.3": {
+    "en": "Fixed bugs in flowcards and added new flowcard"
   }
 }
