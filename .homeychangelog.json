@@ -43,5 +43,8 @@
   },
   "2.0.3": {
     "en": "Fixed bugs in flowcards and added new flowcard"
+  },
+  "2.0.4": {
+    "en": "Removed doublicated flowcards and fixed update bug"
   }
 }
