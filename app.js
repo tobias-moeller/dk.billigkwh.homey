@@ -33,10 +33,10 @@ class MyApp extends Homey.App {
     this.homey.setTimeout(() => {
       this.homey.setInterval(async () => {
         this.homey.emit("everyhour", true);
-      }, 60 * 60 * 1000);
-      // }, 5000);
+        }, 60 * 60 * 1000);
+      //}, 5000);
       this.homey.emit("everyhour", true);
-    }, timeToNextHour);
+      }, timeToNextHour);
     //}, 5000);
     this.log("everyHour job started");
   }

@@ -26,12 +26,9 @@ class MyDevice extends Device {
 
       // Trigger flow cards
       this.triggerPriceHigherOrLessThanAvgFlowCard();
-      this.triggerPriceIsLowestFlowCard();
       this.triggerPriceIsNegativeFlowCard();
       this.triggerNewHourFlowCard();
-      this.triggerPriceLowestBetweenFlowCard();
       this.triggerLowestPeriodStartsBetweenFlowCard();
-      this.triggerLowestPricePeriodFlowCard();
       this.triggerPricePeriodHigherBetweenFlowCard();
     };
     this.homey.on("everyhour", this.eventListenerHour);
@@ -117,25 +114,63 @@ class MyDevice extends Device {
     // Get daily stats
     const dailyStats = this.getDailyStats(todaysTimestamp);
 
-    // Set daily stats
+    // Fix missing capabilities
+    const capabilities = this.getCapabilities();
+    if (!capabilities.includes("meter_price_this_day_lowest_hour")) {
+      this.log("Adding capability 'lowest_hour'");
+      const promise = this.addCapability("meter_price_this_day_lowest_hour");
+      promise.then(() => {
+        const lowestHourPromise = this.setCapabilityValue(
+          "meter_price_this_day_lowest_hour",
+          dailyStats.minHour
+        );
+        lowestHourPromise.catch((error) => {
+          throw Error("Kunne ikke sætte capability værdi 'lowest_hour'");
+        });
+      });
+      promise.catch((error) => {
+        throw Error("Noget gik galt med at tilføje 'lowest_hour' capability");
+      });
+    } else {
+      const lowestHourPromise = this.setCapabilityValue(
+        "meter_price_this_day_lowest_hour",
+        dailyStats.minHour
+      );
+      lowestHourPromise.catch((error) => {
+        throw Error("Kunne ikke sætte capability værdi 'lowest_hour'");
+      });
+    }
 
+    if (!capabilities.includes("meter_price_this_day_highest_hour")) {
+      this.log("Adding capability 'highest_hour'");
+      const promise = this.addCapability("meter_price_this_day_highest_hour");
+      promise.then(() => {
+        const highestHourPromise = this.setCapabilityValue(
+          "meter_price_this_day_highest_hour",
+          dailyStats.maxHour
+        );
+        highestHourPromise.catch((error) => {
+          throw Error("Kunne ikke sætte capability værdi 'highest_hour'");
+        });
+      });
+
+      promise.catch((error) => {
+        throw Error("Noget gik galt med at tilføje 'highest_hour' capability");
+      });
+    } else {
+      const highestHourPromise = this.setCapabilityValue(
+        "meter_price_this_day_highest_hour",
+        dailyStats.maxHour
+      );
+      highestHourPromise.catch((error) => {
+        throw Error("Kunne ikke sætte capability værdi 'highest_hour'");
+      });
+    }
+
+    // Set daily stats
     this.setCapabilityValue("meter_price_this_day_lowest", dailyStats.min);
-    const lowestHourPromise = this.setCapabilityValue(
-      "meter_price_this_day_lowest_hour",
-      dailyStats.minHour
-    );
-    lowestHourPromise.catch((error) => {
-      throw Error("Enheden skal geninstalleres grundet opdatering");
-    });
 
     this.setCapabilityValue("meter_price_this_day_highest", dailyStats.max);
-    const highestHourPromise = this.setCapabilityValue(
-      "meter_price_this_day_highest_hour",
-      dailyStats.maxHour
-    );
-    highestHourPromise.catch((error) => {
-      throw Error("Enheden skal geninstalleres grundet opdatering");
-    });
 
     this.setCapabilityValue("meter_price_this_day_avg", dailyStats.average);
 
@@ -523,9 +558,11 @@ class MyDevice extends Device {
   // Trigger price higher/less than average price flow card
   triggerPriceHigherOrLessThanAvgFlowCard() {
     const currentPrice = this.getPriceNow();
-    const avgPrice = this.getDailyStats(
-      this.toTimestamp(this.getDanishDate())
-    ).average;
+
+    const date = this.getDanishDate();
+    date.setHours(0, 0, 0, 0);
+    const timestamp = this.toTimestamp(date);
+    const avgPrice = this.getDailyStats(timestamp).average;
     const tokens = {
       price_now: currentPrice,
       price_avg: avgPrice,
@@ -545,38 +582,6 @@ class MyDevice extends Device {
     }
   }
 
-  // Trigger price is lowest flow card
-  triggerPriceIsLowestFlowCard() {
-    const todaysDate = this.getDanishDate();
-    const todaysTimestamp = this.toTimestamp(todaysDate);
-    const dailyStats = this.getDailyStats(todaysTimestamp);
-
-    if (todaysDate.getHours() == dailyStats.minHour) {
-      this.log("Triggering flow card: Price is lowest");
-      tokens = { price_now: this.getPriceNow() };
-      let state = {};
-      this.driver.ready().then(() => {
-        this.driver.triggerPriceIsLowestFlow(this.device, tokens, state);
-      });
-    }
-  }
-
-  // Trigger price is highest flow card
-  triggerPriceIsHighestFlowCard() {
-    const todaysDate = this.getDanishDate();
-    const todaysTimestamp = this.toTimestamp(todaysDate);
-    const dailyStats = this.getDailyStats(todaysTimestamp);
-
-    if (todaysDate.getHours() == dailyStats.maxHour) {
-      this.log("Triggering flow card: Price is highest");
-      tokens = { price_now: this.getPriceNow() };
-      let state = {};
-      this.driver.ready().then(() => {
-        this.driver.triggerPriceIsHighestFlow(this.device, tokens, state);
-      });
-    }
-  }
-
   // Trigger price is negative flow card
   triggerPriceIsNegativeFlowCard() {
     const priceNow = this.getPriceNow();
@@ -588,56 +593,6 @@ class MyDevice extends Device {
         this.driver.triggerPriceIsNegativeFlow(this.device, tokens, state);
       });
     }
-  }
-
-  // Trigger price is lowest between flow card
-  triggerPriceLowestBetweenFlowCard() {
-    this.log("Triggering flow card: Price is lowest between");
-    const tokens = { price_now: this.getPriceNow() };
-    let state = {};
-    this.driver.ready().then(() => {
-      this.driver.triggerPriceLowestBetweenFlow(this.device, tokens, state);
-    });
-  }
-
-  // Flow price is lowest between listener
-  priceLowestBetweenListener(args) {
-    const date = this.getDanishDate();
-    let currentHour = date.getHours();
-
-    const period = 1;
-    const from = this.convertStringTimeToNumber(args.from);
-    const to = this.convertStringTimeToNumber(args.to);
-
-    /* Test code */
-    //date.setDate(date.getDate() + 1);
-    //date.setHours(10, 0, 0, 0);
-    //currentHour = 10;
-    /* END */
-
-    if (!this.isValidTimeRange(currentHour, period, from, to)) {
-      return false;
-    }
-
-    const avgIndexes = this.calculateIntervalBetweenClock(
-      date,
-      period,
-      from,
-      to,
-      true
-    );
-
-    if (avgIndexes[0] > 23) {
-      avgIndexes[0] = this.convertFromCombinedIndex(avgIndexes[0]);
-      this.log(
-        'Converted index from "combined" to "normal" index: ' + avgIndexes[0]
-      );
-    }
-
-    if (currentHour == avgIndexes[0]) {
-      return true;
-    }
-    return false;
   }
 
   // Trigger new hour flow card
@@ -681,50 +636,6 @@ class MyDevice extends Device {
     const period = args.period;
     const from = this.convertStringTimeToNumber(args.from);
     const to = this.convertStringTimeToNumber(args.to);
-
-    if (!this.isValidTimeRange(currentHour, period, from, to)) {
-      return false;
-    }
-
-    const avgIndexes = this.calculateIntervalBetweenClock(
-      date,
-      period,
-      from,
-      to,
-      true
-    );
-
-    if (avgIndexes[0] > 23) {
-      avgIndexes[0] = this.convertFromCombinedIndex(avgIndexes[0]);
-      this.log(
-        'Converted index from "combined" to "normal" index: ' + avgIndexes[0]
-      );
-    }
-
-    if (currentHour == avgIndexes[0]) {
-      return true;
-    }
-    return false;
-  }
-
-  // Trigger lowest price period flow card
-  triggerLowestPricePeriodFlowCard() {
-    this.log("Triggering flow card: Lowest price period");
-    const tokens = { price_now: this.getPriceNow() };
-    let state = {};
-    this.driver.ready().then(() => {
-      this.driver.triggerLowestPricePeriodFlow(this.device, tokens, state);
-    });
-  }
-
-  // Flow lowest price period listener
-  lowestPricePeriodListener(args) {
-    const date = this.getDanishDate();
-    let currentHour = date.getHours();
-
-    const period = args.period;
-    const from = 0;
-    const to = 23;
 
     if (!this.isValidTimeRange(currentHour, period, from, to)) {
       return false;

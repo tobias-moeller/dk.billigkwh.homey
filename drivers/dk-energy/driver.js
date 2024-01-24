@@ -18,21 +18,10 @@ class MyDriver extends Driver {
     this._devicesPriceLessAvg = this.homey.flow.getDeviceTriggerCard(
       "price-is-less-than-avg-price"
     );
-    this._devicesPriceLowest =
-      this.homey.flow.getDeviceTriggerCard("price-is-lowest");
-    this._devicesPriceHighest =
-      this.homey.flow.getDeviceTriggerCard("price-is-highest");
     this._devicesPriceNegative =
       this.homey.flow.getDeviceTriggerCard("price-is-negative");
     this._devicesNewHour =
       this.homey.flow.getDeviceTriggerCard("new-hour-started");
-
-    this._devicesPriceLowestBetween = this.homey.flow.getDeviceTriggerCard(
-      "price-is-lowest-between"
-    );
-    this._devicesPriceLowestBetween.registerRunListener(async (args) =>
-      args.device.priceLowestBetweenListener(args)
-    );
 
     this._devicesLowestPeriodStartsBetween =
       this.homey.flow.getDeviceTriggerCard(
@@ -40,13 +29,6 @@ class MyDriver extends Driver {
       );
     this._devicesLowestPeriodStartsBetween.registerRunListener(async (args) =>
       args.device.lowestPeriodStartsBetweenListener(args)
-    );
-
-    this._devicesLowestPricePeriod = this.homey.flow.getDeviceTriggerCard(
-      "lowest-price-period"
-    );
-    this._devicesLowestPricePeriod.registerRunListener(async (args) =>
-      args.device.lowestPricePeriodListener(args)
     );
 
     this._devicesPricePeriodHigherBetween =
@@ -159,31 +141,10 @@ class MyDriver extends Driver {
       .catch(this.error);
   }
 
-  triggerPriceIsLowestFlow(device, tokens, state) {
-    this._devicesPriceLowest
-      .trigger(device, tokens, state)
-      .then(this.log("Flow 'price-is-lowest' triggered"))
-      .catch(this.error);
-  }
-
-  triggerPriceIsHighestFlow(device, tokens, state) {
-    this._devicesPriceHighest
-      .trigger(device, tokens, state)
-      .then(this.log("Flow 'price-is-highest' triggered"))
-      .catch(this.error);
-  }
-
   triggerPriceIsNegativeFlow(device, tokens, state) {
     this._devicesPriceNegative
       .trigger(device, tokens, state)
       .then(this.log("Flow 'price-is-negative' triggered"))
-      .catch(this.error);
-  }
-
-  triggerPriceLowestBetweenFlow(device, tokens, state) {
-    this._devicesPriceLowestBetween
-      .trigger(device, tokens, state)
-      .then(this.log("Flow 'price-is-lowest-between' triggered"))
       .catch(this.error);
   }
 
@@ -198,13 +159,6 @@ class MyDriver extends Driver {
     this._devicesLowestPeriodStartsBetween
       .trigger(device, tokens, state)
       .then(this.log("Flow 'lowest-price-period-starts-between' triggered"))
-      .catch(this.error);
-  }
-
-  triggerLowestPricePeriodFlow(device, tokens, state) {
-    this._devicesLowestPricePeriod
-      .trigger(device, tokens, state)
-      .then(this.log("Flow 'lowest-price-period' triggered"))
       .catch(this.error);
   }
 
