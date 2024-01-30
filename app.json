@@ -992,6 +992,13 @@
               }
             },
             {
+              "id": "altid-energi",
+              "label": {
+                "da": "Altid Energi",
+                "en": "Altid Energi"
+              }
+            },
+            {
               "id": "andel_energi_timeenergi",
               "label": {
                 "da": "Andel Energi - TimeEnergi",
@@ -1048,6 +1055,20 @@
               }
             },
             {
+              "id": "ewii_groen_timepris",
+              "label": {
+                "da": "EWII Grøn Timepris",
+                "en": "EWII Grøn Timepris"
+              }
+            },
+            {
+              "id": "ewii_timepris",
+              "label": {
+                "da": "EWII Timepris",
+                "en": "EWII Timepris"
+              }
+            },
+            {
               "id": "elektron",
               "label": {
                 "da": "Elektron",
@@ -1064,8 +1085,8 @@
             {
               "id": "energi_viborg",
               "label": {
-                "da": "Energi Viborg",
-                "en": "Energi Viborg"
+                "da": "Energi Viborg - Flex-El",
+                "en": "Energi Viborg - Flex-El"
               }
             },
             {
@@ -1169,8 +1190,8 @@
             {
               "id": "greenbow_elaftale",
               "label": {
-                "da": "Greenbow - Elaftale",
-                "en": "Greenbow - Elaftale"
+                "da": "Greenbow",
+                "en": "Greenbow"
               }
             },
             {
@@ -1178,6 +1199,20 @@
               "label": {
                 "da": "Grøn El-Forsyning - Grøn Flex",
                 "en": "Grøn El-Forsyning - Grøn Flex"
+              }
+            },
+            {
+              "id": "groen_ok_el_flex_intro",
+              "label": {
+                "da": "Grøn OK El Flex Intro",
+                "en": "Grøn OK El Flex Intro"
+              }
+            },
+            {
+              "id": "groen_ok_el_spot_intro",
+              "label": {
+                "da": "Grøn OK El Spotpris Intro",
+                "en": "Grøn OK El Spotpris Intro"
               }
             },
             {
@@ -1230,6 +1265,13 @@
               }
             },
             {
+              "id": "nrgi_time_intro",
+              "label": {
+                "da": "NRGi - NRGi Time Intro (6 mdr)",
+                "en": "NRGi - NRGi Time Intro (6 mdr)"
+              }
+            },
+            {
               "id": "nef",
               "label": {
                 "da": "Nef - El til kostpris",
@@ -1239,8 +1281,8 @@
             {
               "id": "nordisk_energy",
               "label": {
-                "da": "Nordisk Energy",
-                "en": "Nordisk Energy"
+                "da": "Nordisk Energi",
+                "en": "Nordisk Energi"
               }
             },
             {
@@ -1321,10 +1363,17 @@
               }
             },
             {
-              "id": "samstrom",
+              "id": "samstrom_ren_spot",
               "label": {
                 "da": "Samstrøm - REN SPOT",
                 "en": "Samstrøm - REN SPOT"
+              }
+            },
+            {
+              "id": "samstrom_ren_spar",
+              "label": {
+                "da": "Samstrøm REN SPAR",
+                "en": "Samstrøm REN SPAR"
               }
             },
             {
@@ -1356,6 +1405,13 @@
               }
             },
             {
+              "id": "vedvarende_intro",
+              "label": {
+                "da": "Vedvarende - Vedvarende intro",
+                "en": "Vedvarende - Vedvarende intro"
+              }
+            },
+            {
               "id": "velkommen",
               "label": {
                 "da": "Velkommen",
@@ -1372,22 +1428,22 @@
             {
               "id": "vest_energi",
               "label": {
-                "da": "Vest Energi",
-                "en": "Vest Energi"
+                "da": "VestEnergi - Indkøbspris",
+                "en": "VestEnergi - Indkøbspris"
               }
             },
             {
               "id": "vest_energi_spot",
               "label": {
-                "da": "Vestenergi - Spot",
-                "en": "Vestenergi - Spot"
+                "da": "VestEnergi - Spot",
+                "en": "VestEnergi - Spot"
               }
             },
             {
               "id": "vest_energi_spot_intro",
               "label": {
-                "da": "Vestenergi - Spot Intro",
-                "en": "Vestenergi - Spot Intro"
+                "da": "VestEnergi - Spot Intro",
+                "en": "VestEnergi - Spot Intro"
               }
             },
             {
@@ -1421,8 +1477,8 @@
             {
               "id": "vindstoed_elforbundet",
               "label": {
-                "da": "Vindstød - Elforbundet",
-                "en": "Vindstød - Elforbundet"
+                "da": "Vindstød - Elforbundet 2024",
+                "en": "Vindstød - Elforbundet 2024"
               }
             },
             {
@@ -1484,15 +1540,15 @@
             {
               "id": "oe_groen_stroem",
               "label": {
-                "da": "Ø-Strøm - GrønSpotEL",
-                "en": "Ø-Strøm - GrønSpotEL"
+                "da": "Ø/strøm - GrønSpotEL",
+                "en": "Ø/strøm - GrønSpotEL"
               }
             },
             {
               "id": "oe_stroem",
               "label": {
-                "da": "Ø-Strøm - SpotEL",
-                "en": "Ø-Strøm - SpotEL"
+                "da": "Ø/strøm - SpotEL",
+                "en": "Ø/strøm - SpotEL"
               }
             }
           ]
