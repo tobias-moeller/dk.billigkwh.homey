@@ -637,6 +637,8 @@ class MyDevice extends Device {
     const from = this.convertStringTimeToNumber(args.from);
     const to = this.convertStringTimeToNumber(args.to);
 
+    this.log("Arguments - Period: " + period + " from: " + from + " to: " + to);
+
     if (!this.isValidTimeRange(currentHour, period, from, to)) {
       return false;
     }
@@ -680,6 +682,8 @@ class MyDevice extends Device {
     const period = args.period;
     const from = this.convertStringTimeToNumber(args.from);
     const to = this.convertStringTimeToNumber(args.to);
+    
+    this.log("Arguments - Period: " + period + " from: " + from + " to: " + to);
 
     if (!this.isValidTimeRange(currentHour, period, from, to)) {
       return false;

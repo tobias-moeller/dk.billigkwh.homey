@@ -299,7 +299,7 @@
         "en": "price period higher between"
       },
       "titleFormatted": {
-        "en": "Lowest price periode [[period]] between [[from]] to [[to]] begins",
+        "en": "Highest price periode [[period]] between [[from]] to [[to]] begins",
         "da": "Den dyreste periode på [[period]] timer mellem kl [[from]] til kl [[to]] begynder"
       },
       "hint": {
