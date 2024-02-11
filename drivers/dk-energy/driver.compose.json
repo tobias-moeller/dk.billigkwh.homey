@@ -398,6 +398,13 @@
           }
         },
         {
+          "id": "e-go",
+          "label": {
+            "da": "E-GO - E-GO Spot el-aftale",
+            "en": "E-GO - E-GO Spot el-aftale"
+          }
+        },
+        {
           "id": "edison_variabel",
           "label": {
             "da": "EDISON - Variabel",
@@ -421,15 +428,15 @@
         {
           "id": "ewii_groen_timepris",
           "label": {
-            "da": "EWII Grøn Timepris",
-            "en": "EWII Grøn Timepris"
+            "da": "EWII - Grøn Timepris",
+            "en": "EWII - Grøn Timepris"
           }
         },
         {
           "id": "ewii_timepris",
           "label": {
-            "da": "EWII Timepris",
-            "en": "EWII Timepris"
+            "da": "EWII - Timepris",
+            "en": "EWII - Timepris"
           }
         },
         {
@@ -566,20 +573,6 @@
           }
         },
         {
-          "id": "groen_ok_el_flex_intro",
-          "label": {
-            "da": "Grøn OK El Flex Intro",
-            "en": "Grøn OK El Flex Intro"
-          }
-        },
-        {
-          "id": "groen_ok_el_spot_intro",
-          "label": {
-            "da": "Grøn OK El Spotpris Intro",
-            "en": "Grøn OK El Spotpris Intro"
-          }
-        },
-        {
           "id": "jysk_energi_fdm-stroem",
           "label": {
             "da": "Jysk Energi - FDM Strøm",
@@ -629,13 +622,6 @@
           }
         },
         {
-          "id": "nrgi_time_intro",
-          "label": {
-            "da": "NRGi - NRGi Time Intro (6 mdr)",
-            "en": "NRGi - NRGi Time Intro (6 mdr)"
-          }
-        },
-        {
           "id": "nef",
           "label": {
             "da": "Nef - El til kostpris",
@@ -664,6 +650,13 @@
           }
         },
         {
+          "id": "norlys_flexel_intro",
+          "label": {
+            "da": "Norlys - FlexEl Intro",
+            "en": "Norlys - FlexEl Intro"
+          }
+        },
+        {
           "id": "groen_ok_el_flex",
           "label": {
             "da": "OK - Grøn OK El Flex",
@@ -671,10 +664,24 @@
           }
         },
         {
+          "id": "groen_ok_el_flex_intro",
+          "label": {
+            "da": "OK - Grøn OK El Flex Intro",
+            "en": "OK - Grøn OK El Flex Intro"
+          }
+        },
+        {
           "id": "groen_ok_el_spot",
           "label": {
             "da": "OK - Grøn OK El Spotpris",
             "en": "OK - Grøn OK El Spotpris"
+          }
+        },
+        {
+          "id": "groen_ok_el_spot_intro",
+          "label": {
+            "da": "OK - Grøn OK El Spotpris Intro",
+            "en": "OK - Grøn OK El Spotpris Intro"
           }
         },
         {
@@ -727,17 +734,17 @@
           }
         },
         {
+          "id": "samstrom_ren_spar",
+          "label": {
+            "da": "Samstrøm - REN SPAR",
+            "en": "Samstrøm - REN SPAR"
+          }
+        },
+        {
           "id": "samstrom_ren_spot",
           "label": {
             "da": "Samstrøm - REN SPOT",
             "en": "Samstrøm - REN SPOT"
-          }
-        },
-        {
-          "id": "samstrom_ren_spar",
-          "label": {
-            "da": "Samstrøm REN SPAR",
-            "en": "Samstrøm REN SPAR"
           }
         },
         {
@@ -762,10 +769,17 @@
           }
         },
         {
-          "id": "vedvarende",
+          "id": "vedvarende_el",
           "label": {
-            "da": "Vedvarende",
-            "en": "Vedvarende"
+            "da": "Vedvarende - Vedvarende El",
+            "en": "Vedvarende - Vedvarende El"
+          }
+        },
+        {
+          "id": "vedvarende_fri",
+          "label": {
+            "da": "Vedvarende - Vedvarende Fri",
+            "en": "Vedvarende - Vedvarende Fri"
           }
         },
         {
@@ -780,6 +794,13 @@
           "label": {
             "da": "Velkommen",
             "en": "Velkommen"
+          }
+        },
+        {
+          "id": "raakraft",
+          "label": {
+            "da": "Velkommen - Råkraft",
+            "en": "Velkommen - Råkraft"
           }
         },
         {
@@ -829,6 +850,13 @@
           "label": {
             "da": "Vesthimmerlands El-Forsyning - Fri el spot",
             "en": "Vesthimmerlands El-Forsyning - Fri el spot"
+          }
+        },
+        {
+          "id": "vindstoed_aktive_energiforbrugere",
+          "label": {
+            "da": "Vindstød - Aktive Energiforbrugere",
+            "en": "Vindstød - Aktive Energiforbrugere"
           }
         },
         {

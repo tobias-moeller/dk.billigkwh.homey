@@ -229,6 +229,11 @@ class MyDevice extends Device {
     // Refresh date
     todaysDate = this.getDanishDate();
 
+    if(todaysPrices == null){
+      this.log("Todays prices == null, returning 0");
+      return [0,0,0,0,0,0,0,0,0];
+    }
+
     // Get prices for the next 8 hours
     const meterPrices = [];
     let hourIndexCounter = 0;
@@ -254,6 +259,11 @@ class MyDevice extends Device {
 
       // Get prices for tomorrow
       const tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
+      if(tomorrowsPrices == null){
+        this.log("Tomorrow prices == null, returning 0");
+        return [0,0,0,0,0,0,0,0,0];
+      }
+
       for (let i = 0; i < Object.keys(tomorrowsPrices).length; i++) {
         meterPrices[hourIndexCounter] = tomorrowsPrices[i];
         hourIndexCounter++;
@@ -281,16 +291,20 @@ class MyDevice extends Device {
 
   getPricesByTimestamp(timestamp) {
     let datePrices = [];
+    this.log("Trying to get prices for Timestamp " + timestamp);
     for (let i = 0; i < Object.keys(this.prices).length; i++) {
+      this.log("Got prices for date " + this.prices[i].dato);
       if (this.prices[i].dato == timestamp) {
+        this.log("Found index for prices for " + timestamp);
         datePrices = this.prices[i].priser;
         break;
       }
     }
     if (datePrices == null || datePrices[0] == null) {
-      this.log("No prices found for timestamp: " + timestamp);
+      this.log("Fail: No prices found for timestamp: " + timestamp);
       return null;
     }
+    this.log("Success: Found prices for " + timestamp);
     return datePrices;
   }
 
