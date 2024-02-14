@@ -231,7 +231,8 @@ class MyDevice extends Device {
 
     if(todaysPrices == null){
       this.log("Todays prices == null, returning 0");
-      return [0,0,0,0,0,0,0,0,0];
+      this.log(this.prices);
+      return [0,0,0,0,0,0,0,0];
     }
 
     // Get prices for the next 8 hours
@@ -261,7 +262,8 @@ class MyDevice extends Device {
       const tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
       if(tomorrowsPrices == null){
         this.log("Tomorrow prices == null, returning 0");
-        return [0,0,0,0,0,0,0,0,0];
+        this.log(this.prices);
+        return [0,0,0,0,0,0,0,0];
       }
 
       for (let i = 0; i < Object.keys(tomorrowsPrices).length; i++) {
@@ -282,6 +284,11 @@ class MyDevice extends Device {
 
     const todaysPrices = this.getPricesByTimestamp(todaysTimestamp);
     const currentHour = this.getDanishDate().getHours();
+
+    if(todaysPrices == null){
+      this.log(this.prices);
+      throw new Error("Kan ikke indlæse dagens priser");
+    }
     return todaysPrices[currentHour];
   }
 
