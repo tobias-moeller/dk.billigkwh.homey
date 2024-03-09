@@ -70,10 +70,10 @@ class MyApp extends Homey.App {
       this.homey.setInterval(async () => {
         this.homey.emit("everyday", true);
       }, 24 * 60 * 60 * 1000);
-      //}, 5000);
+      //}, 30000);
       this.homey.emit("everyday", true);
     }, timeToNextDay);
-    //}, 5000);
+    //}, 30000);
     this.log("everyDay job started");
   }
 }

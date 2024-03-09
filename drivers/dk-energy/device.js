@@ -15,6 +15,7 @@ class MyDevice extends Device {
     this.restarting = false;
     this.device = this;
     this.prices = [];
+    this.tommorowsPricesRecieved = true
 
     await this.getPrices();
     this.setMeterPrices();
@@ -23,6 +24,27 @@ class MyDevice extends Device {
     this.eventListenerHour = async () => {
       this.log("New hour event received");
       this.setMeterPrices();
+
+      // Check if tommorows prices is recieved
+      if(this.tommorowsPricesRecieved == false){
+        const date = this.getDanishDate()
+        if(date.getHours() == 0){
+          // Cant get tommorows prices before 14
+          this.tommorowsPricesRecieved = true
+        }
+        else {
+          this.log("Retry daily pull from billigkwh.dk")
+          await this.getPrices();
+          this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable()
+
+          if(this.tommorowsPricesRecieved == false) {
+            this.log("Did not recieve tommorows prices from retry pull")
+          }
+          else {
+            this.log("Got tommorows prices from retry pull")
+          }
+        }
+      }
 
       // Trigger flow cards
       this.triggerPriceHigherOrLessThanAvgFlowCard();
@@ -37,6 +59,11 @@ class MyDevice extends Device {
     this.eventListenerDay = async () => {
       this.log("New day event received");
       await this.getPrices();
+      this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable()
+      if(this.tommorowsPricesRecieved == false) {
+        this.log("Did not recieve tommorows prices from daily pull")
+      }
+
     };
     this.homey.on("everyday", this.eventListenerDay);
 
@@ -98,6 +125,20 @@ class MyDevice extends Device {
   async onDeleted() {
     this.destroyListeners();
     this.log("Energy-device has been deleted");
+  }
+
+  isTommorowsPricesAvailable() {
+    let tomorrowsDate = this.getDanishDate();
+      tomorrowsDate.setDate(tomorrowsDate.getDate() + 1);
+      tomorrowsDate.setHours(0, 0, 0, 0);
+      const tomorrowsTimestamp = this.toTimestamp(tomorrowsDate);
+
+      // Get prices for tomorrow
+      const tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
+      if(tomorrowsPrices == null) {
+        return false
+      }
+      return true
   }
 
   setMeterPrices() {
@@ -223,7 +264,7 @@ class MyDevice extends Device {
     const todaysTimestamp = this.toTimestamp(todaysDate);
 
     // Get prices for today
-    const todaysPrices = this.getPricesByTimestamp(todaysTimestamp);
+    let todaysPrices = this.getPricesByTimestamp(todaysTimestamp);
     const pricesHoursToRetrieve = 8; // Starting from the current hour (0)
 
     // Refresh date
@@ -232,7 +273,7 @@ class MyDevice extends Device {
     if(todaysPrices == null){
       this.log("Todays prices == null, returning 0");
       this.log(this.prices);
-      return [0,0,0,0,0,0,0,0];
+      todaysPrices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     }
 
     // Get prices for the next 8 hours
@@ -259,11 +300,11 @@ class MyDevice extends Device {
       const tomorrowsTimestamp = this.toTimestamp(tomorrowsDate);
 
       // Get prices for tomorrow
-      const tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
+      let tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
       if(tomorrowsPrices == null){
         this.log("Tomorrow prices == null, returning 0");
         this.log(this.prices);
-        return [0,0,0,0,0,0,0,0];
+        tomorrowsPrices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];;
       }
 
       for (let i = 0; i < Object.keys(tomorrowsPrices).length; i++) {
@@ -298,11 +339,8 @@ class MyDevice extends Device {
 
   getPricesByTimestamp(timestamp) {
     let datePrices = [];
-    this.log("Trying to get prices for Timestamp " + timestamp);
     for (let i = 0; i < Object.keys(this.prices).length; i++) {
-      this.log("Got prices for date " + this.prices[i].dato);
       if (this.prices[i].dato == timestamp) {
-        this.log("Found index for prices for " + timestamp);
         datePrices = this.prices[i].priser;
         break;
       }
