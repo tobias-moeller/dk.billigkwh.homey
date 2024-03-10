@@ -320,15 +320,15 @@ class MyDevice extends Device {
 
   getPriceNow() {
     let todaysDate = this.getDanishDate();
+    const currentHour = todaysDate.getHours()
     todaysDate.setHours(0, 0, 0, 0);
     const todaysTimestamp = this.toTimestamp(todaysDate);
 
     const todaysPrices = this.getPricesByTimestamp(todaysTimestamp);
-    const currentHour = this.getDanishDate().getHours();
 
     if(todaysPrices == null){
       this.log(this.prices);
-      throw new Error("Kan ikke indlæse dagens priser");
+      throw Error("Cant get todays prices from getPriceNow");
     }
     return todaysPrices[currentHour];
   }
