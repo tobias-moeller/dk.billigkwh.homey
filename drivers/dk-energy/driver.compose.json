@@ -461,6 +461,13 @@
           }
         },
         {
+          "id": "energi_viborg_intro_flex_el",
+          "label": {
+            "da": "Energi Viborg Intro-Flex-El",
+            "en": "Energi Viborg Intro-Flex-El"
+          }
+        },
+        {
           "id": "stromplus_49",
           "label": {
             "da": "Energi+ - Strøm+ 39",
@@ -545,17 +552,17 @@
           }
         },
         {
+          "id": "gasel_borspris",
+          "label": {
+            "da": "Gasel - El til børspris",
+            "en": "Gasel - El til børspris"
+          }
+        },
+        {
           "id": "gasel",
           "label": {
             "da": "Gasel - El til indkøbspris",
             "en": "Gasel - El til indkøbspris"
-          }
-        },
-        {
-          "id": "gasel_borspris",
-          "label": {
-            "da": "Gasel - el til børspris",
-            "en": "Gasel - el til børspris"
           }
         },
         {
@@ -727,6 +734,13 @@
           }
         },
         {
+          "id": "sef_energi_as_timeel",
+          "label": {
+            "da": "SEF Energi - TimeEl",
+            "en": "SEF Energi - TimeEl"
+          }
+        },
+        {
           "id": "sk-energi_flex-el",
           "label": {
             "da": "SK Energi - Flex El",
@@ -769,10 +783,17 @@
           }
         },
         {
+          "id": "stromtid_klimahelt",
+          "label": {
+            "da": "Strømtid - Klimahelt",
+            "en": "Strømtid - Klimahelt"
+          }
+        },
+        {
           "id": "vedvarende_el",
           "label": {
-            "da": "Vedvarende - Vedvarende El",
-            "en": "Vedvarende - Vedvarende El"
+            "da": "Vedvarende - Vedvarende Flex",
+            "en": "Vedvarende - Vedvarende Flex"
           }
         },
         {
@@ -869,8 +890,8 @@
         {
           "id": "vindstoed_elforbundet",
           "label": {
-            "da": "Vindstød - Elforbundet 2024",
-            "en": "Vindstød - Elforbundet 2024"
+            "da": "Vindstød - Elforbundet.dk 2024",
+            "en": "Vindstød - Elforbundet.dk 2024"
           }
         },
         {
@@ -885,6 +906,13 @@
           "label": {
             "da": "Vindstød - VEstrøm",
             "en": "Vindstød - VEstrøm"
+          }
+        },
+        {
+          "id": "zapp_energy",
+          "label": {
+            "da": "Zapp Energy - Variabel timepris",
+            "en": "Zapp Energy - Variabel timepris"
           }
         },
         {
@@ -920,13 +948,6 @@
           "label": {
             "da": "nettopower",
             "en": "nettopower"
-          }
-        },
-        {
-          "id": "stromtid_klimahelt",
-          "label": {
-            "da": "strømtid - Klimahelt",
-            "en": "strømtid - Klimahelt"
           }
         },
         {
