@@ -3,6 +3,7 @@
 const { Device } = require("homey");
 const https = require("https");
 const util = require("util");
+const moment = require("moment-timezone");
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
@@ -15,7 +16,7 @@ class MyDevice extends Device {
     this.restarting = false;
     this.device = this;
     this.prices = [];
-    this.tommorowsPricesRecieved = true
+    this.tommorowsPricesRecieved = true;
 
     await this.getPrices();
     this.setMeterPrices();
@@ -26,22 +27,20 @@ class MyDevice extends Device {
       this.setMeterPrices();
 
       // Check if tommorows prices is recieved
-      if(this.tommorowsPricesRecieved == false){
-        const date = this.getDanishDate()
-        if(date.getHours() == 0){
+      if (this.tommorowsPricesRecieved == false) {
+        const date = this.getDanishDate();
+        if (date.getHours() == 0) {
           // Cant get tommorows prices before 14
-          this.tommorowsPricesRecieved = true
-        }
-        else {
-          this.log("Retry daily pull from billigkwh.dk")
+          this.tommorowsPricesRecieved = true;
+        } else {
+          this.log("Retry daily pull from billigkwh.dk");
           await this.getPrices();
-          this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable()
+          this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
 
-          if(this.tommorowsPricesRecieved == false) {
-            this.log("Did not recieve tommorows prices from retry pull")
-          }
-          else {
-            this.log("Got tommorows prices from retry pull")
+          if (this.tommorowsPricesRecieved == false) {
+            this.log("Did not recieve tommorows prices from retry pull");
+          } else {
+            this.log("Got tommorows prices from retry pull");
           }
         }
       }
@@ -59,11 +58,10 @@ class MyDevice extends Device {
     this.eventListenerDay = async () => {
       this.log("New day event received");
       await this.getPrices();
-      this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable()
-      if(this.tommorowsPricesRecieved == false) {
-        this.log("Did not recieve tommorows prices from daily pull")
+      this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
+      if (this.tommorowsPricesRecieved == false) {
+        this.log("Did not recieve tommorows prices from daily pull");
       }
-
     };
     this.homey.on("everyday", this.eventListenerDay);
 
@@ -129,16 +127,16 @@ class MyDevice extends Device {
 
   isTommorowsPricesAvailable() {
     let tomorrowsDate = this.getDanishDate();
-      tomorrowsDate.setDate(tomorrowsDate.getDate() + 1);
-      tomorrowsDate.setHours(0, 0, 0, 0);
-      const tomorrowsTimestamp = this.toTimestamp(tomorrowsDate);
+    tomorrowsDate.setDate(tomorrowsDate.getDate() + 1);
+    tomorrowsDate.setHours(0, 0, 0, 0);
+    const tomorrowsTimestamp = this.toTimestamp(tomorrowsDate);
 
-      // Get prices for tomorrow
-      const tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
-      if(tomorrowsPrices == null) {
-        return false
-      }
-      return true
+    // Get prices for tomorrow
+    const tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
+    if (tomorrowsPrices == null) {
+      return false;
+    }
+    return true;
   }
 
   setMeterPrices() {
@@ -270,10 +268,12 @@ class MyDevice extends Device {
     // Refresh date
     todaysDate = this.getDanishDate();
 
-    if(todaysPrices == null){
+    if (todaysPrices == null) {
       this.log("Todays prices == null, returning 0");
       this.log(this.prices);
-      todaysPrices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      todaysPrices = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ];
     }
 
     // Get prices for the next 8 hours
@@ -301,10 +301,13 @@ class MyDevice extends Device {
 
       // Get prices for tomorrow
       let tomorrowsPrices = this.getPricesByTimestamp(tomorrowsTimestamp);
-      if(tomorrowsPrices == null){
+      if (tomorrowsPrices == null) {
         this.log("Tomorrow prices == null, returning 0");
         this.log(this.prices);
-        tomorrowsPrices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];;
+        tomorrowsPrices = [
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0,
+        ];
       }
 
       for (let i = 0; i < Object.keys(tomorrowsPrices).length; i++) {
@@ -320,13 +323,13 @@ class MyDevice extends Device {
 
   getPriceNow() {
     let todaysDate = this.getDanishDate();
-    const currentHour = todaysDate.getHours()
+    const currentHour = todaysDate.getHours();
     todaysDate.setHours(0, 0, 0, 0);
     const todaysTimestamp = this.toTimestamp(todaysDate);
 
     const todaysPrices = this.getPricesByTimestamp(todaysTimestamp);
 
-    if(todaysPrices == null){
+    if (todaysPrices == null) {
       this.log(this.prices);
       throw Error("Cant get todays prices from getPriceNow");
     }
@@ -353,20 +356,17 @@ class MyDevice extends Device {
     return datePrices;
   }
 
-  isSummerTime(dateToTest) {
-    let jan = new Date(dateToTest.getFullYear(), 0, 1).getTimezoneOffset();
-    let jul = new Date(dateToTest.getFullYear(), 6, 1).getTimezoneOffset();
-    return Math.max(jan, jul) !== dateToTest.getTimezoneOffset();
+  isDST(dt) {
+    return moment(dt).tz("Europe/Copenhagen").isDST();
   }
 
   getDanishDate() {
-    const date = new Date();
-    let timeDifference = 1;
-    if (this.isSummerTime(date)) {
-      timeDifference = 2;
-    }
-    date.setHours(date.getHours() + timeDifference);
-    return date;
+    const utcDate = new Date();
+    const isDST = this.isDST(utcDate);
+    const timeDifference = isDST ? 2 : 1;
+    const danishDate = new Date(utcDate.getTime() + timeDifference * 3600000);
+
+    return danishDate;
   }
 
   async getPrices() {
@@ -741,7 +741,7 @@ class MyDevice extends Device {
     const period = args.period;
     const from = this.convertStringTimeToNumber(args.from);
     const to = this.convertStringTimeToNumber(args.to);
-    
+
     this.log("Arguments - Period: " + period + " from: " + from + " to: " + to);
 
     if (!this.isValidTimeRange(currentHour, period, from, to)) {
