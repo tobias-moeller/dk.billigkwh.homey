@@ -67,5 +67,8 @@
   },
   "2.1.0": {
     "en": "Updated elproducts and netcompanys"
+  },
+  "2.1.1": {
+    "en": "Fixed bug with summer time"
   }
 }
