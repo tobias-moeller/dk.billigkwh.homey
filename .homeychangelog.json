@@ -70,5 +70,8 @@
   },
   "2.1.1": {
     "en": "Fixed bug with summer time"
+  },
+  "2.1.2": {
+    "en": "Fixed negative price bug"
   }
 }
