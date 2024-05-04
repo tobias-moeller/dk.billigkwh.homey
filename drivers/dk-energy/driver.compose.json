@@ -5,36 +5,34 @@
   },
   "class": "sensor",
   "capabilities": [],
-  "platforms": [
-    "local"
-  ],
+  "platforms": ["local"],
   "connectivity": [],
   "images": {
     "small": "{{driverAssetsPath}}/images/small.png",
     "large": "{{driverAssetsPath}}/images/large.png"
   },
   "pair": [
-		{
-			"id": "list_devices",
-			"template": "list_devices",
-			"options": {
-				"singular": true
-			},
-			"navigation": {
-				"next": "add_devices"
-			}
-		},
-		{
-			"id": "add_devices",
-			"template": "add_devices"
-		}
-	],
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "options": {
+        "singular": true
+      },
+      "navigation": {
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
   "settings": [
     {
       "id": "location",
       "type": "dropdown",
       "value": "Dk1",
-      "label": { 
+      "label": {
         "en": "Location",
         "da": "Område"
       },
@@ -42,16 +40,16 @@
         {
           "id": "Dk1",
           "label": {
-             "en": "DK1 - west from storebælt",
-             "da": "DK1 - vest for storebælt"
-            }
+            "en": "DK1 - west from storebælt",
+            "da": "DK1 - vest for storebælt"
+          }
         },
         {
           "id": "Dk2",
           "label": {
-             "en": "DK2 - east from storebælt",
-             "da": "DK2 - øst for storebælt"
-            }
+            "en": "DK2 - east from storebælt",
+            "da": "DK2 - øst for storebælt"
+          }
         }
       ]
     },
@@ -59,7 +57,7 @@
       "id": "net_company",
       "type": "dropdown",
       "value": "none",
-      "label": { 
+      "label": {
         "en": "Net company",
         "da": "Net selskab"
       },
@@ -343,7 +341,7 @@
       "id": "el_product",
       "type": "dropdown",
       "value": "spotpris",
-      "label": { 
+      "label": {
         "en": "El Product",
         "da": "Elprodukt"
       },
@@ -463,8 +461,8 @@
         {
           "id": "energi_viborg_intro_flex_el",
           "label": {
-            "da": "Energi Viborg Intro-Flex-El",
-            "en": "Energi Viborg Intro-Flex-El"
+            "da": "Energi Viborg - Intro-Flex-El",
+            "en": "Energi Viborg - Intro-Flex-El"
           }
         },
         {
@@ -552,6 +550,13 @@
           }
         },
         {
+          "id": "gnp_flex_privat",
+          "label": {
+            "da": "GNP Energy - Flex Privat",
+            "en": "GNP Energy - Flex Privat"
+          }
+        },
+        {
           "id": "gasel_borspris",
           "label": {
             "da": "Gasel - El til børspris",
@@ -563,6 +568,13 @@
           "label": {
             "da": "Gasel - El til indkøbspris",
             "en": "Gasel - El til indkøbspris"
+          }
+        },
+        {
+          "id": "green_power_energy_variabel_privat",
+          "label": {
+            "da": "Green Power Energy - Variabel pris",
+            "en": "Green Power Energy - Variabel pris"
           }
         },
         {
@@ -626,6 +638,13 @@
           "label": {
             "da": "NRGi - NRGi Time",
             "en": "NRGi - NRGi Time"
+          }
+        },
+        {
+          "id": "nrgi_time_klima",
+          "label": {
+            "da": "NRGi - NRGi Time Klimatilvalg",
+            "en": "NRGi - NRGi Time Klimatilvalg"
           }
         },
         {
@@ -832,6 +851,13 @@
           }
         },
         {
+          "id": "vest_energi_gron_elaftale",
+          "label": {
+            "da": "VestEnergi - Grøn Elaftale",
+            "en": "VestEnergi - Grøn Elaftale"
+          }
+        },
+        {
           "id": "vest_energi",
           "label": {
             "da": "VestEnergi - Indkøbspris",
@@ -843,13 +869,6 @@
           "label": {
             "da": "VestEnergi - Spot",
             "en": "VestEnergi - Spot"
-          }
-        },
-        {
-          "id": "vest_energi_spot_intro",
-          "label": {
-            "da": "VestEnergi - Spot Intro",
-            "en": "VestEnergi - Spot Intro"
           }
         },
         {
@@ -951,6 +970,13 @@
           }
         },
         {
+          "id": "atompower",
+          "label": {
+            "da": "nettopower - atompower",
+            "en": "nettopower - atompower"
+          }
+        },
+        {
           "id": "oe_groen_stroem",
           "label": {
             "da": "Ø/strøm - GrønSpotEL",
@@ -970,10 +996,10 @@
       "id": "redafg",
       "type": "checkbox",
       "value": false,
-      "label": { 
+      "label": {
         "en": "Reducet el charge > 4000 kWh",
         "da": "Reduceret elafgift > 4000 kWh"
-       }
+      }
     }
   ]
 }

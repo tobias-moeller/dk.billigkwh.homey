@@ -321,7 +321,7 @@ class MyDevice extends Device {
     return meterPrices;
   }
 
-  getPriceNow() {
+  getPriceNow(retry = true) {
     let todaysDate = this.getDanishDate();
     const currentHour = todaysDate.getHours();
     todaysDate.setHours(0, 0, 0, 0);
@@ -331,7 +331,11 @@ class MyDevice extends Device {
 
     if (todaysPrices == null) {
       this.log(this.prices);
-      throw Error("Cant get todays prices from getPriceNow");
+      if (retry) {
+        return this.getPriceNow(false);
+      } else {
+        throw Error("Cant get todays prices from getPriceNow");
+      }
     }
     return todaysPrices[currentHour];
   }

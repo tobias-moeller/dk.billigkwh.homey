@@ -1099,8 +1099,8 @@
             {
               "id": "energi_viborg_intro_flex_el",
               "label": {
-                "da": "Energi Viborg Intro-Flex-El",
-                "en": "Energi Viborg Intro-Flex-El"
+                "da": "Energi Viborg - Intro-Flex-El",
+                "en": "Energi Viborg - Intro-Flex-El"
               }
             },
             {
@@ -1188,6 +1188,13 @@
               }
             },
             {
+              "id": "gnp_flex_privat",
+              "label": {
+                "da": "GNP Energy - Flex Privat",
+                "en": "GNP Energy - Flex Privat"
+              }
+            },
+            {
               "id": "gasel_borspris",
               "label": {
                 "da": "Gasel - El til børspris",
@@ -1199,6 +1206,13 @@
               "label": {
                 "da": "Gasel - El til indkøbspris",
                 "en": "Gasel - El til indkøbspris"
+              }
+            },
+            {
+              "id": "green_power_energy_variabel_privat",
+              "label": {
+                "da": "Green Power Energy - Variabel pris",
+                "en": "Green Power Energy - Variabel pris"
               }
             },
             {
@@ -1262,6 +1276,13 @@
               "label": {
                 "da": "NRGi - NRGi Time",
                 "en": "NRGi - NRGi Time"
+              }
+            },
+            {
+              "id": "nrgi_time_klima",
+              "label": {
+                "da": "NRGi - NRGi Time Klimatilvalg",
+                "en": "NRGi - NRGi Time Klimatilvalg"
               }
             },
             {
@@ -1468,6 +1489,13 @@
               }
             },
             {
+              "id": "vest_energi_gron_elaftale",
+              "label": {
+                "da": "VestEnergi - Grøn Elaftale",
+                "en": "VestEnergi - Grøn Elaftale"
+              }
+            },
+            {
               "id": "vest_energi",
               "label": {
                 "da": "VestEnergi - Indkøbspris",
@@ -1479,13 +1507,6 @@
               "label": {
                 "da": "VestEnergi - Spot",
                 "en": "VestEnergi - Spot"
-              }
-            },
-            {
-              "id": "vest_energi_spot_intro",
-              "label": {
-                "da": "VestEnergi - Spot Intro",
-                "en": "VestEnergi - Spot Intro"
               }
             },
             {
@@ -1584,6 +1605,13 @@
               "label": {
                 "da": "nettopower",
                 "en": "nettopower"
+              }
+            },
+            {
+              "id": "atompower",
+              "label": {
+                "da": "nettopower - atompower",
+                "en": "nettopower - atompower"
               }
             },
             {
