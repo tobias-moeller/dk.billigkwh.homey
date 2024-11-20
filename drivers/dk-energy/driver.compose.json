@@ -354,6 +354,20 @@
           }
         },
         {
+          "id": "aura_flexel_intro2",
+          "label": {
+            "da": "AURA - FlexEl Intro",
+            "en": "AURA - FlexEl Intro"
+          }
+        },
+        {
+          "id": "aura_flexel_intro",
+          "label": {
+            "da": "AURA - FlexEl Kampagne",
+            "en": "AURA - FlexEl Kampagne"
+          }
+        },
+        {
           "id": "altid-energi",
           "label": {
             "da": "Altid Energi",
@@ -375,10 +389,24 @@
           }
         },
         {
-          "id": "bornholms_energi_og_forsyning",
+          "id": "beof_timeenergi",
           "label": {
-            "da": "Bornholms Energi & Forsyning - Det frie valg",
-            "en": "Bornholms Energi & Forsyning - Det frie valg"
+            "da": "Bornholms Energi & Forsyning - TimeEnergi",
+            "en": "Bornholms Energi & Forsyning - TimeEnergi"
+          }
+        },
+        {
+          "id": "beof_timeenergi_maaned",
+          "label": {
+            "da": "Bornholms Energi & Forsyning - TimeEnergi",
+            "en": "Bornholms Energi & Forsyning - TimeEnergi"
+          }
+        },
+        {
+          "id": "budget_energi_variabel_elpris",
+          "label": {
+            "da": "Budget Energi - Variabel elpris",
+            "en": "Budget Energi - Variabel elpris"
           }
         },
         {
@@ -438,10 +466,10 @@
           }
         },
         {
-          "id": "elektron",
+          "id": "ewii_timepris_intro",
           "label": {
-            "da": "Elektron",
-            "en": "Elektron"
+            "da": "EWII - Timepris Intro",
+            "en": "EWII - Timepris Intro"
           }
         },
         {
@@ -449,6 +477,13 @@
           "label": {
             "da": "Energi Fyn - SpotEL",
             "en": "Energi Fyn - SpotEL"
+          }
+        },
+        {
+          "id": "energi_fyn_kostpris_plus_50ore",
+          "label": {
+            "da": "Energi Fyn - Strøm til kostpris + 50 øre om dagen",
+            "en": "Energi Fyn - Strøm til kostpris + 50 øre om dagen"
           }
         },
         {
@@ -508,6 +543,20 @@
           }
         },
         {
+          "id": "enkel_energi-pioneers",
+          "label": {
+            "da": "Enkel Energi - Enkel Strøm - Pioneers",
+            "en": "Enkel Energi - Enkel Strøm - Pioneers"
+          }
+        },
+        {
+          "id": "fair_strom_fair_spot_kvartal",
+          "label": {
+            "da": "Fair Strøm - Fair Spot Kvartal",
+            "en": "Fair Strøm - Fair Spot Kvartal"
+          }
+        },
+        {
           "id": "forskel_spotel",
           "label": {
             "da": "Forskel - SpotEl",
@@ -517,15 +566,8 @@
         {
           "id": "forsyning_helsingoer_kronborg_el",
           "label": {
-            "da": "Forsyning Helsingør - Kronborg El",
-            "en": "Forsyning Helsingør - Kronborg El"
-          }
-        },
-        {
-          "id": "forsyning_helsingoer_kronborg_el_plus",
-          "label": {
-            "da": "Forsyning Helsingør - Kronborg El+",
-            "en": "Forsyning Helsingør - Kronborg El+"
+            "da": "Forsyning Helsingør - Kronborg El Måned",
+            "en": "Forsyning Helsingør - Kronborg El Måned"
           }
         },
         {
@@ -536,24 +578,17 @@
           }
         },
         {
-          "id": "frederikshavn-spot-el",
-          "label": {
-            "da": "Frederikshavn Spot El",
-            "en": "Frederikshavn Spot El"
-          }
-        },
-        {
-          "id": "frederikshavn-spot-el-miljo",
-          "label": {
-            "da": "Frederikshavn Spot El Miljø",
-            "en": "Frederikshavn Spot El Miljø"
-          }
-        },
-        {
           "id": "gnp_flex_privat",
           "label": {
             "da": "GNP Energy - Flex Privat",
             "en": "GNP Energy - Flex Privat"
+          }
+        },
+        {
+          "id": "gnp_variabel_garanti",
+          "label": {
+            "da": "GNP Energy - Variabel Garanti",
+            "en": "GNP Energy - Variabel Garanti"
           }
         },
         {
@@ -589,6 +624,13 @@
           "label": {
             "da": "Grøn El-Forsyning - Grøn Flex",
             "en": "Grøn El-Forsyning - Grøn Flex"
+          }
+        },
+        {
+          "id": "homecharge",
+          "label": {
+            "da": "HomeCharge",
+            "en": "HomeCharge"
           }
         },
         {
@@ -634,10 +676,38 @@
           }
         },
         {
+          "id": "modstroem_nemel",
+          "label": {
+            "da": "Modstrøm - NemEl",
+            "en": "Modstrøm - NemEl"
+          }
+        },
+        {
+          "id": "modstroem_premium",
+          "label": {
+            "da": "Modstrøm - Premium",
+            "en": "Modstrøm - Premium"
+          }
+        },
+        {
+          "id": "modstroem_spotel",
+          "label": {
+            "da": "Modstrøm - SpotEl",
+            "en": "Modstrøm - SpotEl"
+          }
+        },
+        {
           "id": "nrgi_time",
           "label": {
             "da": "NRGi - NRGi Time",
             "en": "NRGi - NRGi Time"
+          }
+        },
+        {
+          "id": "nrgi_time_intro",
+          "label": {
+            "da": "NRGi - NRGi Time Intro",
+            "en": "NRGi - NRGi Time Intro"
           }
         },
         {
@@ -648,10 +718,17 @@
           }
         },
         {
-          "id": "nef",
+          "id": "nef-el_til_kostpris",
           "label": {
             "da": "Nef - El til kostpris",
             "en": "Nef - El til kostpris"
+          }
+        },
+        {
+          "id": "nef-variabel_pris_uden_aconto",
+          "label": {
+            "da": "Nef - Variabel pris uden aconto",
+            "en": "Nef - Variabel pris uden aconto"
           }
         },
         {
@@ -732,6 +809,13 @@
           }
         },
         {
+          "id": "power_fuel",
+          "label": {
+            "da": "Power Fuel",
+            "en": "Power Fuel"
+          }
+        },
+        {
           "id": "spotpris",
           "label": {
             "da": "Ren spotpris",
@@ -788,17 +872,24 @@
           }
         },
         {
-          "id": "stromlinet_solenergi",
+          "id": "stroemfordel_flexstroem_privat",
           "label": {
-            "da": "Strømlinet - Solenergi",
-            "en": "Strømlinet - Solenergi"
+            "da": "StrømFordel - Flexstrøm – Privat",
+            "en": "StrømFordel - Flexstrøm – Privat"
           }
         },
         {
           "id": "stromlinet_vindenergi",
           "label": {
-            "da": "Strømlinet - Vindenergi",
-            "en": "Strømlinet - Vindenergi"
+            "da": "Strømlinet - FlexEl",
+            "en": "Strømlinet - FlexEl"
+          }
+        },
+        {
+          "id": "stromlinet_solenergi",
+          "label": {
+            "da": "Strømlinet - SpotEl",
+            "en": "Strømlinet - SpotEl"
           }
         },
         {
@@ -820,13 +911,6 @@
           "label": {
             "da": "Vedvarende - Vedvarende Fri",
             "en": "Vedvarende - Vedvarende Fri"
-          }
-        },
-        {
-          "id": "vedvarende_intro",
-          "label": {
-            "da": "Vedvarende - Vedvarende intro",
-            "en": "Vedvarende - Vedvarende intro"
           }
         },
         {
@@ -907,6 +991,13 @@
           }
         },
         {
+          "id": "vindstoed_elforbundet_2023",
+          "label": {
+            "da": "Vindstød - Elforbundet.dk 2023",
+            "en": "Vindstød - Elforbundet.dk 2023"
+          }
+        },
+        {
           "id": "vindstoed_elforbundet",
           "label": {
             "da": "Vindstød - Elforbundet.dk 2024",
@@ -923,8 +1014,8 @@
         {
           "id": "vindstoed_vestroem",
           "label": {
-            "da": "Vindstød - VEstrøm",
-            "en": "Vindstød - VEstrøm"
+            "da": "Vindstød - VE Strøm",
+            "en": "Vindstød - VE Strøm"
           }
         },
         {
