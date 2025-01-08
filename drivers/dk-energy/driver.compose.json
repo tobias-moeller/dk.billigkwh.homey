@@ -375,6 +375,13 @@
           }
         },
         {
+          "id": "andel_energi_solenergi",
+          "label": {
+            "da": "Andel Energi - SolEnergi",
+            "en": "Andel Energi - SolEnergi"
+          }
+        },
+        {
           "id": "andel_energi_timeenergi",
           "label": {
             "da": "Andel Energi - TimeEnergi",
@@ -473,6 +480,13 @@
           }
         },
         {
+          "id": "energi_fyn_groen_kostpris_plus_50ore",
+          "label": {
+            "da": "Energi Fyn - Grøn Strøm til kostpris + 1 kr om dagen",
+            "en": "Energi Fyn - Grøn Strøm til kostpris + 1 kr om dagen"
+          }
+        },
+        {
           "id": "energi_fyn_spotel",
           "label": {
             "da": "Energi Fyn - SpotEL",
@@ -550,10 +564,31 @@
           }
         },
         {
-          "id": "fair_strom_fair_spot_kvartal",
+          "id": "fairstrom_fair-spot-kvartal",
           "label": {
             "da": "Fair Strøm - Fair Spot Kvartal",
             "en": "Fair Strøm - Fair Spot Kvartal"
+          }
+        },
+        {
+          "id": "fairstrom_fair-spot-maaned",
+          "label": {
+            "da": "Fair Strøm - Fair Spot Måned",
+            "en": "Fair Strøm - Fair Spot Måned"
+          }
+        },
+        {
+          "id": "fairpris_fast",
+          "label": {
+            "da": "Fairpris - FAIR Fast",
+            "en": "Fairpris - FAIR Fast"
+          }
+        },
+        {
+          "id": "fairpris_flex",
+          "label": {
+            "da": "Fairpris - FAIR Flex",
+            "en": "Fairpris - FAIR Flex"
           }
         },
         {
@@ -566,8 +601,8 @@
         {
           "id": "forsyning_helsingoer_kronborg_el",
           "label": {
-            "da": "Forsyning Helsingør - Kronborg El Måned",
-            "en": "Forsyning Helsingør - Kronborg El Måned"
+            "da": "Forsyning Helsingør - Kronborg El Kvartal",
+            "en": "Forsyning Helsingør - Kronborg El Kvartal"
           }
         },
         {
@@ -624,6 +659,13 @@
           "label": {
             "da": "Grøn El-Forsyning - Grøn Flex",
             "en": "Grøn El-Forsyning - Grøn Flex"
+          }
+        },
+        {
+          "id": "gronelforsyning_gron-fremtid",
+          "label": {
+            "da": "Grøn El-Forsyning - Grøn Fremtid",
+            "en": "Grøn El-Forsyning - Grøn Fremtid"
           }
         },
         {
@@ -697,6 +739,20 @@
           }
         },
         {
+          "id": "nordiczol_groen-nordic",
+          "label": {
+            "da": "NORDICZOL - GRØN NORDIC",
+            "en": "NORDICZOL - GRØN NORDIC"
+          }
+        },
+        {
+          "id": "nordiczol_nordic-velkommen",
+          "label": {
+            "da": "NORDICZOL - NORDIC VELKOMMEN",
+            "en": "NORDICZOL - NORDIC VELKOMMEN"
+          }
+        },
+        {
           "id": "nrgi_time",
           "label": {
             "da": "NRGi - NRGi Time",
@@ -704,17 +760,17 @@
           }
         },
         {
-          "id": "nrgi_time_intro",
-          "label": {
-            "da": "NRGi - NRGi Time Intro",
-            "en": "NRGi - NRGi Time Intro"
-          }
-        },
-        {
           "id": "nrgi_time_klima",
           "label": {
             "da": "NRGi - NRGi Time Klimatilvalg",
             "en": "NRGi - NRGi Time Klimatilvalg"
+          }
+        },
+        {
+          "id": "nef-bil_og_bolig",
+          "label": {
+            "da": "Nef - Bil og Bolig",
+            "en": "Nef - Bil og Bolig"
           }
         },
         {
@@ -799,6 +855,13 @@
           "label": {
             "da": "OK - OK El Spotpris",
             "en": "OK - OK El Spotpris"
+          }
+        },
+        {
+          "id": "ok_el_variabelpris",
+          "label": {
+            "da": "OK - OK El Variabelpris",
+            "en": "OK - OK El Variabelpris"
           }
         },
         {
@@ -991,17 +1054,10 @@
           }
         },
         {
-          "id": "vindstoed_elforbundet_2023",
+          "id": "vindstoed_elforbundet_2025",
           "label": {
-            "da": "Vindstød - Elforbundet.dk 2023",
-            "en": "Vindstød - Elforbundet.dk 2023"
-          }
-        },
-        {
-          "id": "vindstoed_elforbundet",
-          "label": {
-            "da": "Vindstød - Elforbundet.dk 2024",
-            "en": "Vindstød - Elforbundet.dk 2024"
+            "da": "Vindstød - Elforbundet.dk 2025",
+            "en": "Vindstød - Elforbundet.dk 2025"
           }
         },
         {
@@ -1012,10 +1068,24 @@
           }
         },
         {
+          "id": "vindstoed_timeel",
+          "label": {
+            "da": "Vindstød - TimeEl",
+            "en": "Vindstød - TimeEl"
+          }
+        },
+        {
           "id": "vindstoed_vestroem",
           "label": {
             "da": "Vindstød - VE Strøm",
             "en": "Vindstød - VE Strøm"
+          }
+        },
+        {
+          "id": "zosani-velkommen-energi",
+          "label": {
+            "da": "ZOSANI - Velkommen energi",
+            "en": "ZOSANI - Velkommen energi"
           }
         },
         {
