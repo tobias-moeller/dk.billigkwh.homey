@@ -1,0 +1,13 @@
+{
+  "name": {
+    "en": "Graph"
+  },
+  "height": 285,
+  "settings": [],
+  "api": {
+    "getPrices": {
+      "method": "GET",
+      "path": "/"
+    }
+  }
+}
