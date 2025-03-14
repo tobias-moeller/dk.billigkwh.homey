@@ -635,6 +635,7 @@
   },
   "drivers": [
     {
+      "id": "dk-energy",
       "name": {
         "en": "DK-Energy",
         "da": "DK-Energi"
@@ -1800,8 +1801,7 @@
             "da": "Reduceret elafgift > 4000 kWh"
           }
         }
-      ],
-      "id": "dk-energy"
+      ]
     }
   ],
   "widgets": {
@@ -1809,7 +1809,7 @@
       "name": {
         "en": "Graph"
       },
-      "height": 285,
+      "height": 350,
       "settings": [],
       "api": {
         "getPrices": {

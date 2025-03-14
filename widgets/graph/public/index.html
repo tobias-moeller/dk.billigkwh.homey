@@ -101,25 +101,32 @@
       text-align: right;
     }
 
-    .stock-price-value {
-      font-size: 18px;
-      font-weight: 600;
+    .price-value {
+      font-size: 12px;
+      font-weight: 400;
       color: var(--homey-color-mono-1000);
       margin-bottom: 5px;
-
+      margin-right: 10px;
+      padding-left: 15px;
+      padding-right: 15px;
+      border-radius: 30px;
+      border-color: var(--homey-color-mono-500);
+      border-width: 1px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
     }
 
-    .stock-price-change {
+    .price-category {
       display: inline-block;
       padding: 2px 8px;
       border-radius: 4px;
+      border-color: var(--homey-color-mono-500);
+      border-width: 1px;
       color: #fff;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 600;
-      width: 70px;
+      width: 150px;
       text-align: center;
 
       white-space: nowrap;
@@ -129,21 +136,21 @@
       transition: background-color 0.3s;
     }
 
-    .stock-price-change[data-change="positive"] {
-      background-color: #34C759;
-    }
-
-    .stock-price-change[data-change="negative"] {
+    .price-category[data-category="red"] {
       background-color: #FF3B30;
     }
 
-    .stock-price-change[data-change="neutral"] {
-      background-color: #9e9e9e;
+    .price-category[data-category="yellow"] {
+      background-color: #FFCD56;
     }
 
-    .stock-chart {
-      width: 60px;
-      height: 30px;
+    .price-category[data-category="green"] {
+      background-color: #34C759;
+    }
+
+    .bar-chart {
+      width: 90%;
+      height: 200px;
       margin: 0 16px;
     }
   </style>
@@ -155,10 +162,24 @@
 
     <div>      
       
-      <div class="chart">
+      <div style="margin-bottom: 25px;">
+        <span class="price-value" style="background-color: #FF3B30;"> over 3 kr. </span>
+        <span class="price-value" style="background-color: #FFCD56;"> 2-3 kr.</span>
+        <span class="price-value" style="background-color: #34C759;"> under 2 kr.</span>
+      </div>
+
+      <div class="chart bar-chart">
         <canvas></canvas>
       </div>
       
+      <div class="price-category" id="regionPriceNow" style="margin-top: 40px;">
+        Pris nu -
+      </div>
+
+      <div id="lblLastUpdate">
+        Sidst opdateret...
+      </div>
+
     </div>
 
   </div>
@@ -166,33 +187,29 @@
   <script type="text/javascript">
     // Render Values
     const green_color         = 'rgb(75, 192, 192 / 40%)';
-    const green_border_color  = 'rgb(75, 192, 192)';
+    const green_border_color  = '#FF3B30';
     const yellow_color        = 'rgb(255, 205, 86 / 40%)';
-    const yellow_border_color = 'rgb(255, 205, 86)';
+    const yellow_border_color = '#FFCD56';
     const red_color           = 'rgb(255, 99, 132 / 40%)';
-    const red_border_color    = 'rgb(255, 99, 132)';
+    const red_border_color    = '#FF3B30';
     
     function onHomeyReady(Homey) {
       Promise.resolve().then(async () => {
         const {
-          prices
+          height
         } = Homey.getSettings();
+
+        Homey.ready();
+
 
         const $error = document.getElementById('error');
         try {
           await loadPrices();
-
         } catch (err){
           $error.innerText = err.message;          
         }
 
-      })
-        .catch(err => {
-          console.error(err);
-        })
-        .finally(() => {
-          Homey.ready();
-        });
+      });
     }
 
     async function loadPrices() {
@@ -205,9 +222,9 @@
         chart = new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: [ "10", "11", "12", "13", "14", "15", "16"],
+            labels: [],
             datasets: [{
-              data: [ 2.32, 2.44, 4.12, 3.96, 1.33, 4.01, 3.25 ],
+              data: [],
               borderWidth: 2,
               borderRadius: 5,
               borderSkipped: false,
@@ -219,11 +236,12 @@
             }]
           },
           options: {
+            maintainAspectRatio: false,
             scales: {
               beginAtZero: true
             },
             plugins: {
-              legend: { display: true },
+              legend: { display: false },
               tooltip: { enabled: false }
             },
             scales: {
@@ -237,7 +255,7 @@
                         return value + " kr.";
                     }
                 },
-                grid: { color:'rgb(201, 203, 207 %20)' }
+                grid: { color: 'var(--homey-color-mono-600)' }
               }
             },
             elements: {
@@ -248,14 +266,34 @@
       }
 
       // Set Chart Data
-      // chart.data.labels = data.quotes.map(quote => new Date(quote.t * 1000).toLocaleTimeString());
-      // chart.data.datasets[0].data = data.quotes.map(quote => quote.v);
+      //throw new Error("data: " + JSON.stringify(data));
+
+      chart.data.labels = data.map(entry => entry.hour);
+      chart.data.datasets[0].data = data.map(entry => entry.price);
       chart.update();
 
+      
+      // Price now update:
+      var currentHourValue = data[0].price;
+      
+      document.querySelector('#regionPriceNow').textContent = `Pris nu: ${currentHourValue} kr.`;
+      document.querySelector('#regionPriceNow').dataset.category = this.calculateColorCase(currentHourValue);
+      
+      // DEBUG
+      document.querySelector('#lblLastUpdate').textContent = new Date().toString();
+
       // Schedule next update
-      setTimeout(() => {
-        loadPrices();
-      }, 1000 * 30); // 30s  //TODO: should be every hour
+      var hourInterval = 60 * 60 * 1000; // Every hour
+      const currentDate = new Date();
+      const firstCallNextFullHour =  hourInterval - (currentDate.getMinutes() * 60 + currentDate.getSeconds()) * 1000 - currentDate.getMilliseconds();
+      
+      await setTimeout(async () => {
+      await this.CalculateCapabilityValues(false);
+        setInterval(async () => {
+          await loadPrices();
+        }, hourInterval + 5000 /* Delay 5 seconds past hour */);
+      }, firstCallNextFullHour);
+
     }
 
     async function getPricesData(symbol) {
@@ -264,12 +302,12 @@
 
     function colorize(opague) {
       return (ctx) => {
-        const v = ctx.parsed.y;
-        const colorCase = v > 4 ? 'red'
-          : v > 2 ? 'yellow'
-          : 'green';
 
-          
+        if (ctx == null || ctx.parsed == null || ctx.parsed.y == null)
+          return 'rgb(201, 203, 207)';
+
+        const v = ctx.parsed.y;
+        const colorCase = this.calculateColorCase(v);
 
         switch (colorCase) {
           case 'red':
@@ -282,6 +320,12 @@
             return 'rgb(201, 203, 207)'
         }
       };
+    }
+
+    function calculateColorCase(value) {
+      return  value > 3 ? 'red'
+            : value > 2 ? 'yellow'
+            : 'green';
     }
 
 

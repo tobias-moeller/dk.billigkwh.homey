@@ -2,7 +2,7 @@
   "name": {
     "en": "Graph"
   },
-  "height": 285,
+  "height": 350,
   "settings": [],
   "api": {
     "getPrices": {
