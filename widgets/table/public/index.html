@@ -1,0 +1,330 @@
+<html>
+
+<head>
+  <script src="chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Roboto, sans-serif;
+    }
+
+    #error {
+      position: absolute;
+      z-index: 1000;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+
+      padding: 0 50px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      text-align: center;
+
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+
+      visibility: hidden;
+    }
+
+    #error:not(:empty) {
+      visibility: visible;
+    }
+
+    #stock-widget {
+      overflow: hidden;
+    }
+
+    .stock {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: content-box;
+      padding: 15px 0;
+      height: 40px;
+      border-bottom: 1px solid var(--homey-line-color-light);
+    }
+
+    .stock:first-child {
+      padding-top: 0;
+    }
+
+    .stock:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .stock-info {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+
+    .stock-info-symbol {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--homey-color-mono-1000);
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .stock-info-name {
+      font-size: 15px;
+      font-weight: 450;
+      color: var(--homey-color-mono-500);
+      margin: 5px 0 0;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .stock-chart {
+      flex-shrink: 0;
+    }
+
+    .stock-price {
+      flex-shrink: 0;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .stock-price-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--homey-color-mono-1000);
+      margin-bottom: 5px;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .stock-price-change {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      width: 70px;
+      text-align: center;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+      transition: background-color 0.3s;
+    }
+
+    .stock-price-change[data-change="positive"] {
+      background-color: #FF3B30;
+    }
+
+    .stock-price-change[data-change="negative"] {
+      background-color: #34C759;
+    }
+
+    .stock-price-change[data-change="neutral"] {
+      background-color: #9e9e9e;
+    }
+
+    .stock-chart {
+      width: 30px;
+      height: 15px;
+      margin: 0 16px;
+    }
+  </style>
+</head>
+
+<body class="homey-widget">
+  <div id="error"></div>
+  <div id="stock-widget">
+
+    <div
+      class="stock"
+      data-stock="1"
+    >
+      <div class="stock-info">
+        <div class="stock-info-symbol"></div>
+        <div class="stock-info-name"></div>
+      </div>
+      <div class="stock-chart">
+        <img class="stock-image" src="arrow-right-long-light.svg">
+      </div>
+      <div class="stock-price">
+        <div class="stock-price-value"></div>
+        <div class="stock-price-change"></div>
+      </div>
+    </div>
+
+    <div
+      class="stock"
+      data-stock="2"
+    >
+      <div class="stock-info">
+        <div class="stock-info-symbol"></div>
+        <div class="stock-info-name"></div>
+      </div>
+      <div class="stock-chart">
+        <img class="stock-image" src="arrow-right-long-light.svg">
+      </div>
+      <div class="stock-price">
+        <div class="stock-price-value"></div>
+        <div class="stock-price-change"></div>
+      </div>
+    </div>
+
+    <div
+      class="stock"
+      data-stock="3"
+    >
+      <div class="stock-info">
+        <div class="stock-info-symbol"></div>
+        <div class="stock-info-name"></div>
+      </div>
+      <div class="stock-chart">
+        <img class="stock-image" src="arrow-right-long-light.svg">
+      </div>
+      <div class="stock-price">
+        <div class="stock-price-value"></div>
+        <div class="stock-price-change"></div>
+      </div>
+    </div>
+
+    <div
+      class="stock"
+      data-stock="4"
+    >
+      <div class="stock-info">
+        <div class="stock-info-symbol"></div>
+        <div class="stock-info-name"></div>
+      </div>
+      <div class="stock-chart">
+        <img class="stock-image" src="arrow-right-long-light.svg">
+      </div>
+      <div class="stock-price">
+        <div class="stock-price-value"></div>
+        <div class="stock-price-change"></div>
+      </div>
+    </div>
+
+    <div
+      class="stock"
+      data-stock="5"
+    >
+      <div class="stock-info">
+        <div class="stock-info-symbol"></div>
+        <div class="stock-info-name"></div>
+      </div>
+      <div class="stock-chart">
+        <img class="stock-image" src="arrow-right-long-light.svg">
+      </div>
+      <div class="stock-price">
+        <div class="stock-price-value"></div>
+        <div class="stock-price-change"></div>
+      </div>
+    </div>
+
+    <div
+      class="stock"
+      data-stock="6"
+    >
+      <div class="stock-info">
+        <div class="stock-info-symbol"></div>
+        <div class="stock-info-name"></div>
+      </div>
+      <div class="stock-chart">
+        <img class="stock-image" src="arrow-right-long-light.svg">
+      </div>
+      <div class="stock-price">
+        <div class="stock-price-value"></div>
+        <div class="stock-price-change"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    function onHomeyReady(Homey) {
+      Promise.resolve().then(async () => {
+        const {
+        } = Homey.getSettings();
+        
+        const $error = document.getElementById('error');
+        try {
+          await updateTable();
+        } catch (err){
+          $error.innerText = err.message;          
+        }
+        
+      })
+        .catch(err => {
+          console.error(err);
+        })
+        .finally(() => {
+          Homey.ready();
+        });
+    }
+
+    async function updateTable() {
+      const data = await getTableData();
+
+
+      data.forEach(async (hourData, index) => {
+        await updateTableElement(hourData, index);
+      });
+
+      // Schedule next update
+      var hourInterval = 60 * 60 * 1000; // Every hour
+      const currentDate = new Date();
+      const firstCallNextFullHour =  hourInterval - (currentDate.getMinutes() * 60 + currentDate.getSeconds()) * 1000 - currentDate.getMilliseconds();
+      
+      await setTimeout(async () => {
+        setInterval(async () => {
+          await loadPrices(hours);
+        }, hourInterval);
+      }, firstCallNextFullHour);
+    }
+
+    async function getTableData() {
+      return Homey.api('GET', `/PriceTable`);
+    }
+
+    async function updateTableElement(hourData, index) {
+      var element = document.querySelector(`.stock[data-stock="${index+1}"]`)
+
+      element.querySelector('.stock-info-symbol').textContent  = hourData.hour + ":00";
+      //element.querySelector('.stock-info-name').textContent    = `${hourData.hour}:00 - ${hourData.to}:00`;
+      element.querySelector('.stock-info-name').textContent    = "Pris lav";
+      element.querySelector('.stock-info-name').textContent    = hourData.price >= 1.7  ? `Pris middel` : element.querySelector('.stock-info-name').textContent;
+      element.querySelector('.stock-info-name').textContent    = hourData.price >= 2.21 ? `Pris høj`    : element.querySelector('.stock-info-name').textContent;
+      element.querySelector('.stock-price-value').textContent  = hourData.price + " kr.";
+      element.querySelector('.stock-price-change').textContent = (hourData.change > 0
+        ? '+'
+        : ''
+      ) + Number(hourData.change).toFixed(2) + ' kr.';
+      element.querySelector('.stock-price-change').dataset.change = hourData.change == 0 ? 'neutral' : element.querySelector('.stock-price-change').dataset.change;
+      element.querySelector('.stock-price-change').dataset.change = hourData.change > 0 ? 'positive' : element.querySelector('.stock-price-change').dataset.change;
+      element.querySelector('.stock-price-change').dataset.change = hourData.change < 0 ? 'negative' : element.querySelector('.stock-price-change').dataset.change;
+      element.querySelector('.stock-image').src = hourData.change == 0 ? 'arrow-right-long-light.svg' : element.querySelector('.stock-image').src;
+      element.querySelector('.stock-image').src = hourData.change < 0  ? 'arrow-trend-down-light.svg' : element.querySelector('.stock-image').src;
+      element.querySelector('.stock-image').src = hourData.change > 0  ? 'arrow-trend-up-light.svg'   : element.querySelector('.stock-image').src;
+    }
+
+  </script>
+</body>
+
+</html>

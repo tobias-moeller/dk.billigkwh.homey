@@ -1807,17 +1807,43 @@
   "widgets": {
     "graph": {
       "name": {
-        "en": "Graph"
+        "en": "Pris graf"
       },
       "height": 350,
-      "settings": [],
+      "settings": [
+        {
+          "id": "hours",
+          "type": "number",
+          "title": {
+            "en": "Antal timer",
+            "da": "Antal timer"
+          },
+          "value": 6,
+          "min": 1,
+          "max": 24
+        }
+      ],
       "api": {
         "getPrices": {
           "method": "GET",
-          "path": "/"
+          "path": "/HoursPrices"
         }
       },
       "id": "graph"
+    },
+    "table": {
+      "name": {
+        "en": "Prisudvikling"
+      },
+      "height": 420,
+      "settings": [],
+      "api": {
+        "getPriceTable": {
+          "method": "GET",
+          "path": "/PriceTable"
+        }
+      },
+      "id": "table"
     }
   },
   "capabilities": {

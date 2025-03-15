@@ -107,8 +107,8 @@
       color: var(--homey-color-mono-1000);
       margin-bottom: 5px;
       margin-right: 10px;
-      padding-left: 15px;
-      padding-right: 15px;
+      padding-left: 10px;
+      padding-right: 10px;
       border-radius: 30px;
       border-color: var(--homey-color-mono-500);
       border-width: 1px;
@@ -149,7 +149,7 @@
     }
 
     .bar-chart {
-      width: 90%;
+      width: 95%;
       height: 200px;
       margin: 0 16px;
     }
@@ -163,22 +163,30 @@
     <div>      
       
       <div style="margin-bottom: 25px;">
-        <span class="price-value" style="background-color: #FF3B30;"> over 3 kr. </span>
-        <span class="price-value" style="background-color: #FFCD56;"> 2-3 kr.</span>
-        <span class="price-value" style="background-color: #34C759;"> under 2 kr.</span>
+        <span class="price-value" style="background-color: #FF3B30;"> over 2,21 kr. </span>
+        <span class="price-value" style="background-color: #FFCD56;"> 1,70 - 2,20 kr.</span>
+        <span class="price-value" style="background-color: #34C759;"> under 1,69 kr.</span>
       </div>
 
       <div class="chart bar-chart">
         <canvas></canvas>
       </div>
       
-      <div class="price-category" id="regionPriceNow" style="margin-top: 40px;">
-        Pris nu -
+      <div>
+        <div class="price-category" id="regionPriceNow" style="margin-top: 40px;">
+          Pris nu -
+        </div>
+
+        <div class="price-category" id="regionCategoryNow" style="margin-left: 15px;">
+          Middel
+        </div>
+
       </div>
 
-      <div id="lblLastUpdate">
+
+      <!-- <div id="lblLastUpdate">
         Sidst opdateret...
-      </div>
+      </div> -->
 
     </div>
 
@@ -196,7 +204,7 @@
     function onHomeyReady(Homey) {
       Promise.resolve().then(async () => {
         const {
-          height
+          hours
         } = Homey.getSettings();
 
         Homey.ready();
@@ -204,7 +212,7 @@
 
         const $error = document.getElementById('error');
         try {
-          await loadPrices();
+          await loadPrices(hours);
         } catch (err){
           $error.innerText = err.message;          
         }
@@ -212,8 +220,8 @@
       });
     }
 
-    async function loadPrices() {
-      const data = await getPricesData();
+    async function loadPrices(hours) {
+      const data = await getPricesData(hours);
 
       // Get or Create Chart
       const ctx = document.querySelector('.chart > canvas').getContext('2d');
@@ -225,7 +233,7 @@
             labels: [],
             datasets: [{
               data: [],
-              borderWidth: 2,
+              borderWidth: 1,
               borderRadius: 5,
               borderSkipped: false,
               tension: 0.2,
@@ -242,15 +250,51 @@
             },
             plugins: {
               legend: { display: false },
-              tooltip: { enabled: false }
+              tooltip: { 
+                enabled: true,
+                afterTitle: ':00',
+                title: 'Hello world',
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+
+                        
+
+                        if (label) {
+                            label += ':---- ';
+                        }
+                        if (context.parsed.y !== null) {
+
+                            var hourFormat = String(context.parsed.x).padStart(2, '0') + ":00";
+                            var hourPrice = context.parsed.y;
+                            
+                            var priceCategory = hourPrice >= 2.21 ? 'Høj'
+                                  : hourPrice >= 1.7 ? 'Mellem'
+                                  : 'Lav';
+
+                            label = `Tid: ${hourFormat} [${priceCategory}], Pris: ${context.parsed.y} kr.` ;
+
+                            //label += hourFormat + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                        }
+                        return label;
+                    }
+                }
+              
+              }
             },
             scales: {
-              x: { display: true, text: 'Timer' },
+              x: { 
+                display: true, 
+                text: 'Timer',
+                ticks: {
+                    callback: function(value, index, ticks) {
+                        return String(value).padStart(2, '0') + ":00";
+                    }
+                }, },
               y: { 
                 display: true, 
                 text: 'Kr.', 
                 ticks: {
-                    // Include a dollar sign in the ticks
                     callback: function(value, index, ticks) {
                         return value + " kr.";
                     }
@@ -276,28 +320,31 @@
       // Price now update:
       var currentHourValue = data[0].price;
       
-      document.querySelector('#regionPriceNow').textContent = `Pris nu: ${currentHourValue} kr.`;
+      document.querySelector('#regionPriceNow').textContent      = `Pris nu: ${currentHourValue} kr.`;
       document.querySelector('#regionPriceNow').dataset.category = this.calculateColorCase(currentHourValue);
       
-      // DEBUG
-      document.querySelector('#lblLastUpdate').textContent = new Date().toString();
-
+      document.querySelector('#regionCategoryNow').textContent      = this.calculateColorCategory(currentHourValue);
+      document.querySelector('#regionCategoryNow').dataset.category = this.calculateColorCase(currentHourValue);
+      
+      
+      
       // Schedule next update
       var hourInterval = 60 * 60 * 1000; // Every hour
       const currentDate = new Date();
       const firstCallNextFullHour =  hourInterval - (currentDate.getMinutes() * 60 + currentDate.getSeconds()) * 1000 - currentDate.getMilliseconds();
       
       await setTimeout(async () => {
-      await this.CalculateCapabilityValues(false);
         setInterval(async () => {
-          await loadPrices();
-        }, hourInterval + 5000 /* Delay 5 seconds past hour */);
+          await loadPrices(hours);
+        }, hourInterval);
       }, firstCallNextFullHour);
-
+      
+      // DEBUG
+      //document.querySelector('#lblLastUpdate').textContent = firstCallNextFullHour + "--" + new Date().toString();
     }
 
-    async function getPricesData(symbol) {
-      return Homey.api('GET', `/`);
+    async function getPricesData(hours) {
+      return Homey.api('GET', `/HoursPrices?hours=${hours}`);
     }
 
     function colorize(opague) {
@@ -323,9 +370,15 @@
     }
 
     function calculateColorCase(value) {
-      return  value > 3 ? 'red'
-            : value > 2 ? 'yellow'
+      return  value >= 2.21 ? 'red'
+            : value >= 1.7 ? 'yellow'
             : 'green';
+    }
+
+    function calculateColorCategory(value) {
+      return  value >= 2.21 ? 'Høj'
+            : value >= 1.7 ? 'Mellem'
+            : 'Lav';
     }
 
 

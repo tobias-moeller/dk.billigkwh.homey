@@ -1,12 +1,23 @@
 'use strict';
 
 const _ = require("lodash");
-const moment = require("moment-timezone");
 
 module.exports = {
   async getPrices({ homey, query }) {
     
-    var nullValue = [{ hour: 0, price: 0 }];
+
+
+    var hours     = +query.hours;
+    var nullValue = _.chain([
+                     { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 },
+                     { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 },
+                     { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 },
+                     { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }, { hour: 0, price: 0 }
+                    ])
+                    .take(hours)
+                    .value()
+                    ;
+   
 
     if (homey.drivers.getDriver('dk-energy').getDevices().length == 0){
       return nullValue;
@@ -23,7 +34,7 @@ module.exports = {
                                 hour: String(((currentHour + index) % 24)).padStart(2, '0'), 
                                 price: price.toFixed(2) }
                     })
-                    .take(6)
+                    .take(hours)
                     .value()
                     ;
       ;
@@ -33,4 +44,7 @@ module.exports = {
       return nullValue;
     }
   }
+
+  
+
 };
