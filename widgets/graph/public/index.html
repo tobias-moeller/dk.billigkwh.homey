@@ -194,11 +194,11 @@
 
   <script type="text/javascript">
     // Render Values
-    const green_color         = 'rgb(75, 192, 192 / 40%)';
-    const green_border_color  = '#FF3B30';
+    const green_color         = 'rgb(52, 199, 89 / 40%)';
+    const green_border_color  = '#34C759';
     const yellow_color        = 'rgb(255, 205, 86 / 40%)';
     const yellow_border_color = '#FFCD56';
-    const red_color           = 'rgb(255, 99, 132 / 40%)';
+    const red_color           = 'rgb(255, 59, 48 / 40%)';
     const red_border_color    = '#FF3B30';
     
     function onHomeyReady(Homey) {
@@ -222,7 +222,7 @@
 
     async function loadPrices(hours) {
       const data = await getPricesData(hours);
-
+      //throw new Error("data: " + JSON.stringify(data));
       // Get or Create Chart
       const ctx = document.querySelector('.chart > canvas').getContext('2d');
       let chart = Chart.getChart(ctx);
@@ -253,7 +253,6 @@
               tooltip: { 
                 enabled: true,
                 afterTitle: ':00',
-                title: 'Hello world',
                 callbacks: {
                     label: function(context) {
                         let label = context.dataset.label || '';
@@ -265,16 +264,13 @@
                         }
                         if (context.parsed.y !== null) {
 
-                            var hourFormat = String(context.parsed.x).padStart(2, '0') + ":00";
                             var hourPrice = context.parsed.y;
                             
                             var priceCategory = hourPrice >= 2.21 ? 'Høj'
                                   : hourPrice >= 1.7 ? 'Mellem'
                                   : 'Lav';
 
-                            label = `Tid: ${hourFormat} [${priceCategory}], Pris: ${context.parsed.y} kr.` ;
-
-                            //label += hourFormat + new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                            label = `[${priceCategory}], Pris: ${context.parsed.y} kr.` ;
                         }
                         return label;
                     }
@@ -286,11 +282,7 @@
               x: { 
                 display: true, 
                 text: 'Timer',
-                ticks: {
-                    callback: function(value, index, ticks) {
-                        return String(value).padStart(2, '0') + ":00";
-                    }
-                }, },
+              },
               y: { 
                 display: true, 
                 text: 'Kr.', 
@@ -312,7 +304,7 @@
       // Set Chart Data
       //throw new Error("data: " + JSON.stringify(data));
 
-      chart.data.labels = data.map(entry => entry.hour);
+      chart.data.labels = data.map(entry => String(entry.hour).padStart(2, '0') + ":00");
       chart.data.datasets[0].data = data.map(entry => entry.price);
       chart.update();
 
@@ -325,8 +317,7 @@
       
       document.querySelector('#regionCategoryNow').textContent      = this.calculateColorCategory(currentHourValue);
       document.querySelector('#regionCategoryNow').dataset.category = this.calculateColorCase(currentHourValue);
-      
-      
+           
       
       // Schedule next update
       var hourInterval = 60 * 60 * 1000; // Every hour
