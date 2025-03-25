@@ -64,10 +64,17 @@
       },
       "values": [
         {
-          "id": "aal_el_net_c",
+          "id": "aal_el-net_c",
           "label": {
             "da": "Aal El-Net A M B A",
             "en": "Aal El-Net A M B A"
+          }
+        },
+        {
+          "id": "aal_el_net_c",
+          "label": {
+            "da": "Aal El-Net A M B A - Udgået",
+            "en": "Aal El-Net A M B A - Udgået"
           }
         },
         {
@@ -190,10 +197,17 @@
           }
         },
         {
-          "id": "midtfyns_elforsyning_c",
+          "id": "midtfyns_c",
           "label": {
             "da": "Midtfyns Elforsyning A.m.b.A",
             "en": "Midtfyns Elforsyning A.m.b.A"
+          }
+        },
+        {
+          "id": "midtfyns_elforsyning_c",
+          "label": {
+            "da": "Midtfyns Elforsyning A.m.b.A - Udgået",
+            "en": "Midtfyns Elforsyning A.m.b.A - Udgået"
           }
         },
         {
@@ -227,8 +241,8 @@
         {
           "id": "netselskabet_elvaerk_c",
           "label": {
-            "da": "Netselskabet Elværk C",
-            "en": "Netselskabet Elværk C"
+            "da": "Netselskabet Elværk C - Udgået",
+            "en": "Netselskabet Elværk C - Udgået"
           }
         },
         {
@@ -406,8 +420,8 @@
         {
           "id": "beof_timeenergi_maaned",
           "label": {
-            "da": "Bornholms Energi & Forsyning - TimeEnergi",
-            "en": "Bornholms Energi & Forsyning - TimeEnergi"
+            "da": "Bornholms Energi & Forsyning - TimeEnergi Måned",
+            "en": "Bornholms Energi & Forsyning - TimeEnergi Måned"
           }
         },
         {
@@ -422,6 +436,13 @@
           "label": {
             "da": "Clever - Clever Power",
             "en": "Clever - Clever Power"
+          }
+        },
+        {
+          "id": "dcc-energi-flex",
+          "label": {
+            "da": "DCC Energi - Flex",
+            "en": "DCC Energi - Flex"
           }
         },
         {
@@ -600,10 +621,10 @@
           }
         },
         {
-          "id": "forsyning_helsingoer_kronborg_el",
+          "id": "forsyning_helsingoer_kronborg_el_maaned",
           "label": {
-            "da": "Forsyning Helsingør - Kronborg El Kvartal",
-            "en": "Forsyning Helsingør - Kronborg El Kvartal"
+            "da": "Forsyning Helsingør - Kronborg El Måned",
+            "en": "Forsyning Helsingør - Kronborg El Måned"
           }
         },
         {
@@ -621,17 +642,31 @@
           }
         },
         {
-          "id": "gnp_variabel_garanti",
+          "id": "gnp_variabel_garanti_39",
           "label": {
             "da": "GNP Energy - Variabel Garanti",
             "en": "GNP Energy - Variabel Garanti"
           }
         },
         {
+          "id": "gnp_variabel_garanti",
+          "label": {
+            "da": "GNP Energy - Variabel Garanti - 5,9 øres tillæg",
+            "en": "GNP Energy - Variabel Garanti - 5,9 øres tillæg"
+          }
+        },
+        {
           "id": "gasel_borspris",
           "label": {
-            "da": "Gasel - El til børspris",
-            "en": "Gasel - El til børspris"
+            "da": "Gasel - El til børspris + 10 øre/kWh",
+            "en": "Gasel - El til børspris + 10 øre/kWh"
+          }
+        },
+        {
+          "id": "gasel_borspris_4ore",
+          "label": {
+            "da": "Gasel - El til børspris + 4 øre/kWh",
+            "en": "Gasel - El til børspris + 4 øre/kWh"
           }
         },
         {
@@ -709,6 +744,13 @@
           "label": {
             "da": "Lokal Energi - Lokal Variabel",
             "en": "Lokal Energi - Lokal Variabel"
+          }
+        },
+        {
+          "id": "modstroem_enkel",
+          "label": {
+            "da": "Modstrøm - EnkEl",
+            "en": "Modstrøm - EnkEl"
           }
         },
         {
@@ -866,13 +908,6 @@
           }
         },
         {
-          "id": "preasy",
-          "label": {
-            "da": "PREASY - Marked",
-            "en": "PREASY - Marked"
-          }
-        },
-        {
           "id": "power_fuel",
           "label": {
             "da": "Power Fuel",
@@ -989,6 +1024,13 @@
           "label": {
             "da": "Velkommen - Råkraft",
             "en": "Velkommen - Råkraft"
+          }
+        },
+        {
+          "id": "velkommen_vedvarende_fri",
+          "label": {
+            "da": "Velkommen - Vedvarende Fri",
+            "en": "Velkommen - Vedvarende Fri"
           }
         },
         {
