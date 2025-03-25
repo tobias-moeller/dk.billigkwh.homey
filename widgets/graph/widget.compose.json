@@ -1,0 +1,25 @@
+{
+  "name": {
+    "en": "Pris graf"
+  },
+  "height": 350,
+  "settings": [
+    {
+      "id": "hours",
+      "type": "number",
+      "title": {
+        "en": "Antal timer",
+        "da": "Antal timer"
+      },
+      "value": 6,
+      "min": 1,
+      "max": 24
+    }
+  ],
+  "api": {
+    "getPrices": {
+      "method": "GET",
+      "path": "/HoursPrices"
+    }
+  }
+}

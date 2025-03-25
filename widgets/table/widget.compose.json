@@ -1,0 +1,13 @@
+{
+  "name": {
+    "en": "Prisudvikling"
+  },
+  "height": 420,
+  "settings": [],
+  "api": {
+    "getPriceTable": {
+      "method": "GET",
+      "path": "/PriceTable"
+    }
+  }
+}

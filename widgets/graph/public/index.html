@@ -1,0 +1,379 @@
+<html>
+
+<head>
+  <script src="chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Roboto, sans-serif;
+    }
+
+    #error {
+      position: absolute;
+      z-index: 1000;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+
+      padding: 0 50px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      text-align: center;
+
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+
+      visibility: hidden;
+    }
+
+    #error:not(:empty) {
+      visibility: visible;
+    }
+
+    #stock-widget {
+      overflow: hidden;
+    }
+
+    .stock {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: content-box;
+      padding: 15px 0;
+      height: 40px;
+      border-bottom: 1px solid var(--homey-line-color-light);
+    }
+
+    .stock:first-child {
+      padding-top: 0;
+    }
+
+    .stock:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .stock-info {
+      flex-grow: 1;
+      overflow: hidden;
+    }
+
+    .stock-info-symbol {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--homey-color-mono-1000);
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .stock-info-name {
+      font-size: 15px;
+      font-weight: 450;
+      color: var(--homey-color-mono-500);
+      margin: 5px 0 0;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .stock-chart {
+      flex-shrink: 0;
+    }
+
+    .stock-price {
+      flex-shrink: 0;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .price-value {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--homey-color-mono-1000);
+      margin-bottom: 5px;
+      margin-right: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-radius: 30px;
+      border-color: var(--homey-color-mono-500);
+      border-width: 1px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .price-category {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border-color: var(--homey-color-mono-500);
+      border-width: 1px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      width: 150px;
+      text-align: center;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+      transition: background-color 0.3s;
+    }
+
+    .price-category[data-category="red"] {
+      background-color: #FF3B30;
+    }
+
+    .price-category[data-category="yellow"] {
+      background-color: #FFCD56;
+    }
+
+    .price-category[data-category="green"] {
+      background-color: #34C759;
+    }
+
+    .bar-chart {
+      width: 95%;
+      height: 200px;
+      margin: 0 16px;
+    }
+  </style>
+</head>
+
+<body class="homey-widget">
+  <div id="error"></div>
+  <div id="stock-widget">
+
+    <div>      
+      
+      <div style="margin-bottom: 25px;">
+        <span class="price-value" style="background-color: #FF3B30;"> over 2,21 kr. </span>
+        <span class="price-value" style="background-color: #FFCD56;"> 1,70 - 2,20 kr.</span>
+        <span class="price-value" style="background-color: #34C759;"> under 1,69 kr.</span>
+      </div>
+
+      <div class="chart bar-chart">
+        <canvas></canvas>
+      </div>
+      
+      <div>
+        <div class="price-category" id="regionPriceNow" style="margin-top: 40px;">
+          Pris nu -
+        </div>
+
+        <div class="price-category" id="regionCategoryNow" style="margin-left: 15px;">
+          Middel
+        </div>
+
+      </div>
+
+
+      <!-- <div id="lblLastUpdate">
+        Sidst opdateret...
+      </div> -->
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    // Render Values
+    const green_color         = 'rgb(52, 199, 89 / 40%)';
+    const green_border_color  = '#34C759';
+    const yellow_color        = 'rgb(255, 205, 86 / 40%)';
+    const yellow_border_color = '#FFCD56';
+    const red_color           = 'rgb(255, 59, 48 / 40%)';
+    const red_border_color    = '#FF3B30';
+    
+    function onHomeyReady(Homey) {
+      Promise.resolve().then(async () => {
+        const {
+          hours
+        } = Homey.getSettings();
+
+        Homey.ready();
+
+
+        const $error = document.getElementById('error');
+        try {
+          await loadPrices(hours);
+        } catch (err){
+          $error.innerText = err.message;          
+        }
+
+      });
+    }
+
+    async function loadPrices(hours) {
+      const data = await getPricesData(hours);
+      //throw new Error("data: " + JSON.stringify(data));
+      // Get or Create Chart
+      const ctx = document.querySelector('.chart > canvas').getContext('2d');
+      let chart = Chart.getChart(ctx);
+      if (!chart) {
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: [],
+            datasets: [{
+              data: [],
+              borderWidth: 1,
+              borderRadius: 5,
+              borderSkipped: false,
+              tension: 0.2,
+              pointRadius: 0,
+              fill: true,
+              borderColor: this.colorize(false),
+              backgroundColor: this.colorize(true)
+            }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            scales: {
+              beginAtZero: true
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: { 
+                enabled: true,
+                afterTitle: ':00',
+                callbacks: {
+                    label: function(context) {
+                        let label = context.dataset.label || '';
+
+                        
+
+                        if (label) {
+                            label += ':---- ';
+                        }
+                        if (context.parsed.y !== null) {
+
+                            var hourPrice = context.parsed.y;
+                            
+                            var priceCategory = hourPrice >= 2.21 ? 'Høj'
+                                  : hourPrice >= 1.7 ? 'Mellem'
+                                  : 'Lav';
+
+                            label = `[${priceCategory}], Pris: ${context.parsed.y} kr.` ;
+                        }
+                        return label;
+                    }
+                }
+              
+              }
+            },
+            scales: {
+              x: { 
+                display: true, 
+                text: 'Timer',
+              },
+              y: { 
+                display: true, 
+                text: 'Kr.', 
+                ticks: {
+                    callback: function(value, index, ticks) {
+                        return value + " kr.";
+                    }
+                },
+                grid: { color: 'var(--homey-color-mono-600)' }
+              }
+            },
+            elements: {
+              line: { borderJoinStyle: 'round' }
+            }
+          }
+        });
+      }
+
+      // Set Chart Data
+      //throw new Error("data: " + JSON.stringify(data));
+
+      chart.data.labels = data.map(entry => String(entry.hour).padStart(2, '0') + ":00");
+      chart.data.datasets[0].data = data.map(entry => entry.price);
+      chart.update();
+
+      
+      // Price now update:
+      var currentHourValue = data[0].price;
+      
+      document.querySelector('#regionPriceNow').textContent      = `Pris nu: ${currentHourValue} kr.`;
+      document.querySelector('#regionPriceNow').dataset.category = this.calculateColorCase(currentHourValue);
+      
+      document.querySelector('#regionCategoryNow').textContent      = this.calculateColorCategory(currentHourValue);
+      document.querySelector('#regionCategoryNow').dataset.category = this.calculateColorCase(currentHourValue);
+           
+      
+      // Schedule next update
+      var hourInterval = 60 * 60 * 1000; // Every hour
+      const currentDate = new Date();
+      const firstCallNextFullHour =  hourInterval - (currentDate.getMinutes() * 60 + currentDate.getSeconds()) * 1000 - currentDate.getMilliseconds();
+      
+      await setTimeout(async () => {
+        setInterval(async () => {
+          await loadPrices(hours);
+        }, hourInterval);
+      }, firstCallNextFullHour);
+      
+      // DEBUG
+      //document.querySelector('#lblLastUpdate').textContent = firstCallNextFullHour + "--" + new Date().toString();
+    }
+
+    async function getPricesData(hours) {
+      return Homey.api('GET', `/HoursPrices?hours=${hours}`);
+    }
+
+    function colorize(opague) {
+      return (ctx) => {
+
+        if (ctx == null || ctx.parsed == null || ctx.parsed.y == null)
+          return 'rgb(201, 203, 207)';
+
+        const v = ctx.parsed.y;
+        const colorCase = this.calculateColorCase(v);
+
+        switch (colorCase) {
+          case 'red':
+            return opague ? red_border_color : red_color;
+          case 'yellow':
+            return opague ? yellow_border_color : yellow_color;
+          case 'green':
+            return opague ? green_border_color : green_color;
+          default:
+            return 'rgb(201, 203, 207)'
+        }
+      };
+    }
+
+    function calculateColorCase(value) {
+      return  value >= 2.21 ? 'red'
+            : value >= 1.7 ? 'yellow'
+            : 'green';
+    }
+
+    function calculateColorCategory(value) {
+      return  value >= 2.21 ? 'Høj'
+            : value >= 1.7 ? 'Mellem'
+            : 'Lav';
+    }
+
+
+  </script>
+</body>
+
+</html>
