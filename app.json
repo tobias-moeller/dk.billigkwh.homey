@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "dk.billigkwh.homey",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "compatibility": ">=12.1.2",
   "sdk": 3,
   "brandColor": "#7DC245",
@@ -1000,14 +1000,21 @@
           },
           "values": [
             {
-              "id": "aura_flexel",
+              "id": "aura_fastel",
               "label": {
-                "da": "AURA - FlexEl",
-                "en": "AURA - FlexEl"
+                "da": "AURA - FastEl",
+                "en": "AURA - FastEl"
               }
             },
             {
               "id": "aura_flexel_intro2",
+              "label": {
+                "da": "AURA - FlexEl Intro",
+                "en": "AURA - FlexEl Intro"
+              }
+            },
+            {
+              "id": "aura_flexel_intro3",
               "label": {
                 "da": "AURA - FlexEl Intro",
                 "en": "AURA - FlexEl Intro"
@@ -1021,10 +1028,45 @@
               }
             },
             {
+              "id": "aura_flexel_intro4",
+              "label": {
+                "da": "AURA - FlexEl Kampagne",
+                "en": "AURA - FlexEl Kampagne"
+              }
+            },
+            {
+              "id": "aura_power",
+              "label": {
+                "da": "AURA - Power",
+                "en": "AURA - Power"
+              }
+            },
+            {
+              "id": "aura_power_intro",
+              "label": {
+                "da": "AURA - Power Intro",
+                "en": "AURA - Power Intro"
+              }
+            },
+            {
               "id": "altid-energi",
               "label": {
-                "da": "Altid Energi",
-                "en": "Altid Energi"
+                "da": "Altid Energi - Strøm til indkøbspris",
+                "en": "Altid Energi - Strøm til indkøbspris"
+              }
+            },
+            {
+              "id": "andel_basisel_kab",
+              "label": {
+                "da": "Andel Energi - BasisEL KAB",
+                "en": "Andel Energi - BasisEL KAB"
+              }
+            },
+            {
+              "id": "andel_energi_flexenergi",
+              "label": {
+                "da": "Andel Energi - FlexEnergi",
+                "en": "Andel Energi - FlexEnergi"
               }
             },
             {
@@ -1070,6 +1112,27 @@
               }
             },
             {
+              "id": "gnp_flex_privat",
+              "label": {
+                "da": "Cheap Energy - Flex Privat",
+                "en": "Cheap Energy - Flex Privat"
+              }
+            },
+            {
+              "id": "gnp_variabel_garanti_39",
+              "label": {
+                "da": "Cheap Energy - Variabel Garanti",
+                "en": "Cheap Energy - Variabel Garanti"
+              }
+            },
+            {
+              "id": "gnp_variabel_garanti",
+              "label": {
+                "da": "Cheap Energy - Variabel Garanti - 5,9 øres tillæg",
+                "en": "Cheap Energy - Variabel Garanti - 5,9 øres tillæg"
+              }
+            },
+            {
               "id": "clever",
               "label": {
                 "da": "Clever - Clever Power",
@@ -1077,10 +1140,24 @@
               }
             },
             {
+              "id": "clever-49",
+              "label": {
+                "da": "Clever - Clever Power - 49 kr/md",
+                "en": "Clever - Clever Power - 49 kr/md"
+              }
+            },
+            {
               "id": "dcc-energi-flex",
               "label": {
                 "da": "DCC Energi - Flex",
                 "en": "DCC Energi - Flex"
+              }
+            },
+            {
+              "id": "dcc-energi-flex_vedvarende",
+              "label": {
+                "da": "DCC Energi - Flex - Vedvarende Energi",
+                "en": "DCC Energi - Flex - Vedvarende Energi"
               }
             },
             {
@@ -1098,10 +1175,24 @@
               }
             },
             {
-              "id": "edison_variabel",
+              "id": "evdk_elaftale",
               "label": {
-                "da": "EDISON - Variabel",
-                "en": "EDISON - Variabel"
+                "da": "EVDK - EVDK Elaftale",
+                "en": "EVDK - EVDK Elaftale"
+              }
+            },
+            {
+              "id": "evdk_energi",
+              "label": {
+                "da": "EVDK - EVDK Energi - 5 øres tillæg",
+                "en": "EVDK - EVDK Energi - 5 øres tillæg"
+              }
+            },
+            {
+              "id": "ewii_basis-el",
+              "label": {
+                "da": "EWII - Basis El",
+                "en": "EWII - Basis El"
               }
             },
             {
@@ -1112,17 +1203,17 @@
               }
             },
             {
-              "id": "ewii_groen_indkoebspris",
-              "label": {
-                "da": "EWII - Grøn Indkøbspris",
-                "en": "EWII - Grøn Indkøbspris"
-              }
-            },
-            {
               "id": "ewii_groen_timepris",
               "label": {
                 "da": "EWII - Grøn Timepris",
                 "en": "EWII - Grøn Timepris"
+              }
+            },
+            {
+              "id": "ewii_plus-el",
+              "label": {
+                "da": "EWII - Plus El",
+                "en": "EWII - Plus El"
               }
             },
             {
@@ -1175,24 +1266,17 @@
               }
             },
             {
+              "id": "stromplus_prisgaranti",
+              "label": {
+                "da": "Energi+ - Strøm+",
+                "en": "Energi+ - Strøm+"
+              }
+            },
+            {
               "id": "stromplus_49",
               "label": {
                 "da": "Energi+ - Strøm+ 39",
                 "en": "Energi+ - Strøm+ 39"
-              }
-            },
-            {
-              "id": "stromplus_prisgaranti",
-              "label": {
-                "da": "Energi+ - Strøm+ Prisgaranti",
-                "en": "Energi+ - Strøm+ Prisgaranti"
-              }
-            },
-            {
-              "id": "stromplus_prisgaranti_intro",
-              "label": {
-                "da": "Energi+ - Strøm+ Prisgaranti Intro",
-                "en": "Energi+ - Strøm+ Prisgaranti Intro"
               }
             },
             {
@@ -1219,8 +1303,29 @@
             {
               "id": "enkel_energi-pioneers",
               "label": {
-                "da": "Enkel Energi - Enkel Strøm - Pioneers",
-                "en": "Enkel Energi - Enkel Strøm - Pioneers"
+                "da": "Enkel Energi - Enkel Strøm - 24kr/md",
+                "en": "Enkel Energi - Enkel Strøm - 24kr/md"
+              }
+            },
+            {
+              "id": "enkel_energi-enkel_kvartal",
+              "label": {
+                "da": "Enkel Energi - enkel kvartal",
+                "en": "Enkel Energi - enkel kvartal"
+              }
+            },
+            {
+              "id": "enkel_energi-enkel_natur",
+              "label": {
+                "da": "Enkel Energi - enkel natur",
+                "en": "Enkel Energi - enkel natur"
+              }
+            },
+            {
+              "id": "enkel_energi-enkel_stroem",
+              "label": {
+                "da": "Enkel Energi - enkel strøm",
+                "en": "Enkel Energi - enkel strøm"
               }
             },
             {
@@ -1252,6 +1357,13 @@
               }
             },
             {
+              "id": "forskel_flexel",
+              "label": {
+                "da": "Forskel - FlexEl",
+                "en": "Forskel - FlexEl"
+              }
+            },
+            {
               "id": "forskel_spotel",
               "label": {
                 "da": "Forskel - SpotEl",
@@ -1273,24 +1385,17 @@
               }
             },
             {
-              "id": "gnp_flex_privat",
+              "id": "gev_elhandel-gev_spot",
               "label": {
-                "da": "GNP Energy - Flex Privat",
-                "en": "GNP Energy - Flex Privat"
+                "da": "GEV Elhandel - GEV SPOT",
+                "en": "GEV Elhandel - GEV SPOT"
               }
             },
             {
-              "id": "gnp_variabel_garanti_39",
+              "id": "gev_elhandel-gev_spot_kvarter",
               "label": {
-                "da": "GNP Energy - Variabel Garanti",
-                "en": "GNP Energy - Variabel Garanti"
-              }
-            },
-            {
-              "id": "gnp_variabel_garanti",
-              "label": {
-                "da": "GNP Energy - Variabel Garanti - 5,9 øres tillæg",
-                "en": "GNP Energy - Variabel Garanti - 5,9 øres tillæg"
+                "da": "GEV Elhandel - GEV SPOT KVARTER",
+                "en": "GEV Elhandel - GEV SPOT KVARTER"
               }
             },
             {
@@ -1308,10 +1413,10 @@
               }
             },
             {
-              "id": "gasel",
+              "id": "gasel_borspris_6ore",
               "label": {
-                "da": "Gasel - El til indkøbspris",
-                "en": "Gasel - El til indkøbspris"
+                "da": "Gasel - El til børspris + 6 øre/kWh",
+                "en": "Gasel - El til børspris + 6 øre/kWh"
               }
             },
             {
@@ -1326,6 +1431,13 @@
               "label": {
                 "da": "Greenbow",
                 "en": "Greenbow"
+              }
+            },
+            {
+              "id": "greenbow_spot_on",
+              "label": {
+                "da": "Greenbow - Spot On",
+                "en": "Greenbow - Spot On"
               }
             },
             {
@@ -1378,6 +1490,13 @@
               }
             },
             {
+              "id": "looad_moove",
+              "label": {
+                "da": "LOOAD - Looad Moove",
+                "en": "LOOAD - Looad Moove"
+              }
+            },
+            {
               "id": "lokal_energi",
               "label": {
                 "da": "Lokal Energi - Lokal Variabel",
@@ -1392,17 +1511,17 @@
               }
             },
             {
-              "id": "modstroem_g",
-              "label": {
-                "da": "Modstrøm - Grundprodukt",
-                "en": "Modstrøm - Grundprodukt"
-              }
-            },
-            {
               "id": "modstroem_nemel",
               "label": {
                 "da": "Modstrøm - NemEl",
                 "en": "Modstrøm - NemEl"
+              }
+            },
+            {
+              "id": "modstroem_g",
+              "label": {
+                "da": "Modstrøm - Overgangsprodukt",
+                "en": "Modstrøm - Overgangsprodukt"
               }
             },
             {
@@ -1448,6 +1567,20 @@
               }
             },
             {
+              "id": "nef-basis_med_aconto",
+              "label": {
+                "da": "Nef - Basis med aconto",
+                "en": "Nef - Basis med aconto"
+              }
+            },
+            {
+              "id": "nef-basis_uden_aconto",
+              "label": {
+                "da": "Nef - Basis uden aconto",
+                "en": "Nef - Basis uden aconto"
+              }
+            },
+            {
               "id": "nef-bil_og_bolig",
               "label": {
                 "da": "Nef - Bil og Bolig",
@@ -1459,6 +1592,13 @@
               "label": {
                 "da": "Nef - El til kostpris",
                 "en": "Nef - El til kostpris"
+              }
+            },
+            {
+              "id": "nef-sol_og_vind_uden_aconto",
+              "label": {
+                "da": "Nef - Sol & Vind uden aconto",
+                "en": "Nef - Sol & Vind uden aconto"
               }
             },
             {
@@ -1476,6 +1616,20 @@
               }
             },
             {
+              "id": "nordisk_energy_flex",
+              "label": {
+                "da": "Nordisk Energi - Flex",
+                "en": "Nordisk Energi - Flex"
+              }
+            },
+            {
+              "id": "nordisk_energy_variabel-stroem",
+              "label": {
+                "da": "Nordisk Energi - Variabel strøm",
+                "en": "Nordisk Energi - Variabel strøm"
+              }
+            },
+            {
               "id": "groen_nordisk",
               "label": {
                 "da": "Nordiskel - Grøn Nordisk",
@@ -1490,27 +1644,6 @@
               }
             },
             {
-              "id": "norlys_flexel_intro",
-              "label": {
-                "da": "Norlys - FlexEl Intro",
-                "en": "Norlys - FlexEl Intro"
-              }
-            },
-            {
-              "id": "groen_ok_el_flex",
-              "label": {
-                "da": "OK - Grøn OK El Flex",
-                "en": "OK - Grøn OK El Flex"
-              }
-            },
-            {
-              "id": "groen_ok_el_flex_intro",
-              "label": {
-                "da": "OK - Grøn OK El Flex Intro",
-                "en": "OK - Grøn OK El Flex Intro"
-              }
-            },
-            {
               "id": "groen_ok_el_spot",
               "label": {
                 "da": "OK - Grøn OK El Spotpris",
@@ -1522,13 +1655,6 @@
               "label": {
                 "da": "OK - Grøn OK El Spotpris Intro",
                 "en": "OK - Grøn OK El Spotpris Intro"
-              }
-            },
-            {
-              "id": "ok_el_flex",
-              "label": {
-                "da": "OK - OK El Flex",
-                "en": "OK - OK El Flex"
               }
             },
             {
@@ -1553,10 +1679,17 @@
               }
             },
             {
-              "id": "spotpris",
+              "id": "sef_energi_as_bareel_stor",
               "label": {
-                "da": "Ren spotpris",
-                "en": "Ren spotpris"
+                "da": "SEF Energi - BareEl - over 6000 kWh",
+                "en": "SEF Energi - BareEl - over 6000 kWh"
+              }
+            },
+            {
+              "id": "sef_energi_as_bareel_lille",
+              "label": {
+                "da": "SEF Energi - BareEl - under 6000 kWh",
+                "en": "SEF Energi - BareEl - under 6000 kWh"
               }
             },
             {
@@ -1574,10 +1707,24 @@
               }
             },
             {
+              "id": "sef_energi_as_mereendel",
+              "label": {
+                "da": "SEF Energi - MereEndEl",
+                "en": "SEF Energi - MereEndEl"
+              }
+            },
+            {
               "id": "sef_energi_as_timeel",
               "label": {
                 "da": "SEF Energi - TimeEl",
                 "en": "SEF Energi - TimeEl"
+              }
+            },
+            {
+              "id": "sk-energi_el-til-indkoebspris",
+              "label": {
+                "da": "SK Energi - El til indkøbspris",
+                "en": "SK Energi - El til indkøbspris"
               }
             },
             {
@@ -1609,13 +1756,6 @@
               }
             },
             {
-              "id": "stroemfordel_flexstroem_privat",
-              "label": {
-                "da": "StrømFordel - Flexstrøm – Privat",
-                "en": "StrømFordel - Flexstrøm – Privat"
-              }
-            },
-            {
               "id": "stromlinet_vindenergi",
               "label": {
                 "da": "Strømlinet - FlexEl",
@@ -1637,6 +1777,20 @@
               }
             },
             {
+              "id": "trygenergi-spot",
+              "label": {
+                "da": "TrygEnergi - SPOT",
+                "en": "TrygEnergi - SPOT"
+              }
+            },
+            {
+              "id": "ungstrom-variabel",
+              "label": {
+                "da": "UngStrøm - Variabel",
+                "en": "UngStrøm - Variabel"
+              }
+            },
+            {
               "id": "vedvarende_el",
               "label": {
                 "da": "Vedvarende - Vedvarende Flex",
@@ -1651,10 +1805,10 @@
               }
             },
             {
-              "id": "velkommen",
+              "id": "velkommen_gron_el",
               "label": {
-                "da": "Velkommen",
-                "en": "Velkommen"
+                "da": "Velkommen - GrønEl",
+                "en": "Velkommen - GrønEl"
               }
             },
             {
@@ -1672,10 +1826,24 @@
               }
             },
             {
+              "id": "velkommen_b.energy_b.family",
+              "label": {
+                "da": "Velkommen - b.energy b.family",
+                "en": "Velkommen - b.energy b.family"
+              }
+            },
+            {
               "id": "verdo_variabel_timepris",
               "label": {
-                "da": "Verdo - Variabel Timepris",
-                "en": "Verdo - Variabel Timepris"
+                "da": "Verdo - Variabel pris (aconto)",
+                "en": "Verdo - Variabel pris (aconto)"
+              }
+            },
+            {
+              "id": "verdo_variabel_timepris_forbrugsafregnet",
+              "label": {
+                "da": "Verdo - Variabel pris (forbrugsafregnet)",
+                "en": "Verdo - Variabel pris (forbrugsafregnet)"
               }
             },
             {
@@ -1697,6 +1865,34 @@
               "label": {
                 "da": "VestEnergi - Spot",
                 "en": "VestEnergi - Spot"
+              }
+            },
+            {
+              "id": "vest_energi_timeenergi",
+              "label": {
+                "da": "VestEnergi - TimeEnergi",
+                "en": "VestEnergi - TimeEnergi"
+              }
+            },
+            {
+              "id": "vest_energi_variabel_pris",
+              "label": {
+                "da": "VestEnergi - Variabel pris",
+                "en": "VestEnergi - Variabel pris"
+              }
+            },
+            {
+              "id": "vestforsyning_gron-plus",
+              "label": {
+                "da": "Vestforsyning - GRØNPLUS",
+                "en": "Vestforsyning - GRØNPLUS"
+              }
+            },
+            {
+              "id": "vestforsyning_gron-spot",
+              "label": {
+                "da": "Vestforsyning - GRØNSPOT",
+                "en": "Vestforsyning - GRØNSPOT"
               }
             },
             {
@@ -1728,13 +1924,6 @@
               }
             },
             {
-              "id": "vindstoed_danskvind",
-              "label": {
-                "da": "Vindstød - DanskVind",
-                "en": "Vindstød - DanskVind"
-              }
-            },
-            {
               "id": "vindstoed_elforbundet_2025",
               "label": {
                 "da": "Vindstød - Elforbundet.dk 2025",
@@ -1742,10 +1931,10 @@
               }
             },
             {
-              "id": "vindstoed_spotvind",
+              "id": "vindstoed_elforbundet_2026",
               "label": {
-                "da": "Vindstød - SpotVind",
-                "en": "Vindstød - SpotVind"
+                "da": "Vindstød - Elforbundet.dk 2026",
+                "en": "Vindstød - Elforbundet.dk 2026"
               }
             },
             {
@@ -1756,10 +1945,10 @@
               }
             },
             {
-              "id": "vindstoed_vestroem",
+              "id": "vindstoed_variabelel",
               "label": {
-                "da": "Vindstød - VE Strøm",
-                "en": "Vindstød - VE Strøm"
+                "da": "Vindstød - VariabelEl",
+                "en": "Vindstød - VariabelEl"
               }
             },
             {
@@ -1791,6 +1980,13 @@
               }
             },
             {
+              "id": "go-energi_vindenergi_kvartal",
+              "label": {
+                "da": "go'energi - go'kvartal vind",
+                "en": "go'energi - go'kvartal vind"
+              }
+            },
+            {
               "id": "go-energi_go_spot_maaned",
               "label": {
                 "da": "go'energi - go'måned energi",
@@ -1798,17 +1994,10 @@
               }
             },
             {
-              "id": "iwatt_Variabel",
+              "id": "go-energi_vindenergi_maaned",
               "label": {
-                "da": "iWatt - Variabel",
-                "en": "iWatt - Variabel"
-              }
-            },
-            {
-              "id": "nettopower",
-              "label": {
-                "da": "nettopower",
-                "en": "nettopower"
+                "da": "go'energi - go'måned vind",
+                "en": "go'energi - go'måned vind"
               }
             },
             {
