@@ -82,5 +82,11 @@
   },
   "2.2.0": {
     "en": "Adding Dashboards and updating products and companies"
+  },
+  "2.3.0": {
+    "en": "New products"
+  },
+  "2.3.1": {
+    "en": "Changed default values"
   }
 }

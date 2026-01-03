@@ -32,21 +32,21 @@
     {
       "id": "location",
       "type": "dropdown",
-      "value": "Dk1",
+      "value": "DK1",
       "label": {
         "en": "Location",
         "da": "Område"
       },
       "values": [
         {
-          "id": "Dk1",
+          "id": "DK1",
           "label": {
             "en": "DK1 - west from storebælt",
             "da": "DK1 - vest for storebælt"
           }
         },
         {
-          "id": "Dk2",
+          "id": "DK2",
           "label": {
             "en": "DK2 - east from storebælt",
             "da": "DK2 - øst for storebælt"
@@ -355,7 +355,7 @@
     {
       "id": "el_product",
       "type": "dropdown",
-      "value": "spotpris",
+      "value": "ok_el_spot",
       "label": {
         "en": "El Product",
         "da": "Elprodukt"

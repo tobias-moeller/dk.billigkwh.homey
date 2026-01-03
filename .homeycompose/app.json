@@ -1,6 +1,6 @@
 {
   "id": "dk.billigkwh.homey",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "compatibility": ">=12.1.2",
   "sdk": 3,
   "brandColor": "#7DC245",
