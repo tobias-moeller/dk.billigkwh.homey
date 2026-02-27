@@ -7,6 +7,31 @@ const moment = require("moment-timezone");
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
+function matchBilligKWHFormat(apiResponse) {
+  return Object.values(apiResponse.reduce((acc, item) => {
+    const d = new Date(item.date);
+    d.setHours(d.getHours()+1);
+    item.date = d.toISOString()
+    
+    // Get the date without the time (e.g., "2026-02-27")
+    const dayKey = item.date.split('T')[0];
+    const isoDate = `${dayKey}T00:00:00Z`;
+
+    // Initialize the day group if it doesn't exist
+    if (!acc[dayKey]) {
+      acc[dayKey] = {
+        dato: isoDate,
+        priser: []
+      };
+    }
+
+    // Round the price to 2 decimals for the 'priser' array
+    acc[dayKey].priser.push(Math.round(item.price * 100) / 100);
+    
+    return acc;
+  }, {}))
+}
+
 class MyDevice extends Device {
   /**
    * onInit is called when the device is initialized.
@@ -95,7 +120,6 @@ class MyDevice extends Device {
     this.log("Netcompany: " + newSettings.net_company);
     this.log("Location: " + newSettings.location);
     this.log("Product: " + newSettings.el_product);
-    this.log("Redafg: " + Number(newSettings.redafg));
     this.restartDevice(1000);
   }
 
@@ -377,12 +401,10 @@ class MyDevice extends Device {
     const location = this.getSetting("location");
     const netCompany = this.getSetting("net_company");
     const product = this.getSetting("el_product");
-    const redafg = Number(this.getSetting("redafg"));
     const data = await this.getPricesFromApi(
       location,
       netCompany,
-      product,
-      redafg
+      product
     );
     if (data.errorMessage) {
       throw new Error(data.errorMessage);
@@ -393,19 +415,20 @@ class MyDevice extends Device {
     this.triggerNewPricesRecievedFlowCard();
   }
 
-  async getPricesFromApi(location, netCompany, product, redafg) {
+  async getPricesFromApi(location, netCompany, product) {
+    const now = new Date();
+    const startTime = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}T00%3A00%3A00`
+
     const options = {
-      hostname: "billigkwh.dk",
+      hostname: "stromligning.dk",
       port: 443,
       path:
-        "/api/Priser/HentPriser?sted=" +
+        "/api/prices?from="+startTime+"&aggregation=1h&lean=true&priceArea=" +
         location +
-        "&netselskab=" +
+        "&supplierId=" +
         netCompany +
-        "&produkt=" +
-        product +
-        "&redafg=" +
-        redafg,
+        "&productId=" +
+        product,
       method: "GET",
     };
     this.log(
@@ -414,15 +437,13 @@ class MyDevice extends Device {
         " " +
         netCompany +
         " " +
-        product +
-        " " +
-        redafg
+        product
     );
     let retry = 0;
     let data = null;
     while (retry < 3) {
       try {
-        data = await this.httpRequest(options);
+        data = matchBilligKWHFormat(await this.httpRequest(options));
         break;
       } catch (error) {
         retry++;

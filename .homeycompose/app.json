@@ -1,6 +1,6 @@
 {
   "id": "dk.billigkwh.homey",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "compatibility": ">=12.1.2",
   "sdk": 3,
   "brandColor": "#7DC245",
@@ -11,7 +11,7 @@
     "en": "BilligKWH"
   },
   "description": {
-    "en": "Adds energy prices from billigkwh"
+    "en": "Adds energy prices from Strømligning. https://stromligning.dk"
   },
   "category": [
     "energy"
