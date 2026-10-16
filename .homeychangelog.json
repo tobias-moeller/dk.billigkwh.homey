@@ -88,5 +88,8 @@
   },
   "2.3.1": {
     "en": "Changed default values"
+  },
+  "2.4.0": {
+    "en": "New Dataprovider Stromligning.dk"
   }
 }
