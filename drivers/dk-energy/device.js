@@ -462,42 +462,53 @@ class MyDevice extends Device {
         ? NET_COMPANY_ALIASES[netCompany]
         : netCompany;
 
+    const path =
+      "/api/prices?from=" +
+      startTime +
+      "&aggregation=1h&lean=true&priceArea=" +
+      encodeURIComponent(location) +
+      (supplierId ? "&supplierId=" + encodeURIComponent(supplierId) : "") +
+      "&productId=" +
+      encodeURIComponent(product);
+
     const options = {
       hostname: "stromligning.dk",
       port: 443,
-      path:
-        "/api/prices?from=" +
-        startTime +
-        "&aggregation=1h&lean=true&priceArea=" +
-        encodeURIComponent(location) +
-        (supplierId ? "&supplierId=" + encodeURIComponent(supplierId) : "") +
-        "&productId=" +
-        encodeURIComponent(product),
+      path,
       method: "GET",
       timeout: 30000,
     };
+    const fullUrl = `https://${options.hostname}${path}`;
     this.log(
       "Trying to get prices for " +
         location +
         " " +
         netCompany +
         " " +
-        product
+        product +
+        " -> " +
+        fullUrl
     );
     let retry = 0;
     let data = null;
+    let lastError = null;
     while (retry < 3) {
       try {
         data = matchBilligKWHFormat(await this.httpRequest(options));
         break;
       } catch (error) {
         retry++;
-        this.log(error);
+        lastError = error;
+        this.error(
+          `stromligning.dk request failed (attempt ${retry}/3): ${error.message}`,
+          `\nURL: ${fullUrl}`,
+          error.statusCode != null ? `\nStatus: ${error.statusCode}` : ""
+        );
         // A 4xx means the settings are invalid, retrying will not help and
         // only uses up the rate limit (15 requests per 15 minutes)
         if (error.statusCode >= 400 && error.statusCode < 500) {
           throw new Error(
-            "stromligning.dk rejected the settings: " + error.message
+            `stromligning.dk rejected the settings: ${error.message} (URL: ${fullUrl})`
           );
         }
         this.log(`Retry ${retry} of 3`);
@@ -507,7 +518,10 @@ class MyDevice extends Device {
       }
     }
     if (retry >= 3) {
-      throw new Error("Failed to retrieve prices from stromligning.dk");
+      throw new Error(
+        `Failed to retrieve prices from stromligning.dk after 3 attempts. ` +
+          `URL: ${fullUrl}. Last error: ${lastError && lastError.message}`
+      );
     }
     this.log("Prices retrieved from stromligning.dk");
     return data;
