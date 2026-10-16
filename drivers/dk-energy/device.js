@@ -92,7 +92,7 @@ class MyDevice extends Device {
           // Cant get tommorows prices before 14
           this.tommorowsPricesRecieved = true;
         } else {
-          this.log("Retry daily pull from billigkwh.dk");
+          this.log("Retry daily pull from stromligning.dk");
           await this.getPrices();
           this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
 
