@@ -91,5 +91,8 @@
   },
   "2.4.0": {
     "en": "New Dataprovider Stromligning.dk"
+  },
+  "2.5.0": {
+    "en": "Getting rid of the last billigkwh.dk parts"
   }
 }
