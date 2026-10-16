@@ -7,29 +7,54 @@ const moment = require("moment-timezone");
 
 const setTimeoutPromise = util.promisify(setTimeout);
 
-function matchBilligKWHFormat(apiResponse) {
-  return Object.values(apiResponse.reduce((acc, item) => {
-    const d = new Date(item.date);
-    d.setHours(d.getHours()+1);
-    item.date = d.toISOString()
-    
-    // Get the date without the time (e.g., "2026-02-27")
-    const dayKey = item.date.split('T')[0];
-    const isoDate = `${dayKey}T00:00:00Z`;
+const TIMEZONE = "Europe/Copenhagen";
 
-    // Initialize the day group if it doesn't exist
-    if (!acc[dayKey]) {
-      acc[dayKey] = {
-        dato: isoDate,
-        priser: []
+// Net company ids that stromligning.dk no longer knows, mapped to their current id.
+// "none" means no net company, so the supplierId parameter is omitted entirely.
+const NET_COMPANY_ALIASES = {
+  none: null,
+  aal_el_net_c: "aal_el-net_c",
+  midtfyns_elforsyning_c: "midtfyns_c",
+};
+
+// Groups the hourly prices into Danish calendar days, indexed by Danish hour.
+// Uses the Copenhagen timezone so the offset is +1 in winter and +2 in summer.
+function matchBilligKWHFormat(apiResponse) {
+  if (!Array.isArray(apiResponse)) {
+    throw new Error(
+      "Unexpected response from stromligning.dk: " + JSON.stringify(apiResponse)
+    );
+  }
+
+  const days = {};
+  for (const item of apiResponse) {
+    const local = moment.tz(item.date, TIMEZONE);
+    const dayKey = local.format("YYYY-MM-DD");
+    const hour = local.hour();
+
+    if (!days[dayKey]) {
+      days[dayKey] = {
+        dato: `${dayKey}T00:00:00Z`,
+        priser: [],
       };
     }
 
-    // Round the price to 2 decimals for the 'priser' array
-    acc[dayKey].priser.push(Math.round(item.price * 100) / 100);
-    
-    return acc;
-  }, {}))
+    // When DST ends 02:00 occurs twice, keep the first one
+    if (days[dayKey].priser[hour] === undefined) {
+      days[dayKey].priser[hour] = Math.round(item.price * 100) / 100;
+    }
+  }
+
+  // When DST starts 02:00 does not exist, reuse the previous hour's price
+  for (const day of Object.values(days)) {
+    for (let i = 0; i < day.priser.length; i++) {
+      if (day.priser[i] === undefined) {
+        day.priser[i] = i > 0 ? day.priser[i - 1] : day.priser[i + 1];
+      }
+    }
+  }
+
+  return Object.values(days);
 }
 
 class MyDevice extends Device {
@@ -49,7 +74,16 @@ class MyDevice extends Device {
     // Every hour
     this.eventListenerHour = async () => {
       this.log("New hour event received");
+
+      // Retry if the last pull failed, e.g. when there was no connection at startup
+      if (this.prices.length == 0) {
+        this.log("No prices available, retrying pull");
+        await this.getPrices();
+      }
       this.setMeterPrices();
+      if (this.prices.length == 0) {
+        return;
+      }
 
       // Check if tommorows prices is recieved
       if (this.tommorowsPricesRecieved == false) {
@@ -58,7 +92,7 @@ class MyDevice extends Device {
           // Cant get tommorows prices before 14
           this.tommorowsPricesRecieved = true;
         } else {
-          this.log("Retry daily pull from billigkwh.dk");
+          this.log("Retry daily pull from stromligning.dk");
           await this.getPrices();
           this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
 
@@ -397,39 +431,50 @@ class MyDevice extends Device {
     return danishDate;
   }
 
+  // Returns true when prices were retrieved. On failure the device is marked
+  // unavailable with the reason, and the hourly event retries the pull.
   async getPrices() {
     const location = this.getSetting("location");
     const netCompany = this.getSetting("net_company");
     const product = this.getSetting("el_product");
-    const data = await this.getPricesFromApi(
-      location,
-      netCompany,
-      product
-    );
-    if (data.errorMessage) {
-      throw new Error(data.errorMessage);
+    let data;
+    try {
+      data = await this.getPricesFromApi(location, netCompany, product);
+    } catch (error) {
+      this.log(error);
+      await this.setUnavailable(error.message).catch(this.error);
+      return false;
     }
     this.prices = data;
+    await this.setAvailable().catch(this.error);
 
     // Trigger flow card
     this.triggerNewPricesRecievedFlowCard();
+    return true;
   }
 
   async getPricesFromApi(location, netCompany, product) {
-    const now = new Date();
-    const startTime = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}T00%3A00%3A00`
+    // stromligning.dk interprets "from" as Danish local time
+    const startTime = moment.tz(TIMEZONE).format("YYYY-MM-DD") + "T00%3A00%3A00";
+
+    const supplierId =
+      netCompany in NET_COMPANY_ALIASES
+        ? NET_COMPANY_ALIASES[netCompany]
+        : netCompany;
 
     const options = {
       hostname: "stromligning.dk",
       port: 443,
       path:
-        "/api/prices?from="+startTime+"&aggregation=1h&lean=true&priceArea=" +
-        location +
-        "&supplierId=" +
-        netCompany +
+        "/api/prices?from=" +
+        startTime +
+        "&aggregation=1h&lean=true&priceArea=" +
+        encodeURIComponent(location) +
+        (supplierId ? "&supplierId=" + encodeURIComponent(supplierId) : "") +
         "&productId=" +
-        product,
+        encodeURIComponent(product),
       method: "GET",
+      timeout: 30000,
     };
     this.log(
       "Trying to get prices for " +
@@ -448,13 +493,23 @@ class MyDevice extends Device {
       } catch (error) {
         retry++;
         this.log(error);
+        // A 4xx means the settings are invalid, retrying will not help and
+        // only uses up the rate limit (15 requests per 15 minutes)
+        if (error.statusCode >= 400 && error.statusCode < 500) {
+          throw new Error(
+            "stromligning.dk rejected the settings: " + error.message
+          );
+        }
         this.log(`Retry ${retry} of 3`);
+        if (retry < 3) {
+          await setTimeoutPromise(5000 * retry);
+        }
       }
     }
     if (retry >= 3) {
-      throw new Error("Failed to retrieve prices from billigkwh.dk");
+      throw new Error("Failed to retrieve prices from stromligning.dk");
     }
-    this.log("Prices retrieved from billigkwh.dk");
+    this.log("Prices retrieved from stromligning.dk");
     return data;
   }
 
@@ -466,8 +521,25 @@ class MyDevice extends Device {
           data += chunk;
         });
         res.on("end", () => {
-          resolve(JSON.parse(data));
+          let body;
+          try {
+            body = JSON.parse(data);
+          } catch (e) {
+            body = data;
+          }
+          if (res.statusCode < 200 || res.statusCode >= 300 || (body && body.error)) {
+            const error = new Error(
+              `HTTP ${res.statusCode}: ${(body && body.error) || data}`.slice(0, 200)
+            );
+            error.statusCode = (body && body.error) ? 400 : res.statusCode;
+            reject(error);
+            return;
+          }
+          resolve(body);
         });
+      });
+      req.on("timeout", () => {
+        req.destroy(new Error("Request to stromligning.dk timed out"));
       });
       req.on("error", (e) => {
         reject(e);
@@ -597,7 +669,7 @@ class MyDevice extends Device {
   // Example: '23:01 = 0
   convertStringTimeToNumber(time) {
     const timeArray = time.split(":");
-    const hour = parseInt(timeArray[0]);
+    let hour = parseInt(timeArray[0]);
     const minute = parseInt(timeArray[1]);
     if (minute > 0) {
       hour = hour + 1;
@@ -671,7 +743,7 @@ class MyDevice extends Device {
     const priceNow = this.getPriceNow();
     if (priceNow < 0) {
       this.log("Triggering flow card: Price is negative");
-      tokens = { price_now: priceNow };
+      const tokens = { price_now: priceNow };
       let state = {};
       this.driver.ready().then(() => {
         this.driver.triggerPriceIsNegativeFlow(this.device, tokens, state);

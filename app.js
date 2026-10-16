@@ -1,6 +1,7 @@
 "use strict";
 
 const Homey = require("homey");
+const moment = require("moment-timezone");
 
 class MyApp extends Homey.App {
   /**
@@ -41,20 +42,9 @@ class MyApp extends Homey.App {
     this.log("everyHour job started");
   }
 
-  isSummerTime(dateToTest) {
-    let jan = new Date(dateToTest.getFullYear(), 0, 1).getTimezoneOffset();
-    let jul = new Date(dateToTest.getFullYear(), 6, 1).getTimezoneOffset();
-    return Math.max(jan, jul) !== dateToTest.getTimezoneOffset();
-  }
-
+  // Homey apps run in UTC, so shift by the Copenhagen offset (+1 winter, +2 summer)
   getDanishTime() {
-    const date = new Date();
-    let timeDifference = 1;
-    if (this.isSummerTime(date)) {
-      timeDifference = 2;
-    }
-    date.setHours(date.getHours() + timeDifference);
-    return date;
+    return new Date(Date.now() + moment.tz("Europe/Copenhagen").utcOffset() * 60000);
   }
 
   everyDay() {
