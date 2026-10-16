@@ -709,13 +709,6 @@
               }
             },
             {
-              "id": "aal_el_net_c",
-              "label": {
-                "da": "Aal El-Net A M B A - Udgået",
-                "en": "Aal El-Net A M B A - Udgået"
-              }
-            },
-            {
               "id": "cerius_c",
               "label": {
                 "da": "Cerius C",
@@ -842,13 +835,6 @@
               }
             },
             {
-              "id": "midtfyns_elforsyning_c",
-              "label": {
-                "da": "Midtfyns Elforsyning A.m.b.A - Udgået",
-                "en": "Midtfyns Elforsyning A.m.b.A - Udgået"
-              }
-            },
-            {
               "id": "n1_c",
               "label": {
                 "da": "N1 C",
@@ -860,13 +846,6 @@
               "label": {
                 "da": "NKE-Elnet",
                 "en": "NKE-Elnet"
-              }
-            },
-            {
-              "id": "nakskov_elnet_e",
-              "label": {
-                "da": "Nakskov Elnet A/S",
-                "en": "Nakskov Elnet A/S"
               }
             },
             {
@@ -965,13 +944,6 @@
               "label": {
                 "da": "Videbæk Elnet A/S",
                 "en": "Videbæk Elnet A/S"
-              }
-            },
-            {
-              "id": "vildbjerg_elnet_c",
-              "label": {
-                "da": "Vildbjerg Elnet A/S",
-                "en": "Vildbjerg Elnet A/S"
               }
             },
             {
