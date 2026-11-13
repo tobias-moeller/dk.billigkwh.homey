@@ -1418,6 +1418,19 @@
         "en": "The cards for the lowest and highest price period use the forecast for tomorrow until tomorrow's prices are out. Needs 'Fetch price forecasts'.",
         "da": "Kortene for billigste og dyreste periode bruger prognosen for i morgen, indtil morgendagens priser er kommet. Kræver 'Hent prisprognoser'."
       }
+    },
+    {
+      "id": "sell_price",
+      "type": "checkbox",
+      "value": false,
+      "label": {
+        "en": "Sell price for solar power",
+        "da": "Salgspris for solceller"
+      },
+      "hint": {
+        "en": "The spot price excl. VAT minus the production tariffs of Energinet and the net company. Your electricity supplier's buy-back terms, such as fees and markups, are not included. Needs a net company.",
+        "da": "Spotprisen ekskl. moms minus Energinets og netselskabets produktionstariffer. Din elhandlers tilbagekøbsvilkår, fx gebyrer og tillæg, er ikke med. Kræver et netselskab."
+      }
     }
   ]
 }

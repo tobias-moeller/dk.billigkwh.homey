@@ -753,6 +753,72 @@
             "step": 0.01
           }
         ]
+      },
+      {
+        "id": "sell-price-is-over",
+        "title": {
+          "en": "Sell price is over",
+          "da": "Salgsprisen er over"
+        },
+        "titleFormatted": {
+          "en": "Sell price is !{{over|under}} [[price]] kroner",
+          "da": "Salgsprisen er !{{over|under}} [[price]] kroner"
+        },
+        "hint": {
+          "en": "The sell price excl. VAT does not include your electricity supplier's buy-back terms. Needs 'Sell price for solar power' in the device settings.",
+          "da": "Salgsprisen ekskl. moms er uden din elhandlers tilbagekøbsvilkår. Kræver 'Salgspris for solceller' i enhedens indstillinger."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          },
+          {
+            "type": "number",
+            "name": "price",
+            "placeholder": {
+              "en": "Price",
+              "da": "Pris"
+            },
+            "min": -50,
+            "max": 50,
+            "step": 0.01
+          }
+        ]
+      },
+      {
+        "id": "buy-minus-sell-price-is-over",
+        "title": {
+          "en": "Buy price minus sell price is over",
+          "da": "Købspris minus salgspris er over"
+        },
+        "titleFormatted": {
+          "en": "Buy price minus sell price is !{{over|under}} [[price]] kroner",
+          "da": "Købspris minus salgspris er !{{over|under}} [[price]] kroner"
+        },
+        "hint": {
+          "en": "What you save by using the power yourself instead of selling it. The sell price excl. VAT does not include your electricity supplier's buy-back terms. Needs 'Sell price for solar power' in the device settings.",
+          "da": "Det du sparer ved selv at bruge strømmen i stedet for at sælge den. Salgsprisen ekskl. moms er uden din elhandlers tilbagekøbsvilkår. Kræver 'Salgspris for solceller' i enhedens indstillinger."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          },
+          {
+            "type": "number",
+            "name": "price",
+            "placeholder": {
+              "en": "Price",
+              "da": "Pris"
+            },
+            "min": -50,
+            "max": 50,
+            "step": 0.01
+          }
+        ]
       }
     ]
   },
@@ -2179,6 +2245,19 @@
             "en": "The cards for the lowest and highest price period use the forecast for tomorrow until tomorrow's prices are out. Needs 'Fetch price forecasts'.",
             "da": "Kortene for billigste og dyreste periode bruger prognosen for i morgen, indtil morgendagens priser er kommet. Kræver 'Hent prisprognoser'."
           }
+        },
+        {
+          "id": "sell_price",
+          "type": "checkbox",
+          "value": false,
+          "label": {
+            "en": "Sell price for solar power",
+            "da": "Salgspris for solceller"
+          },
+          "hint": {
+            "en": "The spot price excl. VAT minus the production tariffs of Energinet and the net company. Your electricity supplier's buy-back terms, such as fees and markups, are not included. Needs a net company.",
+            "da": "Spotprisen ekskl. moms minus Energinets og netselskabets produktionstariffer. Din elhandlers tilbagekøbsvilkår, fx gebyrer og tillæg, er ikke med. Kræver et netselskab."
+          }
         }
       ]
     }
@@ -2493,6 +2572,74 @@
         "da": "kl"
       },
       "decimals": 0
+    },
+    "meter_sell_price_now": {
+      "type": "number",
+      "title": {
+        "en": "Sell price now (excl. VAT)",
+        "da": "Salgspris nu (ekskl. moms)"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/tariff.svg",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "dkk",
+        "da": "kr"
+      },
+      "decimals": 2
+    },
+    "meter_sell_price_this_day_avg": {
+      "type": "number",
+      "title": {
+        "en": "Avg. sell price this day",
+        "da": "Gennemsnitlig salgspris i dag"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/tariff.svg",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "dkk",
+        "da": "kr"
+      },
+      "decimals": 2
+    },
+    "meter_sell_price_this_day_highest": {
+      "type": "number",
+      "title": {
+        "en": "Highest sell price this day",
+        "da": "Højeste salgspris i dag"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/tariff.svg",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "dkk",
+        "da": "kr"
+      },
+      "decimals": 2
+    },
+    "meter_sell_price_this_day_lowest": {
+      "type": "number",
+      "title": {
+        "en": "Lowest sell price this day",
+        "da": "Laveste salgspris i dag"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/tariff.svg",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "dkk",
+        "da": "kr"
+      },
+      "decimals": 2
     }
   }
 }

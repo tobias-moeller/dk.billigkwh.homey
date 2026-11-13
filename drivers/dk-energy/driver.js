@@ -94,6 +94,19 @@ class MyDriver extends Driver {
       args.device.priceQuarterOverValueListener(args)
     );
 
+    const sellPriceOverValueCondition =
+      this.homey.flow.getConditionCard("sell-price-is-over");
+    sellPriceOverValueCondition.registerRunListener((args) =>
+      args.device.sellPriceOverValueListener(args)
+    );
+
+    const buyMinusSellPriceOverValueCondition = this.homey.flow.getConditionCard(
+      "buy-minus-sell-price-is-over"
+    );
+    buyMinusSellPriceOverValueCondition.registerRunListener((args) =>
+      args.device.buyMinusSellPriceOverValueListener(args)
+    );
+
     const pricePeriodLowestWithinHoursCondition = this.homey.flow.getConditionCard(
       "the-lowest-price-period-within-hours"
     );

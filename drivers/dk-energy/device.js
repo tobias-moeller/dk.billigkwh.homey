@@ -65,6 +65,14 @@ const QUARTER_CAPABILITIES = [
   "meter_price_quarter_next",
 ];
 
+// Capabilities that are only added when the sell price is turned on
+const SELL_PRICE_CAPABILITIES = [
+  "meter_sell_price_now",
+  "meter_sell_price_this_day_avg",
+  "meter_sell_price_this_day_lowest",
+  "meter_sell_price_this_day_highest",
+];
+
 // Lengths of the resolutions stromligning.dk returns
 const RESOLUTION_MS = {
   "15m": 15 * 60 * 1000,
@@ -132,12 +140,14 @@ class MyDevice extends Device {
     this.prices = [];
     this.forecastPrices = [];
     this.slots = [];
+    this.sellSlots = [];
     this.tommorowsPricesRecieved = true;
 
     await this.updateOptionalCapabilities();
     await this.getPrices();
     this.setMeterPrices();
     this.setQuarterPrices();
+    this.setSellPrices();
 
     // Every hour
     this.eventListenerHour = async () => {
@@ -150,7 +160,13 @@ class MyDevice extends Device {
         await this.getPrices();
         pulled = true;
       }
+      // Retry the sell price if the last pull failed
+      if (!pulled && this.prices.length > 0 && this.isSellPriceOn() && this.sellSlots.length == 0) {
+        this.log("No sell prices available, retrying pull");
+        await this.getSellPrices();
+      }
       this.setMeterPrices();
+      this.setSellPrices();
       if (this.prices.length == 0) {
         return;
       }
@@ -197,6 +213,7 @@ class MyDevice extends Device {
       }
       this.log("New quarter event received");
       this.setQuarterPrices();
+      this.setSellPrices();
       this.triggerNewQuarterFlowCard();
     };
     this.homey.on("everyquarter", this.eventListenerQuarter);
@@ -284,6 +301,79 @@ class MyDevice extends Device {
     for (const capability of QUARTER_CAPABILITIES) {
       await this.setCapabilityPresent(capability, quarter);
     }
+    const sellPrice = this.isSellPriceOn();
+    for (const capability of SELL_PRICE_CAPABILITIES) {
+      await this.setCapabilityPresent(capability, sellPrice);
+    }
+  }
+
+  isSellPriceOn() {
+    return this.getSetting("sell_price") == true;
+  }
+
+  // Sell price now and today's lowest, highest and average. null when there
+  // is no sell price for the time.
+  getSellPriceStats() {
+    const now = Date.now();
+    const slot = this.sellSlots.find(
+      (slot) => slot.start <= now && now < slot.end
+    );
+    const dayStart = moment.tz(TIMEZONE).startOf("day").valueOf();
+    const dayEnd = moment.tz(TIMEZONE).add(1, "day").startOf("day").valueOf();
+    const today = this.sellSlots.filter(
+      (slot) => !slot.forecast && slot.start >= dayStart && slot.start < dayEnd
+    );
+    const round = (price) => Math.round(price * 100) / 100;
+
+    const stats = {
+      now: slot ? round(slot.price) : null,
+      min: null,
+      max: null,
+      average: null,
+    };
+    if (today.length > 0) {
+      const prices = today.map((slot) => slot.price);
+      const duration = today.reduce((a, b) => a + (b.end - b.start), 0);
+      stats.min = round(Math.min(...prices));
+      stats.max = round(Math.max(...prices));
+      stats.average = round(
+        today.reduce((a, b) => a + b.price * (b.end - b.start), 0) / duration
+      );
+    }
+    return stats;
+  }
+
+  setSellPrices() {
+    if (!this.isSellPriceOn()) {
+      return;
+    }
+    const stats = this.getSellPriceStats();
+    this.setCapabilityValue("meter_sell_price_now", stats.now).catch(this.error);
+    this.setCapabilityValue("meter_sell_price_this_day_lowest", stats.min).catch(
+      this.error
+    );
+    this.setCapabilityValue(
+      "meter_sell_price_this_day_highest",
+      stats.max
+    ).catch(this.error);
+    this.setCapabilityValue("meter_sell_price_this_day_avg", stats.average).catch(
+      this.error
+    );
+  }
+
+  // A failing sell price leaves the buy prices working and shows a warning
+  async getSellPrices() {
+    let data;
+    try {
+      data = await this.getSellPricesFromApi(this.getSetting("net_company"));
+      this.sellSlots = toSlots(data);
+    } catch (error) {
+      this.log(error);
+      await this.setWarning("Sell price: " + error.message).catch(this.error);
+      return false;
+    }
+    await this.unsetWarning().catch(this.error);
+    return true;
   }
 
   async setCapabilityPresent(capability, present) {
@@ -610,6 +700,10 @@ class MyDevice extends Device {
     this.slots = slots;
     await this.setAvailable().catch(this.error);
 
+    if (this.isSellPriceOn()) {
+      await this.getSellPrices();
+    }
+
     // Trigger flow card
     if (triggerFlow) {
       this.triggerNewPricesRecievedFlowCard();
@@ -632,13 +726,7 @@ class MyDevice extends Device {
     // stromligning.dk interprets "from" as Danish local time
     const startTime = moment.tz(TIMEZONE).format("YYYY-MM-DD") + "T00%3A00%3A00";
 
-    let supplierId =
-      netCompany in NET_COMPANY_ALIASES
-        ? NET_COMPANY_ALIASES[netCompany]
-        : netCompany;
-    if (netCompany == "auto") {
-      supplierId = await this.findNetCompany();
-    }
+    const supplierId = await this.getSupplierId(netCompany);
 
     const path =
       "/api/prices?from=" +
@@ -651,14 +739,6 @@ class MyDevice extends Device {
       encodeURIComponent(product) +
       (this.getSetting("forecast") ? "&forecast=true" : "");
 
-    const options = {
-      hostname: "stromligning.dk",
-      port: 443,
-      path,
-      method: "GET",
-      timeout: 30000,
-    };
-    const fullUrl = `https://${options.hostname}${path}`;
     this.log(
       "Trying to get prices for " +
         location +
@@ -667,8 +747,59 @@ class MyDevice extends Device {
         " " +
         product +
         " -> " +
-        fullUrl
+        `https://stromligning.dk${path}`
     );
+    return this.requestPrices(path);
+  }
+
+  // The sell price is the spot price excl. VAT minus the production tariffs
+  // of Energinet and the net company, so it needs a net company
+  async getSellPricesFromApi(netCompany) {
+    const startTime = moment.tz(TIMEZONE).format("YYYY-MM-DD") + "T00%3A00%3A00";
+
+    const supplierId = await this.getSupplierId(netCompany);
+    if (!supplierId) {
+      throw new Error(
+        "The sell price needs a net company, choose one in the device settings"
+      );
+    }
+
+    const path =
+      "/api/prices/production?from=" +
+      startTime +
+      (this.isQuarterResolution() ? "" : "&aggregation=1h") +
+      "&lean=true&supplierId=" +
+      encodeURIComponent(supplierId) +
+      (this.getSetting("forecast") ? "&forecast=true" : "");
+
+    this.log(
+      "Trying to get sell prices for " +
+        netCompany +
+        " -> " +
+        `https://stromligning.dk${path}`
+    );
+    return this.requestPrices(path);
+  }
+
+  async getSupplierId(netCompany) {
+    if (netCompany == "auto") {
+      return this.findNetCompany();
+    }
+    return netCompany in NET_COMPANY_ALIASES
+      ? NET_COMPANY_ALIASES[netCompany]
+      : netCompany;
+  }
+
+  // Requests prices from stromligning.dk and retries when it fails
+  async requestPrices(path) {
+    const options = {
+      hostname: "stromligning.dk",
+      port: 443,
+      path,
+      method: "GET",
+      timeout: 30000,
+    };
+    const fullUrl = `https://${options.hostname}${path}`;
     let retry = 0;
     let data = null;
     let lastError = null;
@@ -1235,6 +1366,40 @@ class MyDevice extends Device {
       return true;
     }
     return false;
+  }
+
+  // Sell price is over value Listener
+  sellPriceOverValueListener(args) {
+    const sellPrice = this.getSellPriceNow();
+    if (sellPrice > args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  // Buy price minus sell price is over value Listener. Uses the buy price
+  // in the resolution chosen in the device settings.
+  buyMinusSellPriceOverValueListener(args) {
+    const sellPrice = this.getSellPriceNow();
+    const buySlot = this.getSlotAt(Date.now());
+    if (!buySlot) {
+      throw new Error("Der er ingen købspris for nu");
+    }
+    if (buySlot.price - sellPrice > args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  getSellPriceNow() {
+    if (!this.isSellPriceOn()) {
+      throw new Error("Slå salgspris til i enhedens indstillinger");
+    }
+    const sellPrice = this.getSellPriceStats().now;
+    if (sellPrice == null) {
+      throw new Error("Der er ingen salgspris for nu");
+    }
+    return sellPrice;
   }
 
   // Price is under value Listener

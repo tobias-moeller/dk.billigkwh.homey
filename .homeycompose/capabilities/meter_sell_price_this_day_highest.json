@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Highest sell price this day",
+    "da": "Højeste salgspris i dag"
+  },
+  "uiComponent": "sensor",
+  "icon": "/assets/tariff.svg",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "units": {
+    "en": "dkk",
+    "da": "kr"
+  },
+  "decimals": 2
+}

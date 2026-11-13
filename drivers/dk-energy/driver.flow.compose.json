@@ -619,6 +619,62 @@
           "step": 0.01
         }
       ]
+    },
+    {
+      "id": "sell-price-is-over",
+      "title": {
+        "en": "Sell price is over",
+        "da": "Salgsprisen er over"
+      },
+      "titleFormatted": {
+        "en": "Sell price is !{{over|under}} [[price]] kroner",
+        "da": "Salgsprisen er !{{over|under}} [[price]] kroner"
+      },
+      "hint": {
+        "en": "The sell price excl. VAT does not include your electricity supplier's buy-back terms. Needs 'Sell price for solar power' in the device settings.",
+        "da": "Salgsprisen ekskl. moms er uden din elhandlers tilbagekøbsvilkår. Kræver 'Salgspris for solceller' i enhedens indstillinger."
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "price",
+          "placeholder": {
+            "en": "Price",
+            "da": "Pris"
+          },
+          "min": -50,
+          "max": 50,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "id": "buy-minus-sell-price-is-over",
+      "title": {
+        "en": "Buy price minus sell price is over",
+        "da": "Købspris minus salgspris er over"
+      },
+      "titleFormatted": {
+        "en": "Buy price minus sell price is !{{over|under}} [[price]] kroner",
+        "da": "Købspris minus salgspris er !{{over|under}} [[price]] kroner"
+      },
+      "hint": {
+        "en": "What you save by using the power yourself instead of selling it. The sell price excl. VAT does not include your electricity supplier's buy-back terms. Needs 'Sell price for solar power' in the device settings.",
+        "da": "Det du sparer ved selv at bruge strømmen i stedet for at sælge den. Salgsprisen ekskl. moms er uden din elhandlers tilbagekøbsvilkår. Kræver 'Salgspris for solceller' i enhedens indstillinger."
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "price",
+          "placeholder": {
+            "en": "Price",
+            "da": "Pris"
+          },
+          "min": -50,
+          "max": 50,
+          "step": 0.01
+        }
+      ]
     }
   ]
 }

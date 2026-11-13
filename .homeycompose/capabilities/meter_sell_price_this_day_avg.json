@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Avg. sell price this day",
+    "da": "Gennemsnitlig salgspris i dag"
+  },
+  "uiComponent": "sensor",
+  "icon": "/assets/tariff.svg",
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "units": {
+    "en": "dkk",
+    "da": "kr"
+  },
+  "decimals": 2
+}
