@@ -1,22 +1,26 @@
 {
   "id": "dk.billigkwh.homey",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "compatibility": ">=12.1.2",
   "sdk": 3,
-  "brandColor": "#7DC245",
+  "brandColor": "#FF3E00",
   "platforms": [
     "local"
   ],
   "name": {
-    "en": "BilligKWH"
+    "en": "Strømligning",
+    "da": "Strømligning"
   },
   "description": {
-    "en": "Adds energy prices from Strømligning. https://stromligning.dk"
+    "en": "Danish electricity prices from Strømligning. Data provided by Strømligning. https://stromligning.dk",
+    "da": "Danske elpriser fra Strømligning. Data provided by Strømligning. https://stromligning.dk"
   },
   "category": [
     "energy"
   ],
-  "permissions": [],
+  "permissions": [
+    "homey:manager:geolocation"
+  ],
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png",

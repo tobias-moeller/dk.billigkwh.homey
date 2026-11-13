@@ -10,7 +10,8 @@
   "connectivity": [],
   "images": {
     "small": "{{driverAssetsPath}}/images/small.png",
-    "large": "{{driverAssetsPath}}/images/large.png"
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
   },
   "pair": [
     {
@@ -57,12 +58,19 @@
     {
       "id": "net_company",
       "type": "dropdown",
-      "value": "none",
+      "value": "auto",
       "label": {
         "en": "Net company",
         "da": "Net selskab"
       },
       "values": [
+  {
+    "id": "auto",
+    "label": {
+      "da": "Find automatisk ud fra Homeys placering",
+      "en": "Find automatically from Homey's location"
+    }
+  },
   {
     "id": "aal_el-net_c",
     "label": {
@@ -323,6 +331,19 @@
     }
   }
 ]
+    },
+    {
+      "id": "net_company_found",
+      "type": "label",
+      "value": "",
+      "label": {
+        "en": "Found net company",
+        "da": "Fundet net selskab"
+      },
+      "hint": {
+        "en": "The net company found from Homey's location, when the net company is set to find it automatically.",
+        "da": "Det net selskab, der er fundet ud fra Homeys placering, når net selskab er sat til at finde det automatisk."
+      }
     },
     {
       "id": "el_product",
@@ -1356,6 +1377,74 @@
     }
   }
 ]
+    },
+    {
+      "id": "resolution",
+      "type": "dropdown",
+      "value": "hour",
+      "label": {
+        "en": "Resolution",
+        "da": "Opløsning"
+      },
+      "hint": {
+        "en": "With quarter the device also gets the prices per 15 minutes and the cards for quarters. The cards for hours still use hourly prices.",
+        "da": "Med kvarter får enheden også priserne pr. 15 minutter og kortene for kvarterer. Kortene for timer bruger stadig timepriser."
+      },
+      "values": [
+        {
+          "id": "hour",
+          "label": {
+            "en": "Hour",
+            "da": "Time"
+          }
+        },
+        {
+          "id": "quarter",
+          "label": {
+            "en": "Quarter",
+            "da": "Kvarter"
+          }
+        }
+      ]
+    },
+    {
+      "id": "forecast",
+      "type": "checkbox",
+      "value": false,
+      "label": {
+        "en": "Fetch price forecasts",
+        "da": "Hent prisprognoser"
+      },
+      "hint": {
+        "en": "Forecasts from Strømligning for up to 7 days after the known prices. They are estimates and are only used by the cards that say so and by the graph widget.",
+        "da": "Prognoser fra Strømligning op til 7 dage efter de kendte priser. De er skøn og bruges kun af de kort, der siger det, og af graf-widget'en."
+      }
+    },
+    {
+      "id": "forecast_in_period_cards",
+      "type": "checkbox",
+      "value": false,
+      "label": {
+        "en": "Use forecasts in the period cards",
+        "da": "Brug prognoser i periodekortene"
+      },
+      "hint": {
+        "en": "The cards for the lowest and highest price period use the forecast for tomorrow until tomorrow's prices are out. Needs 'Fetch price forecasts'.",
+        "da": "Kortene for billigste og dyreste periode bruger prognosen for i morgen, indtil morgendagens priser er kommet. Kræver 'Hent prisprognoser'."
+      }
+    },
+    {
+      "id": "sell_price",
+      "type": "checkbox",
+      "value": false,
+      "label": {
+        "en": "Sell price for solar power",
+        "da": "Salgspris for solceller"
+      },
+      "hint": {
+        "en": "The spot price excl. VAT minus the production tariffs of Energinet and the net company. Your electricity supplier's buy-back terms, such as fees and markups, are not included. Needs a net company.",
+        "da": "Spotprisen ekskl. moms minus Energinets og netselskabets produktionstariffer. Din elhandlers tilbagekøbsvilkår, fx gebyrer og tillæg, er ikke med. Kræver et netselskab."
+      }
     }
   ]
 }

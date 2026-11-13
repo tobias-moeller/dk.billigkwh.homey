@@ -8,6 +8,8 @@ const moment = require("moment-timezone");
 const setTimeoutPromise = util.promisify(setTimeout);
 
 const TIMEZONE = "Europe/Copenhagen";
+const HOUR_MS = 60 * 60 * 1000;
+const REPOSITORY_URL = "https://github.com/tobias-moeller/dk.billigkwh.homey";
 
 // Net company ids that stromligning.dk no longer knows, mapped to their current id.
 // "none" means no net company, so the supplierId parameter is omitted entirely.
@@ -57,6 +59,84 @@ function matchBilligKWHFormat(apiResponse) {
   return Object.values(days);
 }
 
+// Capabilities that are only added when the resolution is set to quarter
+const QUARTER_CAPABILITIES = [
+  "meter_price_quarter_now",
+  "meter_price_quarter_next",
+];
+
+// Capabilities that are only added when the sell price is turned on
+const SELL_PRICE_CAPABILITIES = [
+  "meter_sell_price_now",
+  "meter_sell_price_this_day_avg",
+  "meter_sell_price_this_day_lowest",
+  "meter_sell_price_this_day_highest",
+];
+
+// Minutes between retries when tomorrow's prices are missing after the daily
+// pull, and until how many minutes after the daily pull each step is used
+const RETRY_STEPS = [
+  [2, 6],
+  [5, 60],
+  [15, null],
+];
+
+// Lengths of the resolutions stromligning.dk returns
+const RESOLUTION_MS = {
+  "15m": 15 * 60 * 1000,
+  "1h": HOUR_MS,
+};
+
+// Turns the prices into slots with a start and an end, using the resolution
+// of each price, so known prices and forecasts can be mixed
+function toSlots(apiResponse) {
+  return apiResponse.map((item) => {
+    if (!(item.resolution in RESOLUTION_MS)) {
+      throw new Error(
+        "Unexpected resolution from stromligning.dk: " + item.resolution
+      );
+    }
+    const start = Date.parse(item.date);
+    return {
+      start,
+      end: start + RESOLUTION_MS[item.resolution],
+      price: item.price,
+      forecast: item.forecast == true,
+    };
+  });
+}
+
+// Hourly prices in the format of the API, from prices in any resolution
+function toHourPrices(apiResponse) {
+  return toHourSlots(toSlots(apiResponse)).map((slot) => ({
+    date: new Date(slot.start).toISOString(),
+    price: slot.price,
+  }));
+}
+
+// Averages the slots per hour. Danish hours start at the same time as UTC
+// hours, so the hour can be found from the UTC timestamp.
+function toHourSlots(slots) {
+  const hours = new Map();
+  for (const slot of slots) {
+    const start = Math.floor(slot.start / HOUR_MS) * HOUR_MS;
+    if (!hours.has(start)) {
+      hours.set(start, { start, sum: 0, duration: 0, forecast: false });
+    }
+    const hour = hours.get(start);
+    const duration = slot.end - slot.start;
+    hour.sum += slot.price * duration;
+    hour.duration += duration;
+    hour.forecast = hour.forecast || slot.forecast;
+  }
+  return [...hours.values()].map((hour) => ({
+    start: hour.start,
+    end: hour.start + HOUR_MS,
+    price: Math.round((hour.sum / hour.duration) * 100) / 100,
+    forecast: hour.forecast,
+  }));
+}
+
 class MyDevice extends Device {
   /**
    * onInit is called when the device is initialized.
@@ -66,42 +146,43 @@ class MyDevice extends Device {
     this.restarting = false;
     this.device = this;
     this.prices = [];
-    this.tommorowsPricesRecieved = true;
+    this.forecastPrices = [];
+    this.slots = [];
+    this.sellSlots = [];
 
+    await this.updateOptionalCapabilities();
     await this.getPrices();
     this.setMeterPrices();
+    this.setQuarterPrices();
+    this.setSellPrices();
+    this.scheduleTomorrowRetry();
 
     // Every hour
     this.eventListenerHour = async () => {
       this.log("New hour event received");
+      let pulled = false;
 
       // Retry if the last pull failed, e.g. when there was no connection at startup
       if (this.prices.length == 0) {
         this.log("No prices available, retrying pull");
         await this.getPrices();
+        pulled = true;
+      }
+      // Retry the sell price if the last pull failed
+      if (!pulled && this.prices.length > 0 && this.isSellPriceOn() && this.sellSlots.length == 0) {
+        this.log("No sell prices available, retrying pull");
+        await this.getSellPrices();
       }
       this.setMeterPrices();
+      this.setSellPrices();
       if (this.prices.length == 0) {
         return;
       }
 
-      // Check if tommorows prices is recieved
-      if (this.tommorowsPricesRecieved == false) {
-        const date = this.getDanishDate();
-        if (date.getHours() == 0) {
-          // Cant get tommorows prices before 14
-          this.tommorowsPricesRecieved = true;
-        } else {
-          this.log("Retry daily pull from stromligning.dk");
-          await this.getPrices();
-          this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
-
-          if (this.tommorowsPricesRecieved == false) {
-            this.log("Did not recieve tommorows prices from retry pull");
-          } else {
-            this.log("Got tommorows prices from retry pull");
-          }
-        }
+      // Pull the new forecasts
+      if (!pulled && this.isForecastUpdateHour()) {
+        this.log("Pull new forecasts from stromligning.dk");
+        await this.getPrices();
       }
 
       // Trigger flow cards
@@ -113,13 +194,25 @@ class MyDevice extends Device {
     };
     this.homey.on("everyhour", this.eventListenerHour);
 
+    // Every quarter, only used with the quarter resolution
+    this.eventListenerQuarter = async () => {
+      if (!this.isQuarterResolution() || this.prices.length == 0) {
+        return;
+      }
+      this.log("New quarter event received");
+      this.setQuarterPrices();
+      this.setSellPrices();
+      this.triggerNewQuarterFlowCard();
+    };
+    this.homey.on("everyquarter", this.eventListenerQuarter);
+
     // Every day
     this.eventListenerDay = async () => {
       this.log("New day event received");
       await this.getPrices();
-      this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
-      if (this.tommorowsPricesRecieved == false) {
+      if (!this.isTommorowsPricesAvailable()) {
         this.log("Did not recieve tommorows prices from daily pull");
+        this.scheduleTomorrowRetry();
       }
     };
     this.homey.on("everyday", this.eventListenerDay);
@@ -130,8 +223,52 @@ class MyDevice extends Device {
   async destroyListeners() {
     if (this.eventListenerHour)
       this.homey.removeListener("everyhour", this.eventListenerHour);
+    if (this.eventListenerQuarter)
+      this.homey.removeListener("everyquarter", this.eventListenerQuarter);
     if (this.eventListenerDay)
       this.homey.removeListener("everyday", this.eventListenerDay);
+    this.homey.clearTimeout(this.tomorrowRetry);
+  }
+
+  // When tomorrow's prices are missing after the daily pull, retry every 2
+  // minutes at first, then every 5 until an hour after it, then every 15,
+  // until they are here or the day ends
+  scheduleTomorrowRetry() {
+    this.homey.clearTimeout(this.tomorrowRetry);
+    const dailyPull = this.homey.app.getDailyPullTime();
+    const now = Date.now();
+    if (now < dailyPull || this.isTommorowsPricesAvailable()) {
+      return;
+    }
+
+    const elapsed = now - dailyPull;
+    let retry;
+    for (const [minutes, limit] of RETRY_STEPS) {
+      const interval = minutes * 60 * 1000;
+      retry = dailyPull + (Math.floor(elapsed / interval) + 1) * interval;
+      if (limit == null || retry - dailyPull <= limit * 60 * 1000) {
+        break;
+      }
+    }
+    const midnight = moment.tz(TIMEZONE).add(1, "day").startOf("day").valueOf();
+    if (retry >= midnight) {
+      this.log("Tomorrow's prices did not come today, stop retrying");
+      return;
+    }
+
+    this.log("Retry pull for tomorrow's prices at " + new Date(retry).toISOString());
+    this.tomorrowRetry = this.homey.setTimeout(async () => {
+      this.log("Retry daily pull from stromligning.dk");
+      await this.getPrices();
+      this.setMeterPrices();
+      this.setSellPrices();
+      if (this.isTommorowsPricesAvailable()) {
+        this.log("Got tommorows prices from retry pull");
+      } else {
+        this.log("Did not recieve tommorows prices from retry pull");
+        this.scheduleTomorrowRetry();
+      }
+    }, retry - now);
   }
 
   /**
@@ -154,6 +291,8 @@ class MyDevice extends Device {
     this.log("Netcompany: " + newSettings.net_company);
     this.log("Location: " + newSettings.location);
     this.log("Product: " + newSettings.el_product);
+    // Prices for new settings count as new prices
+    await this.unsetStoreValue("last_known_price").catch(this.error);
     this.restartDevice(1000);
   }
 
@@ -181,6 +320,131 @@ class MyDevice extends Device {
   async onDeleted() {
     this.destroyListeners();
     this.log("Energy-device has been deleted");
+  }
+
+  isQuarterResolution() {
+    return this.getSetting("resolution") == "quarter";
+  }
+
+  // Adds or removes the capabilities of the optional settings, so a device
+  // with the default settings has the same capabilities as before
+  async updateOptionalCapabilities() {
+    const quarter = this.isQuarterResolution();
+    for (const capability of QUARTER_CAPABILITIES) {
+      await this.setCapabilityPresent(capability, quarter);
+    }
+    const sellPrice = this.isSellPriceOn();
+    for (const capability of SELL_PRICE_CAPABILITIES) {
+      await this.setCapabilityPresent(capability, sellPrice);
+    }
+  }
+
+  isSellPriceOn() {
+    return this.getSetting("sell_price") == true;
+  }
+
+  // Sell price now and today's lowest, highest and average. null when there
+  // is no sell price for the time.
+  getSellPriceStats() {
+    const now = Date.now();
+    const slot = this.sellSlots.find(
+      (slot) => slot.start <= now && now < slot.end
+    );
+    const dayStart = moment.tz(TIMEZONE).startOf("day").valueOf();
+    const dayEnd = moment.tz(TIMEZONE).add(1, "day").startOf("day").valueOf();
+    const today = this.sellSlots.filter(
+      (slot) => !slot.forecast && slot.start >= dayStart && slot.start < dayEnd
+    );
+    const round = (price) => Math.round(price * 100) / 100;
+
+    const stats = {
+      now: slot ? round(slot.price) : null,
+      min: null,
+      max: null,
+      average: null,
+    };
+    if (today.length > 0) {
+      const prices = today.map((slot) => slot.price);
+      const duration = today.reduce((a, b) => a + (b.end - b.start), 0);
+      stats.min = round(Math.min(...prices));
+      stats.max = round(Math.max(...prices));
+      stats.average = round(
+        today.reduce((a, b) => a + b.price * (b.end - b.start), 0) / duration
+      );
+    }
+    return stats;
+  }
+
+  setSellPrices() {
+    if (!this.isSellPriceOn()) {
+      return;
+    }
+    const stats = this.getSellPriceStats();
+    this.setCapabilityValue("meter_sell_price_now", stats.now).catch(this.error);
+    this.setCapabilityValue("meter_sell_price_this_day_lowest", stats.min).catch(
+      this.error
+    );
+    this.setCapabilityValue(
+      "meter_sell_price_this_day_highest",
+      stats.max
+    ).catch(this.error);
+    this.setCapabilityValue("meter_sell_price_this_day_avg", stats.average).catch(
+      this.error
+    );
+  }
+
+  // A failing sell price leaves the buy prices working and shows a warning
+  async getSellPrices() {
+    let data;
+    try {
+      data = await this.getSellPricesFromApi(this.getSetting("net_company"));
+      this.sellSlots = toSlots(data);
+    } catch (error) {
+      this.log(error);
+      await this.setWarning("Sell price: " + error.message).catch(this.error);
+      return false;
+    }
+    await this.unsetWarning().catch(this.error);
+    return true;
+  }
+
+  async setCapabilityPresent(capability, present) {
+    if (present && !this.hasCapability(capability)) {
+      this.log("Adding capability '" + capability + "'");
+      await this.addCapability(capability).catch(this.error);
+    } else if (!present && this.hasCapability(capability)) {
+      this.log("Removing capability '" + capability + "'");
+      await this.removeCapability(capability).catch(this.error);
+    }
+  }
+
+  // The price slot that covers the time, using the resolution of each price
+  getSlotAt(time) {
+    return this.slots.find((slot) => slot.start <= time && time < slot.end);
+  }
+
+  // Prices for this and the next quarter. A forecast covers a whole hour.
+  getQuarterPrices() {
+    const now = this.getSlotAt(Date.now());
+    const next = now ? this.getSlotAt(now.end) : null;
+    return {
+      now: now ? Math.round(now.price * 100) / 100 : 0,
+      next: next ? Math.round(next.price * 100) / 100 : 0,
+    };
+  }
+
+  setQuarterPrices() {
+    if (!this.isQuarterResolution()) {
+      return;
+    }
+    const quarterPrices = this.getQuarterPrices();
+    this.setCapabilityValue("meter_price_quarter_now", quarterPrices.now).catch(
+      this.error
+    );
+    this.setCapabilityValue(
+      "meter_price_quarter_next",
+      quarterPrices.next
+    ).catch(this.error);
   }
 
   isTommorowsPricesAvailable() {
@@ -379,6 +643,15 @@ class MyDevice extends Device {
     return meterPrices;
   }
 
+  // Hourly prices from the current hour, with forecasts after the known prices
+  // when they are turned on
+  getHourlyPrices(hours) {
+    const currentHour = Math.floor(Date.now() / HOUR_MS) * HOUR_MS;
+    return toHourSlots(this.slots)
+      .filter((slot) => slot.start >= currentHour)
+      .slice(0, hours);
+  }
+
   getPriceNow(retry = true) {
     let todaysDate = this.getDanishDate();
     const currentHour = todaysDate.getHours();
@@ -438,47 +711,79 @@ class MyDevice extends Device {
     const netCompany = this.getSetting("net_company");
     const product = this.getSetting("el_product");
     let data;
+    let slots;
     try {
       data = await this.getPricesFromApi(location, netCompany, product);
+      slots = toSlots(data);
     } catch (error) {
       this.log(error);
       await this.setUnavailable(error.message).catch(this.error);
       return false;
     }
-    this.prices = data;
+    // Forecasts are kept apart, so the cards for known prices do not use them.
+    // The cards for hours always get hourly prices.
+    const knownPrices = data.filter((item) => !item.forecast);
+    this.prices = matchBilligKWHFormat(
+      this.isQuarterResolution() ? toHourPrices(knownPrices) : knownPrices
+    );
+    this.forecastPrices = matchBilligKWHFormat(
+      data.filter((item) => item.forecast)
+    );
+    this.slots = slots;
     await this.setAvailable().catch(this.error);
 
-    // Trigger flow card
-    this.triggerNewPricesRecievedFlowCard();
+    if (this.isSellPriceOn()) {
+      await this.getSellPrices();
+    }
+
+    // Only trigger "new prices received" when prices have arrived that the
+    // device did not have before, e.g. tomorrow's prices. The last known price
+    // is kept in the store, so a restart does not trigger it again.
+    const lastKnownPrice =
+      knownPrices.length > 0
+        ? Date.parse(knownPrices[knownPrices.length - 1].date)
+        : null;
+    const storedLastKnownPrice = this.getStoreValue("last_known_price");
+    if (
+      lastKnownPrice != null &&
+      (storedLastKnownPrice == null || lastKnownPrice > storedLastKnownPrice)
+    ) {
+      await this.setStoreValue("last_known_price", lastKnownPrice).catch(
+        this.error
+      );
+      this.triggerNewPricesRecievedFlowCard();
+    }
     return true;
+  }
+
+  // stromligning.dk updates the forecasts at 00, 06 and 18 UTC and at 11:50
+  // Danish time, so they are pulled the hour after
+  isForecastUpdateHour() {
+    if (!this.getSetting("forecast")) {
+      return false;
+    }
+    const utcHour = new Date().getUTCHours();
+    const danishHour = this.getDanishDate().getUTCHours();
+    return [1, 7, 19].includes(utcHour) || danishHour == 12;
   }
 
   async getPricesFromApi(location, netCompany, product) {
     // stromligning.dk interprets "from" as Danish local time
     const startTime = moment.tz(TIMEZONE).format("YYYY-MM-DD") + "T00%3A00%3A00";
 
-    const supplierId =
-      netCompany in NET_COMPANY_ALIASES
-        ? NET_COMPANY_ALIASES[netCompany]
-        : netCompany;
+    const supplierId = await this.getSupplierId(netCompany);
 
     const path =
       "/api/prices?from=" +
       startTime +
-      "&aggregation=1h&lean=true&priceArea=" +
+      (this.isQuarterResolution() ? "" : "&aggregation=1h") +
+      "&lean=true&priceArea=" +
       encodeURIComponent(location) +
       (supplierId ? "&supplierId=" + encodeURIComponent(supplierId) : "") +
       "&productId=" +
-      encodeURIComponent(product);
+      encodeURIComponent(product) +
+      (this.getSetting("forecast") ? "&forecast=true" : "");
 
-    const options = {
-      hostname: "stromligning.dk",
-      port: 443,
-      path,
-      method: "GET",
-      timeout: 30000,
-    };
-    const fullUrl = `https://${options.hostname}${path}`;
     this.log(
       "Trying to get prices for " +
         location +
@@ -487,14 +792,73 @@ class MyDevice extends Device {
         " " +
         product +
         " -> " +
-        fullUrl
+        `https://stromligning.dk${path}`
     );
+    return this.requestPrices(path);
+  }
+
+  // The sell price is the spot price excl. VAT minus the production tariffs
+  // of Energinet and the net company, so it needs a net company
+  async getSellPricesFromApi(netCompany) {
+    const startTime = moment.tz(TIMEZONE).format("YYYY-MM-DD") + "T00%3A00%3A00";
+
+    const supplierId = await this.getSupplierId(netCompany);
+    if (!supplierId) {
+      throw new Error(
+        "The sell price needs a net company, choose one in the device settings"
+      );
+    }
+
+    const path =
+      "/api/prices/production?from=" +
+      startTime +
+      (this.isQuarterResolution() ? "" : "&aggregation=1h") +
+      "&lean=true&supplierId=" +
+      encodeURIComponent(supplierId) +
+      (this.getSetting("forecast") ? "&forecast=true" : "");
+
+    this.log(
+      "Trying to get sell prices for " +
+        netCompany +
+        " -> " +
+        `https://stromligning.dk${path}`
+    );
+    return this.requestPrices(path);
+  }
+
+  async getSupplierId(netCompany) {
+    if (netCompany == "auto") {
+      return this.findNetCompany();
+    }
+    if (this.getSetting("net_company_found")) {
+      await this.setSettings({ net_company_found: "" }).catch(this.error);
+    }
+    return netCompany in NET_COMPANY_ALIASES
+      ? NET_COMPANY_ALIASES[netCompany]
+      : netCompany;
+  }
+
+  // Requests prices from stromligning.dk and retries when it fails
+  async requestPrices(path) {
+    const options = {
+      hostname: "stromligning.dk",
+      port: 443,
+      path,
+      method: "GET",
+      timeout: 30000,
+    };
+    const fullUrl = `https://${options.hostname}${path}`;
     let retry = 0;
     let data = null;
     let lastError = null;
     while (retry < 3) {
       try {
-        data = matchBilligKWHFormat(await this.httpRequest(options));
+        data = await this.httpRequest(options);
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "Unexpected response from stromligning.dk: " + JSON.stringify(data)
+          );
+        }
         break;
       } catch (error) {
         retry++;
@@ -527,9 +891,78 @@ class MyDevice extends Device {
     return data;
   }
 
+  // Finds the net company from Homey's location. The result is kept in the
+  // store, so stromligning.dk is only asked again when Homey has moved.
+  async findNetCompany() {
+    const lat = this.homey.geolocation.getLatitude();
+    const long = this.homey.geolocation.getLongitude();
+    if (!Number.isFinite(lat) || !Number.isFinite(long)) {
+      throw new Error(
+        "Homey has no location, choose a net company in the device settings"
+      );
+    }
+
+    const found = this.getStoreValue("found_net_company");
+    if (found && found.lat == lat && found.long == long && found.name) {
+      await this.showFoundNetCompany(found.name);
+      return found.id;
+    }
+
+    const path =
+      "/api/suppliers/find?lat=" +
+      encodeURIComponent(lat) +
+      "&long=" +
+      encodeURIComponent(long);
+    const options = {
+      hostname: "stromligning.dk",
+      port: 443,
+      path,
+      method: "GET",
+      timeout: 30000,
+    };
+    let suppliers;
+    try {
+      suppliers = await this.httpRequest(options);
+    } catch (error) {
+      throw new Error(
+        `Could not find the net company from Homey's location (${error.message}), choose a net company in the device settings`
+      );
+    }
+    if (!Array.isArray(suppliers) || suppliers.length == 0 || !suppliers[0].id) {
+      throw new Error(
+        "Could not find the net company from Homey's location, choose a net company in the device settings"
+      );
+    }
+
+    const supplier = suppliers[0];
+    this.log(
+      "Found net company " + supplier.id + " (" + supplier.name + ") from Homey's location"
+    );
+    await this.setStoreValue("found_net_company", {
+      lat,
+      long,
+      id: supplier.id,
+      name: supplier.name,
+    });
+    await this.showFoundNetCompany(supplier.name);
+    return supplier.id;
+  }
+
+  // Shows the found net company in the device settings
+  async showFoundNetCompany(name) {
+    if (this.getSetting("net_company_found") != name) {
+      await this.setSettings({ net_company_found: name }).catch(this.error);
+    }
+  }
+
   async httpRequest(options) {
+    // Without a User-Agent the request shows up as Go-http-client at stromligning.dk
+    const headers = {
+      ...options.headers,
+      "User-Agent": `Stromligning-Homey/${this.homey.manifest.version} (+${REPOSITORY_URL})`,
+    };
     return new Promise((resolve, reject) => {
-      const req = https.request(options, (res) => {
+      const req = https.request({ ...options, headers }, (res) => {
         let data = "";
         res.on("data", (chunk) => {
           data += chunk;
@@ -653,7 +1086,18 @@ class MyDevice extends Device {
 
     date.setDate(date.getDate() + 1);
     const dayTwoTimestamp = this.toTimestamp(date);
-    const dayTwoPrices = this.getPricesByTimestamp(dayTwoTimestamp);
+    let dayTwoPrices = this.getPricesByTimestamp(dayTwoTimestamp);
+
+    // Before tomorrow's prices are out, use the forecast if the user chose it
+    if (dayTwoPrices == null && this.getSetting("forecast_in_period_cards")) {
+      const forecastDay = this.forecastPrices.find(
+        (day) => day.dato == dayTwoTimestamp
+      );
+      if (forecastDay) {
+        this.log("Using forecast for " + dayTwoTimestamp);
+        dayTwoPrices = forecastDay.priser;
+      }
+    }
 
     let combinedPrices = [];
     for (let i = 0; i < Object.keys(dayOnePrices).length; i++) {
@@ -784,6 +1228,21 @@ class MyDevice extends Device {
     });
   }
 
+  // Trigger new quarter flow card
+  triggerNewQuarterFlowCard() {
+    this.log("Triggering flow card: New quarter started");
+
+    const quarterPrices = this.getQuarterPrices();
+    const tokens = {
+      price: quarterPrices.now,
+      "price+1": quarterPrices.next,
+    };
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerNewQuarterFlow(this.device, tokens, state);
+    });
+  }
+
   // Trigger lowest price period starts between flow card
   triggerLowestPeriodStartsBetweenFlowCard() {
     this.log("Triggering flow card: Price is lowest between");
@@ -882,6 +1341,50 @@ class MyDevice extends Device {
 
   // AND listeners
 
+  // Lowest price period within the next hours Listener. Uses forecasts after
+  // the known prices when they are turned on. A period that has already
+  // started counts, so the condition stays true for the whole period.
+  lowestPeriodWithinHoursListener(args) {
+    const period = args.period;
+    const hours = args.hours;
+    if (period > hours) {
+      throw new Error("Periode kan ikke være større end antal timer");
+    }
+
+    const now = Date.now();
+    const currentHour = Math.floor(now / HOUR_MS) * HOUR_MS;
+    const hourSlots = toHourSlots(this.slots).filter(
+      (slot) =>
+        slot.start >= currentHour - (period - 1) * HOUR_MS &&
+        slot.end <= currentHour + hours * HOUR_MS
+    );
+
+    let lowest = null;
+    for (let i = 0; i + period <= hourSlots.length; i++) {
+      const block = hourSlots.slice(i, i + period);
+      // Skip blocks with a gap in the prices
+      if (block[period - 1].start - block[0].start != (period - 1) * HOUR_MS) {
+        continue;
+      }
+      const avg = block.reduce((a, b) => a + b.price, 0) / period;
+      if (lowest == null || avg < lowest.avg) {
+        lowest = { start: block[0].start, end: block[period - 1].end, avg };
+      }
+    }
+
+    if (lowest == null) {
+      this.log("No prices for a period of " + period + " hours");
+      return false;
+    }
+    this.log(
+      "Lowest period: " +
+        new Date(lowest.start).toISOString() +
+        " - " +
+        new Date(lowest.end).toISOString()
+    );
+    return lowest.start <= now && now < lowest.end;
+  }
+
   // Price is less than average Listerner
   priceLessThanAvgListener(args) {
     const currentPrice = this.getPriceNow();
@@ -913,6 +1416,52 @@ class MyDevice extends Device {
       return true;
     }
     return false;
+  }
+
+  // Price this quarter is over value Listener
+  priceQuarterOverValueListener(args) {
+    if (!this.isQuarterResolution()) {
+      throw new Error("Sæt opløsning til kvarter i enhedens indstillinger");
+    }
+    const quarterPrices = this.getQuarterPrices();
+    if (quarterPrices.now > args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  // Sell price is over value Listener
+  sellPriceOverValueListener(args) {
+    const sellPrice = this.getSellPriceNow();
+    if (sellPrice > args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  // Buy price minus sell price is over value Listener. Uses the buy price
+  // in the resolution chosen in the device settings.
+  buyMinusSellPriceOverValueListener(args) {
+    const sellPrice = this.getSellPriceNow();
+    const buySlot = this.getSlotAt(Date.now());
+    if (!buySlot) {
+      throw new Error("Der er ingen købspris for nu");
+    }
+    if (buySlot.price - sellPrice > args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  getSellPriceNow() {
+    if (!this.isSellPriceOn()) {
+      throw new Error("Slå salgspris til i enhedens indstillinger");
+    }
+    const sellPrice = this.getSellPriceStats().now;
+    if (sellPrice == null) {
+      throw new Error("Der er ingen salgspris for nu");
+    }
+    return sellPrice;
   }
 
   // Price is under value Listener

@@ -94,5 +94,9 @@
   },
   "2.5.0": {
     "en": "Getting rid of the last billigkwh.dk parts"
+  },
+  "2.6.0": {
+    "en": "BilligKWH is now called Strømligning. New devices find the net company from Homey's location. Price forecasts up to 7 days ahead. Prices per quarter as an option. Sell price for solar power. Tomorrow's prices from 13:05, and 'New prices received' only runs when new prices have arrived",
+    "da": "BilligKWH hedder nu Strømligning. Nye enheder finder netselskabet ud fra Homeys placering. Prisprognoser op til 7 dage frem. Priser pr. kvarter som tilvalg. Salgspris for solceller. Morgendagens priser fra kl. 13:05, og 'Nye priser modtages' kører kun, når nye priser er kommet"
   }
 }

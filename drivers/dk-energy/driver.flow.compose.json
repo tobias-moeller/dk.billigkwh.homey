@@ -7,8 +7,8 @@
         "da": "Nye priser modtages"
       },
       "hint": {
-        "en": "New prices is recieved",
-        "da": "Nye priser er modtages"
+        "en": "Runs when new prices have arrived, e.g. tomorrow's prices",
+        "da": "Kører når nye priser er kommet, fx morgendagens priser"
       },
       "tokens": [
         {
@@ -335,6 +335,41 @@
           "step": 1
         }
       ]
+    },
+    {
+      "id": "new-quarter-started",
+      "title": {
+        "en": "New quarter started",
+        "da": "Nyt kvarter er startet"
+      },
+      "hint": {
+        "en": "Triggers every quarter when the resolution is set to quarter in the device settings",
+        "da": "Kører hvert kvarter, når opløsningen er sat til kvarter i enhedens indstillinger"
+      },
+      "tokens": [
+        {
+          "type": "number",
+          "name": "price",
+          "title": {
+            "en": "Price",
+            "da": "Pris"
+          },
+          "example": {
+            "en": "2.21"
+          }
+        },
+        {
+          "type": "number",
+          "name": "price+1",
+          "title": {
+            "en": "Price next quarter",
+            "da": "Pris næste kvarter"
+          },
+          "example": {
+            "en": "2.31"
+          }
+        }
+      ]
     }
   ],
   "conditions": [
@@ -515,6 +550,129 @@
           "min": 0,
           "max": 23,
           "step": 1
+        }
+      ]
+    },
+    {
+      "id": "the-lowest-price-period-within-hours",
+      "title": {
+        "en": "The lowest price period within the next hours",
+        "da": "Den billigste periode inden for de næste timer"
+      },
+      "titleFormatted": {
+        "en": "Is !{{|not}} in the lowest price period of [[period]] hours within the next [[hours]] hours",
+        "da": "Er !{{|ikke}} i den billigste periode på [[period]] timer inden for de næste [[hours]] timer"
+      },
+      "hint": {
+        "en": "Uses forecasts after the known prices when 'Fetch price forecasts' is on in the device settings. A period that has already started counts.",
+        "da": "Bruger prognoser efter de kendte priser, når 'Hent prisprognoser' er slået til i enhedens indstillinger. En periode, der allerede er startet, tæller med."
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "period",
+          "placeholder": {
+            "en": "Hours",
+            "da": "Timer"
+          },
+          "min": 1,
+          "max": 23,
+          "step": 1
+        },
+        {
+          "type": "number",
+          "name": "hours",
+          "placeholder": {
+            "en": "Hours ahead",
+            "da": "Timer frem"
+          },
+          "min": 1,
+          "max": 168,
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "price-this-quarter-is-over",
+      "title": {
+        "en": "Price this quarter is over",
+        "da": "Prisen for dette kvarter er over"
+      },
+      "titleFormatted": {
+        "en": "Price this quarter is !{{over|under}} [[price]] kroner",
+        "da": "Prisen for dette kvarter er !{{over|under}} [[price]] kroner"
+      },
+      "hint": {
+        "en": "Needs the resolution set to quarter in the device settings",
+        "da": "Kræver at opløsningen er sat til kvarter i enhedens indstillinger"
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "price",
+          "placeholder": {
+            "en": "Price",
+            "da": "Pris"
+          },
+          "min": -50,
+          "max": 50,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "id": "sell-price-is-over",
+      "title": {
+        "en": "Sell price is over",
+        "da": "Salgsprisen er over"
+      },
+      "titleFormatted": {
+        "en": "Sell price is !{{over|under}} [[price]] kroner",
+        "da": "Salgsprisen er !{{over|under}} [[price]] kroner"
+      },
+      "hint": {
+        "en": "The sell price excl. VAT does not include your electricity supplier's buy-back terms. Needs 'Sell price for solar power' in the device settings.",
+        "da": "Salgsprisen ekskl. moms er uden din elhandlers tilbagekøbsvilkår. Kræver 'Salgspris for solceller' i enhedens indstillinger."
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "price",
+          "placeholder": {
+            "en": "Price",
+            "da": "Pris"
+          },
+          "min": -50,
+          "max": 50,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "id": "buy-minus-sell-price-is-over",
+      "title": {
+        "en": "Buy price minus sell price is over",
+        "da": "Købspris minus salgspris er over"
+      },
+      "titleFormatted": {
+        "en": "Buy price minus sell price is !{{over|under}} [[price]] kroner",
+        "da": "Købspris minus salgspris er !{{over|under}} [[price]] kroner"
+      },
+      "hint": {
+        "en": "What you save by using the power yourself instead of selling it. The sell price excl. VAT does not include your electricity supplier's buy-back terms. Needs 'Sell price for solar power' in the device settings.",
+        "da": "Det du sparer ved selv at bruge strømmen i stedet for at sælge den. Salgsprisen ekskl. moms er uden din elhandlers tilbagekøbsvilkår. Kræver 'Salgspris for solceller' i enhedens indstillinger."
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "price",
+          "placeholder": {
+            "en": "Price",
+            "da": "Pris"
+          },
+          "min": -50,
+          "max": 50,
+          "step": 0.01
         }
       ]
     }

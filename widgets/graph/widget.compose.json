@@ -13,7 +13,20 @@
       },
       "value": 6,
       "min": 1,
-      "max": 24
+      "max": 72
+    },
+    {
+      "id": "forecast",
+      "type": "checkbox",
+      "title": {
+        "en": "Vis prognoser",
+        "da": "Vis prognoser"
+      },
+      "hint": {
+        "en": "Kræver 'Hent prisprognoser' i enhedens indstillinger. Prognoser vises lysere.",
+        "da": "Kræver 'Hent prisprognoser' i enhedens indstillinger. Prognoser vises lysere."
+      },
+      "value": false
     }
   ],
   "api": {

@@ -8,7 +8,10 @@ class MyApp extends Homey.App {
    * onInit is called when the app is initialized.
    */
   async onInit() {
+    // A random second, so not every Homey asks at the same moment
+    this.dailyPullSecond = Math.floor(Math.random() * 60);
     this.everyHour();
+    this.everyQuarter();
     this.everyDay();
     this.log("MyApp has been initialized");
   }
@@ -16,6 +19,7 @@ class MyApp extends Homey.App {
   async onUninit() {
     this.log("App onUninit called");
     this.homey.removeAllListeners("everyhour");
+    this.homey.removeAllListeners("everyquarter");
     this.homey.removeAllListeners("everyday");
   }
 
@@ -42,28 +46,46 @@ class MyApp extends Homey.App {
     this.log("everyHour job started");
   }
 
-  // Homey apps run in UTC, so shift by the Copenhagen offset (+1 winter, +2 summer)
-  getDanishTime() {
-    return new Date(Date.now() + moment.tz("Europe/Copenhagen").utcOffset() * 60000);
-  }
-
-  everyDay() {
-    // Pull everday between 14-15 DK TIME
-    const now = this.getDanishTime();
-    const tomorrow = this.getDanishTime();
-    if (tomorrow.getHours() > 14) {
-      tomorrow.setDate(now.getDate() + 1);
-    }
-    tomorrow.setHours(14);
-    const timeToNextDay = tomorrow - now;
+  everyQuarter() {
+    const now = new Date();
+    const nextQuarter = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      (Math.floor(now.getMinutes() / 15) + 1) * 15,
+      0,
+      50
+    );
+    const timeToNextQuarter = nextQuarter - now;
     this.homey.setTimeout(() => {
       this.homey.setInterval(async () => {
-        this.homey.emit("everyday", true);
-      }, 24 * 60 * 60 * 1000);
-      //}, 30000);
+        this.homey.emit("everyquarter", true);
+      }, 15 * 60 * 1000);
+      this.homey.emit("everyquarter", true);
+    }, timeToNextQuarter);
+    this.log("everyQuarter job started");
+  }
+
+  // Today's daily pull at 13:05 Danish time, when tomorrow's prices are
+  // usually out, as a timestamp
+  getDailyPullTime() {
+    return moment
+      .tz("Europe/Copenhagen")
+      .set({ hour: 13, minute: 5, second: this.dailyPullSecond, millisecond: 0 })
+      .valueOf();
+  }
+
+  // Scheduled again every day, so it follows summer and winter time
+  everyDay() {
+    let nextPull = this.getDailyPullTime();
+    if (nextPull <= Date.now()) {
+      nextPull = moment.tz(nextPull, "Europe/Copenhagen").add(1, "day").valueOf();
+    }
+    this.homey.setTimeout(() => {
       this.homey.emit("everyday", true);
-    }, timeToNextDay);
-    //}, 30000);
+      this.everyDay();
+    }, nextPull - Date.now());
     this.log("everyDay job started");
   }
 }
