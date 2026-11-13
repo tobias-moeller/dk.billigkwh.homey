@@ -73,6 +73,14 @@ const SELL_PRICE_CAPABILITIES = [
   "meter_sell_price_this_day_highest",
 ];
 
+// Minutes between retries when tomorrow's prices are missing after the daily
+// pull, and until how many minutes after the daily pull each step is used
+const RETRY_STEPS = [
+  [2, 6],
+  [5, 60],
+  [15, null],
+];
+
 // Lengths of the resolutions stromligning.dk returns
 const RESOLUTION_MS = {
   "15m": 15 * 60 * 1000,
@@ -141,13 +149,13 @@ class MyDevice extends Device {
     this.forecastPrices = [];
     this.slots = [];
     this.sellSlots = [];
-    this.tommorowsPricesRecieved = true;
 
     await this.updateOptionalCapabilities();
     await this.getPrices();
     this.setMeterPrices();
     this.setQuarterPrices();
     this.setSellPrices();
+    this.scheduleTomorrowRetry();
 
     // Every hour
     this.eventListenerHour = async () => {
@@ -171,30 +179,10 @@ class MyDevice extends Device {
         return;
       }
 
-      // Check if tommorows prices is recieved
-      if (this.tommorowsPricesRecieved == false) {
-        const date = this.getDanishDate();
-        if (date.getHours() == 0) {
-          // Cant get tommorows prices before 14
-          this.tommorowsPricesRecieved = true;
-        } else {
-          this.log("Retry daily pull from stromligning.dk");
-          await this.getPrices();
-          pulled = true;
-          this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
-
-          if (this.tommorowsPricesRecieved == false) {
-            this.log("Did not recieve tommorows prices from retry pull");
-          } else {
-            this.log("Got tommorows prices from retry pull");
-          }
-        }
-      }
-
-      // Pull the new forecasts without triggering "new prices received"
+      // Pull the new forecasts
       if (!pulled && this.isForecastUpdateHour()) {
         this.log("Pull new forecasts from stromligning.dk");
-        await this.getPrices(false);
+        await this.getPrices();
       }
 
       // Trigger flow cards
@@ -222,9 +210,9 @@ class MyDevice extends Device {
     this.eventListenerDay = async () => {
       this.log("New day event received");
       await this.getPrices();
-      this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
-      if (this.tommorowsPricesRecieved == false) {
+      if (!this.isTommorowsPricesAvailable()) {
         this.log("Did not recieve tommorows prices from daily pull");
+        this.scheduleTomorrowRetry();
       }
     };
     this.homey.on("everyday", this.eventListenerDay);
@@ -239,6 +227,48 @@ class MyDevice extends Device {
       this.homey.removeListener("everyquarter", this.eventListenerQuarter);
     if (this.eventListenerDay)
       this.homey.removeListener("everyday", this.eventListenerDay);
+    this.homey.clearTimeout(this.tomorrowRetry);
+  }
+
+  // When tomorrow's prices are missing after the daily pull, retry every 2
+  // minutes at first, then every 5 until an hour after it, then every 15,
+  // until they are here or the day ends
+  scheduleTomorrowRetry() {
+    this.homey.clearTimeout(this.tomorrowRetry);
+    const dailyPull = this.homey.app.getDailyPullTime();
+    const now = Date.now();
+    if (now < dailyPull || this.isTommorowsPricesAvailable()) {
+      return;
+    }
+
+    const elapsed = now - dailyPull;
+    let retry;
+    for (const [minutes, limit] of RETRY_STEPS) {
+      const interval = minutes * 60 * 1000;
+      retry = dailyPull + (Math.floor(elapsed / interval) + 1) * interval;
+      if (limit == null || retry - dailyPull <= limit * 60 * 1000) {
+        break;
+      }
+    }
+    const midnight = moment.tz(TIMEZONE).add(1, "day").startOf("day").valueOf();
+    if (retry >= midnight) {
+      this.log("Tomorrow's prices did not come today, stop retrying");
+      return;
+    }
+
+    this.log("Retry pull for tomorrow's prices at " + new Date(retry).toISOString());
+    this.tomorrowRetry = this.homey.setTimeout(async () => {
+      this.log("Retry daily pull from stromligning.dk");
+      await this.getPrices();
+      this.setMeterPrices();
+      this.setSellPrices();
+      if (this.isTommorowsPricesAvailable()) {
+        this.log("Got tommorows prices from retry pull");
+      } else {
+        this.log("Did not recieve tommorows prices from retry pull");
+        this.scheduleTomorrowRetry();
+      }
+    }, retry - now);
   }
 
   /**
@@ -261,6 +291,8 @@ class MyDevice extends Device {
     this.log("Netcompany: " + newSettings.net_company);
     this.log("Location: " + newSettings.location);
     this.log("Product: " + newSettings.el_product);
+    // Prices for new settings count as new prices
+    await this.unsetStoreValue("last_known_price").catch(this.error);
     this.restartDevice(1000);
   }
 
@@ -674,7 +706,7 @@ class MyDevice extends Device {
 
   // Returns true when prices were retrieved. On failure the device is marked
   // unavailable with the reason, and the hourly event retries the pull.
-  async getPrices(triggerFlow = true) {
+  async getPrices() {
     const location = this.getSetting("location");
     const netCompany = this.getSetting("net_company");
     const product = this.getSetting("el_product");
@@ -704,8 +736,21 @@ class MyDevice extends Device {
       await this.getSellPrices();
     }
 
-    // Trigger flow card
-    if (triggerFlow) {
+    // Only trigger "new prices received" when prices have arrived that the
+    // device did not have before, e.g. tomorrow's prices. The last known price
+    // is kept in the store, so a restart does not trigger it again.
+    const lastKnownPrice =
+      knownPrices.length > 0
+        ? Date.parse(knownPrices[knownPrices.length - 1].date)
+        : null;
+    const storedLastKnownPrice = this.getStoreValue("last_known_price");
+    if (
+      lastKnownPrice != null &&
+      (storedLastKnownPrice == null || lastKnownPrice > storedLastKnownPrice)
+    ) {
+      await this.setStoreValue("last_known_price", lastKnownPrice).catch(
+        this.error
+      );
       this.triggerNewPricesRecievedFlowCard();
     }
     return true;

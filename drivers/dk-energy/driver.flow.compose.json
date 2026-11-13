@@ -7,8 +7,8 @@
         "da": "Nye priser modtages"
       },
       "hint": {
-        "en": "New prices is recieved",
-        "da": "Nye priser er modtages"
+        "en": "Runs when new prices have arrived, e.g. tomorrow's prices",
+        "da": "Kører når nye priser er kommet, fx morgendagens priser"
       },
       "tokens": [
         {
