@@ -8,6 +8,7 @@ const moment = require("moment-timezone");
 const setTimeoutPromise = util.promisify(setTimeout);
 
 const TIMEZONE = "Europe/Copenhagen";
+const HOUR_MS = 60 * 60 * 1000;
 const REPOSITORY_URL = "https://github.com/tobias-moeller/dk.billigkwh.homey";
 
 // Net company ids that stromligning.dk no longer knows, mapped to their current id.
@@ -58,6 +59,54 @@ function matchBilligKWHFormat(apiResponse) {
   return Object.values(days);
 }
 
+// Lengths of the resolutions stromligning.dk returns
+const RESOLUTION_MS = {
+  "15m": 15 * 60 * 1000,
+  "1h": HOUR_MS,
+};
+
+// Turns the prices into slots with a start and an end, using the resolution
+// of each price, so known prices and forecasts can be mixed
+function toSlots(apiResponse) {
+  return apiResponse.map((item) => {
+    if (!(item.resolution in RESOLUTION_MS)) {
+      throw new Error(
+        "Unexpected resolution from stromligning.dk: " + item.resolution
+      );
+    }
+    const start = Date.parse(item.date);
+    return {
+      start,
+      end: start + RESOLUTION_MS[item.resolution],
+      price: item.price,
+      forecast: item.forecast == true,
+    };
+  });
+}
+
+// Averages the slots per hour. Danish hours start at the same time as UTC
+// hours, so the hour can be found from the UTC timestamp.
+function toHourSlots(slots) {
+  const hours = new Map();
+  for (const slot of slots) {
+    const start = Math.floor(slot.start / HOUR_MS) * HOUR_MS;
+    if (!hours.has(start)) {
+      hours.set(start, { start, sum: 0, duration: 0, forecast: false });
+    }
+    const hour = hours.get(start);
+    const duration = slot.end - slot.start;
+    hour.sum += slot.price * duration;
+    hour.duration += duration;
+    hour.forecast = hour.forecast || slot.forecast;
+  }
+  return [...hours.values()].map((hour) => ({
+    start: hour.start,
+    end: hour.start + HOUR_MS,
+    price: Math.round((hour.sum / hour.duration) * 100) / 100,
+    forecast: hour.forecast,
+  }));
+}
+
 class MyDevice extends Device {
   /**
    * onInit is called when the device is initialized.
@@ -67,6 +116,8 @@ class MyDevice extends Device {
     this.restarting = false;
     this.device = this;
     this.prices = [];
+    this.forecastPrices = [];
+    this.slots = [];
     this.tommorowsPricesRecieved = true;
 
     await this.getPrices();
@@ -75,11 +126,13 @@ class MyDevice extends Device {
     // Every hour
     this.eventListenerHour = async () => {
       this.log("New hour event received");
+      let pulled = false;
 
       // Retry if the last pull failed, e.g. when there was no connection at startup
       if (this.prices.length == 0) {
         this.log("No prices available, retrying pull");
         await this.getPrices();
+        pulled = true;
       }
       this.setMeterPrices();
       if (this.prices.length == 0) {
@@ -95,6 +148,7 @@ class MyDevice extends Device {
         } else {
           this.log("Retry daily pull from stromligning.dk");
           await this.getPrices();
+          pulled = true;
           this.tommorowsPricesRecieved = this.isTommorowsPricesAvailable();
 
           if (this.tommorowsPricesRecieved == false) {
@@ -103,6 +157,12 @@ class MyDevice extends Device {
             this.log("Got tommorows prices from retry pull");
           }
         }
+      }
+
+      // Pull the new forecasts without triggering "new prices received"
+      if (!pulled && this.isForecastUpdateHour()) {
+        this.log("Pull new forecasts from stromligning.dk");
+        await this.getPrices(false);
       }
 
       // Trigger flow cards
@@ -380,6 +440,15 @@ class MyDevice extends Device {
     return meterPrices;
   }
 
+  // Hourly prices from the current hour, with forecasts after the known prices
+  // when they are turned on
+  getHourlyPrices(hours) {
+    const currentHour = Math.floor(Date.now() / HOUR_MS) * HOUR_MS;
+    return toHourSlots(this.slots)
+      .filter((slot) => slot.start >= currentHour)
+      .slice(0, hours);
+  }
+
   getPriceNow(retry = true) {
     let todaysDate = this.getDanishDate();
     const currentHour = todaysDate.getHours();
@@ -434,24 +503,44 @@ class MyDevice extends Device {
 
   // Returns true when prices were retrieved. On failure the device is marked
   // unavailable with the reason, and the hourly event retries the pull.
-  async getPrices() {
+  async getPrices(triggerFlow = true) {
     const location = this.getSetting("location");
     const netCompany = this.getSetting("net_company");
     const product = this.getSetting("el_product");
     let data;
+    let slots;
     try {
       data = await this.getPricesFromApi(location, netCompany, product);
+      slots = toSlots(data);
     } catch (error) {
       this.log(error);
       await this.setUnavailable(error.message).catch(this.error);
       return false;
     }
-    this.prices = data;
+    // Forecasts are kept apart, so the cards for known prices do not use them
+    this.prices = matchBilligKWHFormat(data.filter((item) => !item.forecast));
+    this.forecastPrices = matchBilligKWHFormat(
+      data.filter((item) => item.forecast)
+    );
+    this.slots = slots;
     await this.setAvailable().catch(this.error);
 
     // Trigger flow card
-    this.triggerNewPricesRecievedFlowCard();
+    if (triggerFlow) {
+      this.triggerNewPricesRecievedFlowCard();
+    }
     return true;
+  }
+
+  // stromligning.dk updates the forecasts at 00, 06 and 18 UTC and at 11:50
+  // Danish time, so they are pulled the hour after
+  isForecastUpdateHour() {
+    if (!this.getSetting("forecast")) {
+      return false;
+    }
+    const utcHour = new Date().getUTCHours();
+    const danishHour = this.getDanishDate().getUTCHours();
+    return [1, 7, 19].includes(utcHour) || danishHour == 12;
   }
 
   async getPricesFromApi(location, netCompany, product) {
@@ -473,7 +562,8 @@ class MyDevice extends Device {
       encodeURIComponent(location) +
       (supplierId ? "&supplierId=" + encodeURIComponent(supplierId) : "") +
       "&productId=" +
-      encodeURIComponent(product);
+      encodeURIComponent(product) +
+      (this.getSetting("forecast") ? "&forecast=true" : "");
 
     const options = {
       hostname: "stromligning.dk",
@@ -498,7 +588,12 @@ class MyDevice extends Device {
     let lastError = null;
     while (retry < 3) {
       try {
-        data = matchBilligKWHFormat(await this.httpRequest(options));
+        data = await this.httpRequest(options);
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "Unexpected response from stromligning.dk: " + JSON.stringify(data)
+          );
+        }
         break;
       } catch (error) {
         retry++;
@@ -712,7 +807,18 @@ class MyDevice extends Device {
 
     date.setDate(date.getDate() + 1);
     const dayTwoTimestamp = this.toTimestamp(date);
-    const dayTwoPrices = this.getPricesByTimestamp(dayTwoTimestamp);
+    let dayTwoPrices = this.getPricesByTimestamp(dayTwoTimestamp);
+
+    // Before tomorrow's prices are out, use the forecast if the user chose it
+    if (dayTwoPrices == null && this.getSetting("forecast_in_period_cards")) {
+      const forecastDay = this.forecastPrices.find(
+        (day) => day.dato == dayTwoTimestamp
+      );
+      if (forecastDay) {
+        this.log("Using forecast for " + dayTwoTimestamp);
+        dayTwoPrices = forecastDay.priser;
+      }
+    }
 
     let combinedPrices = [];
     for (let i = 0; i < Object.keys(dayOnePrices).length; i++) {
@@ -940,6 +1046,50 @@ class MyDevice extends Device {
   }
 
   // AND listeners
+
+  // Lowest price period within the next hours Listener. Uses forecasts after
+  // the known prices when they are turned on. A period that has already
+  // started counts, so the condition stays true for the whole period.
+  lowestPeriodWithinHoursListener(args) {
+    const period = args.period;
+    const hours = args.hours;
+    if (period > hours) {
+      throw new Error("Periode kan ikke være større end antal timer");
+    }
+
+    const now = Date.now();
+    const currentHour = Math.floor(now / HOUR_MS) * HOUR_MS;
+    const hourSlots = toHourSlots(this.slots).filter(
+      (slot) =>
+        slot.start >= currentHour - (period - 1) * HOUR_MS &&
+        slot.end <= currentHour + hours * HOUR_MS
+    );
+
+    let lowest = null;
+    for (let i = 0; i + period <= hourSlots.length; i++) {
+      const block = hourSlots.slice(i, i + period);
+      // Skip blocks with a gap in the prices
+      if (block[period - 1].start - block[0].start != (period - 1) * HOUR_MS) {
+        continue;
+      }
+      const avg = block.reduce((a, b) => a + b.price, 0) / period;
+      if (lowest == null || avg < lowest.avg) {
+        lowest = { start: block[0].start, end: block[period - 1].end, avg };
+      }
+    }
+
+    if (lowest == null) {
+      this.log("No prices for a period of " + period + " hours");
+      return false;
+    }
+    this.log(
+      "Lowest period: " +
+        new Date(lowest.start).toISOString() +
+        " - " +
+        new Date(lowest.end).toISOString()
+    );
+    return lowest.start <= now && now < lowest.end;
+  }
 
   // Price is less than average Listerner
   priceLessThanAvgListener(args) {

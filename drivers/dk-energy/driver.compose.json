@@ -1363,6 +1363,32 @@
     }
   }
 ]
+    },
+    {
+      "id": "forecast",
+      "type": "checkbox",
+      "value": false,
+      "label": {
+        "en": "Fetch price forecasts",
+        "da": "Hent prisprognoser"
+      },
+      "hint": {
+        "en": "Forecasts from Strømligning for up to 7 days after the known prices. They are estimates and are only used by the cards that say so and by the graph widget.",
+        "da": "Prognoser fra Strømligning op til 7 dage efter de kendte priser. De er skøn og bruges kun af de kort, der siger det, og af graf-widget'en."
+      }
+    },
+    {
+      "id": "forecast_in_period_cards",
+      "type": "checkbox",
+      "value": false,
+      "label": {
+        "en": "Use forecasts in the period cards",
+        "da": "Brug prognoser i periodekortene"
+      },
+      "hint": {
+        "en": "The cards for the lowest and highest price period use the forecast for tomorrow until tomorrow's prices are out. Needs 'Fetch price forecasts'.",
+        "da": "Kortene for billigste og dyreste periode bruger prognosen for i morgen, indtil morgendagens priser er kommet. Kræver 'Hent prisprognoser'."
+      }
     }
   ]
 }

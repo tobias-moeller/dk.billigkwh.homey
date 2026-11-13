@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require("lodash");
+const moment = require("moment-timezone");
 
 module.exports = {
   async getPrices({ homey, query }) {
@@ -23,6 +24,18 @@ module.exports = {
 
     try {
       var device = homey.drivers.getDriver('dk-energy').getDevices()[0];
+
+      // With forecasts the prices come with their own hour and a forecast flag
+      if (query.forecast == 'true') {
+        return _.chain(device.getHourlyPrices(hours))
+                .map((slot) => { return {
+                            hour: moment.tz(slot.start, 'Europe/Copenhagen').format('HH'),
+                            price: slot.price.toFixed(2),
+                            forecast: slot.forecast }
+                })
+                .value()
+                ;
+      }
       
       var pricesForNextHours = await device.getMeterPricesForNextHours();
       var currentHour = (await device.getDanishDate()).getHours();

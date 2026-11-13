@@ -517,6 +517,45 @@
           "step": 1
         }
       ]
+    },
+    {
+      "id": "the-lowest-price-period-within-hours",
+      "title": {
+        "en": "The lowest price period within the next hours",
+        "da": "Den billigste periode inden for de næste timer"
+      },
+      "titleFormatted": {
+        "en": "Is !{{|not}} in the lowest price period of [[period]] hours within the next [[hours]] hours",
+        "da": "Er !{{|ikke}} i den billigste periode på [[period]] timer inden for de næste [[hours]] timer"
+      },
+      "hint": {
+        "en": "Uses forecasts after the known prices when 'Fetch price forecasts' is on in the device settings. A period that has already started counts.",
+        "da": "Bruger prognoser efter de kendte priser, når 'Hent prisprognoser' er slået til i enhedens indstillinger. En periode, der allerede er startet, tæller med."
+      },
+      "args": [
+        {
+          "type": "number",
+          "name": "period",
+          "placeholder": {
+            "en": "Hours",
+            "da": "Timer"
+          },
+          "min": 1,
+          "max": 23,
+          "step": 1
+        },
+        {
+          "type": "number",
+          "name": "hours",
+          "placeholder": {
+            "en": "Hours ahead",
+            "da": "Timer frem"
+          },
+          "min": 1,
+          "max": 168,
+          "step": 1
+        }
+      ]
     }
   ]
 }

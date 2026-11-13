@@ -85,6 +85,13 @@ class MyDriver extends Driver {
       args.device.lowestPricePeriodBetweenListener(args)
     );
 
+    const pricePeriodLowestWithinHoursCondition = this.homey.flow.getConditionCard(
+      "the-lowest-price-period-within-hours"
+    );
+    pricePeriodLowestWithinHoursCondition.registerRunListener((args) =>
+      args.device.lowestPeriodWithinHoursListener(args)
+    );
+
     this.log("MyDriver has been initialized");
   }
 

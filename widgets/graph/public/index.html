@@ -166,6 +166,7 @@
         <span class="price-value" style="background-color: #FF3B30;"> over 2,21 kr. </span>
         <span class="price-value" style="background-color: #FFCD56;"> 1,70 - 2,20 kr.</span>
         <span class="price-value" style="background-color: #34C759;"> under 1,69 kr.</span>
+        <span class="price-value" id="forecastLegend" style="display: none; border-style: dashed;"> prognose </span>
       </div>
 
       <div class="chart bar-chart">
@@ -200,11 +201,14 @@
     const yellow_border_color = '#FFCD56';
     const red_color           = 'rgb(255, 59, 48 / 40%)';
     const red_border_color    = '#FF3B30';
+    const forecast_alpha      = '66'; // Forecasts are drawn lighter
+    let forecastFlags         = [];
     
     function onHomeyReady(Homey) {
       Promise.resolve().then(async () => {
         const {
-          hours
+          hours,
+          forecast
         } = Homey.getSettings();
 
         Homey.ready();
@@ -212,7 +216,7 @@
 
         const $error = document.getElementById('error');
         try {
-          await loadPrices(hours);
+          await loadPrices(hours, forecast);
         } catch (err){
           $error.innerText = err.message;          
         }
@@ -220,8 +224,9 @@
       });
     }
 
-    async function loadPrices(hours) {
-      const data = await getPricesData(hours);
+    async function loadPrices(hours, forecast) {
+      const data = await getPricesData(hours, forecast);
+      forecastFlags = data.map(entry => entry.forecast == true);
       //throw new Error("data: " + JSON.stringify(data));
       // Get or Create Chart
       const ctx = document.querySelector('.chart > canvas').getContext('2d');
@@ -271,6 +276,10 @@
                                   : 'Lav';
 
                             label = `[${priceCategory}], Pris: ${context.parsed.y} kr.` ;
+
+                            if (forecastFlags[context.dataIndex]) {
+                                label += ' (prognose)';
+                            }
                         }
                         return label;
                     }
@@ -308,6 +317,8 @@
       chart.data.datasets[0].data = data.map(entry => entry.price);
       chart.update();
 
+      document.querySelector('#forecastLegend').style.display = forecastFlags.includes(true) ? 'inline' : 'none';
+
       
       // Price now update:
       var currentHourValue = data[0].price;
@@ -326,7 +337,7 @@
       
       await setTimeout(async () => {
         setInterval(async () => {
-          await loadPrices(hours);
+          await loadPrices(hours, forecast);
         }, hourInterval);
       }, firstCallNextFullHour);
       
@@ -334,8 +345,8 @@
       //document.querySelector('#lblLastUpdate').textContent = firstCallNextFullHour + "--" + new Date().toString();
     }
 
-    async function getPricesData(hours) {
-      return Homey.api('GET', `/HoursPrices?hours=${hours}`);
+    async function getPricesData(hours, forecast) {
+      return Homey.api('GET', `/HoursPrices?hours=${hours}&forecast=${forecast == true}`);
     }
 
     function colorize(opague) {
@@ -346,6 +357,18 @@
 
         const v = ctx.parsed.y;
         const colorCase = this.calculateColorCase(v);
+
+        // Forecasts get a lighter fill in the same color
+        if (opague && forecastFlags[ctx.dataIndex]) {
+          switch (colorCase) {
+            case 'red':
+              return red_border_color + forecast_alpha;
+            case 'yellow':
+              return yellow_border_color + forecast_alpha;
+            case 'green':
+              return green_border_color + forecast_alpha;
+          }
+        }
 
         switch (colorCase) {
           case 'red':
