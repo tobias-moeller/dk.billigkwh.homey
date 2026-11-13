@@ -8,6 +8,7 @@ const moment = require("moment-timezone");
 const setTimeoutPromise = util.promisify(setTimeout);
 
 const TIMEZONE = "Europe/Copenhagen";
+const REPOSITORY_URL = "https://github.com/tobias-moeller/dk.billigkwh.homey";
 
 // Net company ids that stromligning.dk no longer knows, mapped to their current id.
 // "none" means no net company, so the supplierId parameter is omitted entirely.
@@ -528,8 +529,13 @@ class MyDevice extends Device {
   }
 
   async httpRequest(options) {
+    // Without a User-Agent the request shows up as Go-http-client at stromligning.dk
+    const headers = {
+      ...options.headers,
+      "User-Agent": `Stromligning-Homey/${this.homey.manifest.version} (+${REPOSITORY_URL})`,
+    };
     return new Promise((resolve, reject) => {
-      const req = https.request(options, (res) => {
+      const req = https.request({ ...options, headers }, (res) => {
         let data = "";
         res.on("data", (chunk) => {
           data += chunk;
