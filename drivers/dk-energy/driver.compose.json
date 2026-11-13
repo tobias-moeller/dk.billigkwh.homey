@@ -333,6 +333,19 @@
 ]
     },
     {
+      "id": "net_company_found",
+      "type": "label",
+      "value": "",
+      "label": {
+        "en": "Found net company",
+        "da": "Fundet net selskab"
+      },
+      "hint": {
+        "en": "The net company found from Homey's location, when the net company is set to find it automatically.",
+        "da": "Det net selskab, der er fundet ud fra Homeys placering, når net selskab er sat til at finde det automatisk."
+      }
+    },
+    {
       "id": "el_product",
       "type": "dropdown",
       "value": "ok_el_spot",

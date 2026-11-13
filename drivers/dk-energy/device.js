@@ -830,6 +830,9 @@ class MyDevice extends Device {
     if (netCompany == "auto") {
       return this.findNetCompany();
     }
+    if (this.getSetting("net_company_found")) {
+      await this.setSettings({ net_company_found: "" }).catch(this.error);
+    }
     return netCompany in NET_COMPANY_ALIASES
       ? NET_COMPANY_ALIASES[netCompany]
       : netCompany;
@@ -900,7 +903,8 @@ class MyDevice extends Device {
     }
 
     const found = this.getStoreValue("found_net_company");
-    if (found && found.lat == lat && found.long == long) {
+    if (found && found.lat == lat && found.long == long && found.name) {
+      await this.showFoundNetCompany(found.name);
       return found.id;
     }
 
@@ -934,8 +938,21 @@ class MyDevice extends Device {
     this.log(
       "Found net company " + supplier.id + " (" + supplier.name + ") from Homey's location"
     );
-    await this.setStoreValue("found_net_company", { lat, long, id: supplier.id });
+    await this.setStoreValue("found_net_company", {
+      lat,
+      long,
+      id: supplier.id,
+      name: supplier.name,
+    });
+    await this.showFoundNetCompany(supplier.name);
     return supplier.id;
+  }
+
+  // Shows the found net company in the device settings
+  async showFoundNetCompany(name) {
+    if (this.getSetting("net_company_found") != name) {
+      await this.setSettings({ net_company_found: name }).catch(this.error);
+    }
   }
 
   async httpRequest(options) {
