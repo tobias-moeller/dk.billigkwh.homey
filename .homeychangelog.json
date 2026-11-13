@@ -94,5 +94,9 @@
   },
   "2.5.0": {
     "en": "Getting rid of the last billigkwh.dk parts"
+  },
+  "2.6.0": {
+    "en": "BilligKWH is now called Strømligning",
+    "da": "BilligKWH hedder nu Strømligning"
   }
 }
