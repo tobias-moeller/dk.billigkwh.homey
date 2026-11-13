@@ -96,7 +96,7 @@
     "en": "Getting rid of the last billigkwh.dk parts"
   },
   "2.6.0": {
-    "en": "BilligKWH is now called Strømligning",
-    "da": "BilligKWH hedder nu Strømligning"
+    "en": "BilligKWH is now called Strømligning. New devices find the net company from Homey's location",
+    "da": "BilligKWH hedder nu Strømligning. Nye enheder finder netselskabet ud fra Homeys placering"
   }
 }

@@ -57,12 +57,19 @@
     {
       "id": "net_company",
       "type": "dropdown",
-      "value": "none",
+      "value": "auto",
       "label": {
         "en": "Net company",
         "da": "Net selskab"
       },
       "values": [
+  {
+    "id": "auto",
+    "label": {
+      "da": "Find automatisk ud fra Homeys placering",
+      "en": "Find automatically from Homey's location"
+    }
+  },
   {
     "id": "aal_el-net_c",
     "label": {

@@ -458,10 +458,13 @@ class MyDevice extends Device {
     // stromligning.dk interprets "from" as Danish local time
     const startTime = moment.tz(TIMEZONE).format("YYYY-MM-DD") + "T00%3A00%3A00";
 
-    const supplierId =
+    let supplierId =
       netCompany in NET_COMPANY_ALIASES
         ? NET_COMPANY_ALIASES[netCompany]
         : netCompany;
+    if (netCompany == "auto") {
+      supplierId = await this.findNetCompany();
+    }
 
     const path =
       "/api/prices?from=" +
@@ -526,6 +529,56 @@ class MyDevice extends Device {
     }
     this.log("Prices retrieved from stromligning.dk");
     return data;
+  }
+
+  // Finds the net company from Homey's location. The result is kept in the
+  // store, so stromligning.dk is only asked again when Homey has moved.
+  async findNetCompany() {
+    const lat = this.homey.geolocation.getLatitude();
+    const long = this.homey.geolocation.getLongitude();
+    if (!Number.isFinite(lat) || !Number.isFinite(long)) {
+      throw new Error(
+        "Homey has no location, choose a net company in the device settings"
+      );
+    }
+
+    const found = this.getStoreValue("found_net_company");
+    if (found && found.lat == lat && found.long == long) {
+      return found.id;
+    }
+
+    const path =
+      "/api/suppliers/find?lat=" +
+      encodeURIComponent(lat) +
+      "&long=" +
+      encodeURIComponent(long);
+    const options = {
+      hostname: "stromligning.dk",
+      port: 443,
+      path,
+      method: "GET",
+      timeout: 30000,
+    };
+    let suppliers;
+    try {
+      suppliers = await this.httpRequest(options);
+    } catch (error) {
+      throw new Error(
+        `Could not find the net company from Homey's location (${error.message}), choose a net company in the device settings`
+      );
+    }
+    if (!Array.isArray(suppliers) || suppliers.length == 0 || !suppliers[0].id) {
+      throw new Error(
+        "Could not find the net company from Homey's location, choose a net company in the device settings"
+      );
+    }
+
+    const supplier = suppliers[0];
+    this.log(
+      "Found net company " + supplier.id + " (" + supplier.name + ") from Homey's location"
+    );
+    await this.setStoreValue("found_net_company", { lat, long, id: supplier.id });
+    return supplier.id;
   }
 
   async httpRequest(options) {
