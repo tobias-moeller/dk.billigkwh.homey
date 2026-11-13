@@ -59,6 +59,12 @@ function matchBilligKWHFormat(apiResponse) {
   return Object.values(days);
 }
 
+// Capabilities that are only added when the resolution is set to quarter
+const QUARTER_CAPABILITIES = [
+  "meter_price_quarter_now",
+  "meter_price_quarter_next",
+];
+
 // Lengths of the resolutions stromligning.dk returns
 const RESOLUTION_MS = {
   "15m": 15 * 60 * 1000,
@@ -82,6 +88,14 @@ function toSlots(apiResponse) {
       forecast: item.forecast == true,
     };
   });
+}
+
+// Hourly prices in the format of the API, from prices in any resolution
+function toHourPrices(apiResponse) {
+  return toHourSlots(toSlots(apiResponse)).map((slot) => ({
+    date: new Date(slot.start).toISOString(),
+    price: slot.price,
+  }));
 }
 
 // Averages the slots per hour. Danish hours start at the same time as UTC
@@ -120,8 +134,10 @@ class MyDevice extends Device {
     this.slots = [];
     this.tommorowsPricesRecieved = true;
 
+    await this.updateOptionalCapabilities();
     await this.getPrices();
     this.setMeterPrices();
+    this.setQuarterPrices();
 
     // Every hour
     this.eventListenerHour = async () => {
@@ -174,6 +190,17 @@ class MyDevice extends Device {
     };
     this.homey.on("everyhour", this.eventListenerHour);
 
+    // Every quarter, only used with the quarter resolution
+    this.eventListenerQuarter = async () => {
+      if (!this.isQuarterResolution() || this.prices.length == 0) {
+        return;
+      }
+      this.log("New quarter event received");
+      this.setQuarterPrices();
+      this.triggerNewQuarterFlowCard();
+    };
+    this.homey.on("everyquarter", this.eventListenerQuarter);
+
     // Every day
     this.eventListenerDay = async () => {
       this.log("New day event received");
@@ -191,6 +218,8 @@ class MyDevice extends Device {
   async destroyListeners() {
     if (this.eventListenerHour)
       this.homey.removeListener("everyhour", this.eventListenerHour);
+    if (this.eventListenerQuarter)
+      this.homey.removeListener("everyquarter", this.eventListenerQuarter);
     if (this.eventListenerDay)
       this.homey.removeListener("everyday", this.eventListenerDay);
   }
@@ -242,6 +271,58 @@ class MyDevice extends Device {
   async onDeleted() {
     this.destroyListeners();
     this.log("Energy-device has been deleted");
+  }
+
+  isQuarterResolution() {
+    return this.getSetting("resolution") == "quarter";
+  }
+
+  // Adds or removes the capabilities of the optional settings, so a device
+  // with the default settings has the same capabilities as before
+  async updateOptionalCapabilities() {
+    const quarter = this.isQuarterResolution();
+    for (const capability of QUARTER_CAPABILITIES) {
+      await this.setCapabilityPresent(capability, quarter);
+    }
+  }
+
+  async setCapabilityPresent(capability, present) {
+    if (present && !this.hasCapability(capability)) {
+      this.log("Adding capability '" + capability + "'");
+      await this.addCapability(capability).catch(this.error);
+    } else if (!present && this.hasCapability(capability)) {
+      this.log("Removing capability '" + capability + "'");
+      await this.removeCapability(capability).catch(this.error);
+    }
+  }
+
+  // The price slot that covers the time, using the resolution of each price
+  getSlotAt(time) {
+    return this.slots.find((slot) => slot.start <= time && time < slot.end);
+  }
+
+  // Prices for this and the next quarter. A forecast covers a whole hour.
+  getQuarterPrices() {
+    const now = this.getSlotAt(Date.now());
+    const next = now ? this.getSlotAt(now.end) : null;
+    return {
+      now: now ? Math.round(now.price * 100) / 100 : 0,
+      next: next ? Math.round(next.price * 100) / 100 : 0,
+    };
+  }
+
+  setQuarterPrices() {
+    if (!this.isQuarterResolution()) {
+      return;
+    }
+    const quarterPrices = this.getQuarterPrices();
+    this.setCapabilityValue("meter_price_quarter_now", quarterPrices.now).catch(
+      this.error
+    );
+    this.setCapabilityValue(
+      "meter_price_quarter_next",
+      quarterPrices.next
+    ).catch(this.error);
   }
 
   isTommorowsPricesAvailable() {
@@ -517,8 +598,12 @@ class MyDevice extends Device {
       await this.setUnavailable(error.message).catch(this.error);
       return false;
     }
-    // Forecasts are kept apart, so the cards for known prices do not use them
-    this.prices = matchBilligKWHFormat(data.filter((item) => !item.forecast));
+    // Forecasts are kept apart, so the cards for known prices do not use them.
+    // The cards for hours always get hourly prices.
+    const knownPrices = data.filter((item) => !item.forecast);
+    this.prices = matchBilligKWHFormat(
+      this.isQuarterResolution() ? toHourPrices(knownPrices) : knownPrices
+    );
     this.forecastPrices = matchBilligKWHFormat(
       data.filter((item) => item.forecast)
     );
@@ -558,7 +643,8 @@ class MyDevice extends Device {
     const path =
       "/api/prices?from=" +
       startTime +
-      "&aggregation=1h&lean=true&priceArea=" +
+      (this.isQuarterResolution() ? "" : "&aggregation=1h") +
+      "&lean=true&priceArea=" +
       encodeURIComponent(location) +
       (supplierId ? "&supplierId=" + encodeURIComponent(supplierId) : "") +
       "&productId=" +
@@ -949,6 +1035,21 @@ class MyDevice extends Device {
     });
   }
 
+  // Trigger new quarter flow card
+  triggerNewQuarterFlowCard() {
+    this.log("Triggering flow card: New quarter started");
+
+    const quarterPrices = this.getQuarterPrices();
+    const tokens = {
+      price: quarterPrices.now,
+      "price+1": quarterPrices.next,
+    };
+    let state = {};
+    this.driver.ready().then(() => {
+      this.driver.triggerNewQuarterFlow(this.device, tokens, state);
+    });
+  }
+
   // Trigger lowest price period starts between flow card
   triggerLowestPeriodStartsBetweenFlowCard() {
     this.log("Triggering flow card: Price is lowest between");
@@ -1119,6 +1220,18 @@ class MyDevice extends Device {
   priceOverValueListener(args) {
     const currentPrice = this.getPriceNow();
     if (currentPrice > args.price) {
+      return true;
+    }
+    return false;
+  }
+
+  // Price this quarter is over value Listener
+  priceQuarterOverValueListener(args) {
+    if (!this.isQuarterResolution()) {
+      throw new Error("Sæt opløsning til kvarter i enhedens indstillinger");
+    }
+    const quarterPrices = this.getQuarterPrices();
+    if (quarterPrices.now > args.price) {
       return true;
     }
     return false;

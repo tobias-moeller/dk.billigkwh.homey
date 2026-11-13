@@ -9,6 +9,7 @@ class MyApp extends Homey.App {
    */
   async onInit() {
     this.everyHour();
+    this.everyQuarter();
     this.everyDay();
     this.log("MyApp has been initialized");
   }
@@ -16,6 +17,7 @@ class MyApp extends Homey.App {
   async onUninit() {
     this.log("App onUninit called");
     this.homey.removeAllListeners("everyhour");
+    this.homey.removeAllListeners("everyquarter");
     this.homey.removeAllListeners("everyday");
   }
 
@@ -40,6 +42,27 @@ class MyApp extends Homey.App {
       }, timeToNextHour);
     //}, 5000);
     this.log("everyHour job started");
+  }
+
+  everyQuarter() {
+    const now = new Date();
+    const nextQuarter = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      (Math.floor(now.getMinutes() / 15) + 1) * 15,
+      0,
+      50
+    );
+    const timeToNextQuarter = nextQuarter - now;
+    this.homey.setTimeout(() => {
+      this.homey.setInterval(async () => {
+        this.homey.emit("everyquarter", true);
+      }, 15 * 60 * 1000);
+      this.homey.emit("everyquarter", true);
+    }, timeToNextQuarter);
+    this.log("everyQuarter job started");
   }
 
   // Homey apps run in UTC, so shift by the Copenhagen offset (+1 winter, +2 summer)

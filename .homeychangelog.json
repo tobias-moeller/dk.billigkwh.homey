@@ -96,7 +96,7 @@
     "en": "Getting rid of the last billigkwh.dk parts"
   },
   "2.6.0": {
-    "en": "BilligKWH is now called Strømligning. New devices find the net company from Homey's location. Price forecasts up to 7 days ahead",
-    "da": "BilligKWH hedder nu Strømligning. Nye enheder finder netselskabet ud fra Homeys placering. Prisprognoser op til 7 dage frem"
+    "en": "BilligKWH is now called Strømligning. New devices find the net company from Homey's location. Price forecasts up to 7 days ahead. Prices per quarter as an option",
+    "da": "BilligKWH hedder nu Strømligning. Nye enheder finder netselskabet ud fra Homeys placering. Prisprognoser op til 7 dage frem. Priser pr. kvarter som tilvalg"
   }
 }

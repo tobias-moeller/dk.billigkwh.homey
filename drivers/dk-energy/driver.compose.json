@@ -1365,6 +1365,35 @@
 ]
     },
     {
+      "id": "resolution",
+      "type": "dropdown",
+      "value": "hour",
+      "label": {
+        "en": "Resolution",
+        "da": "Opløsning"
+      },
+      "hint": {
+        "en": "With quarter the device also gets the prices per 15 minutes and the cards for quarters. The cards for hours still use hourly prices.",
+        "da": "Med kvarter får enheden også priserne pr. 15 minutter og kortene for kvarterer. Kortene for timer bruger stadig timepriser."
+      },
+      "values": [
+        {
+          "id": "hour",
+          "label": {
+            "en": "Hour",
+            "da": "Time"
+          }
+        },
+        {
+          "id": "quarter",
+          "label": {
+            "en": "Quarter",
+            "da": "Kvarter"
+          }
+        }
+      ]
+    },
+    {
       "id": "forecast",
       "type": "checkbox",
       "value": false,

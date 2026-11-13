@@ -22,6 +22,8 @@ class MyDriver extends Driver {
       this.homey.flow.getDeviceTriggerCard("price-is-negative");
     this._devicesNewHour =
       this.homey.flow.getDeviceTriggerCard("new-hour-started");
+    this._devicesNewQuarter =
+      this.homey.flow.getDeviceTriggerCard("new-quarter-started");
 
     this._devicesLowestPeriodStartsBetween =
       this.homey.flow.getDeviceTriggerCard(
@@ -83,6 +85,13 @@ class MyDriver extends Driver {
     );
     pricePeriodLowestBetweenCondition.registerRunListener((args) =>
       args.device.lowestPricePeriodBetweenListener(args)
+    );
+
+    const priceQuarterOverValueCondition = this.homey.flow.getConditionCard(
+      "price-this-quarter-is-over"
+    );
+    priceQuarterOverValueCondition.registerRunListener((args) =>
+      args.device.priceQuarterOverValueListener(args)
     );
 
     const pricePeriodLowestWithinHoursCondition = this.homey.flow.getConditionCard(
@@ -159,6 +168,13 @@ class MyDriver extends Driver {
     this._devicesNewHour
       .trigger(device, tokens, state)
       .then(this.log("Flow 'new-hour-started' triggered"))
+      .catch(this.error);
+  }
+
+  triggerNewQuarterFlow(device, tokens, state) {
+    this._devicesNewQuarter
+      .trigger(device, tokens, state)
+      .then(this.log("Flow 'new-quarter-started' triggered"))
       .catch(this.error);
   }
 

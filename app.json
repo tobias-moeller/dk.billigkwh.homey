@@ -413,6 +413,48 @@
             "step": 1
           }
         ]
+      },
+      {
+        "id": "new-quarter-started",
+        "title": {
+          "en": "New quarter started",
+          "da": "Nyt kvarter er startet"
+        },
+        "hint": {
+          "en": "Triggers every quarter when the resolution is set to quarter in the device settings",
+          "da": "Kører hvert kvarter, når opløsningen er sat til kvarter i enhedens indstillinger"
+        },
+        "tokens": [
+          {
+            "type": "number",
+            "name": "price",
+            "title": {
+              "en": "Price",
+              "da": "Pris"
+            },
+            "example": {
+              "en": "2.21"
+            }
+          },
+          {
+            "type": "number",
+            "name": "price+1",
+            "title": {
+              "en": "Price next quarter",
+              "da": "Pris næste kvarter"
+            },
+            "example": {
+              "en": "2.31"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          }
+        ]
       }
     ],
     "conditions": [
@@ -676,6 +718,39 @@
             "min": 1,
             "max": 168,
             "step": 1
+          }
+        ]
+      },
+      {
+        "id": "price-this-quarter-is-over",
+        "title": {
+          "en": "Price this quarter is over",
+          "da": "Prisen for dette kvarter er over"
+        },
+        "titleFormatted": {
+          "en": "Price this quarter is !{{over|under}} [[price]] kroner",
+          "da": "Prisen for dette kvarter er !{{over|under}} [[price]] kroner"
+        },
+        "hint": {
+          "en": "Needs the resolution set to quarter in the device settings",
+          "da": "Kræver at opløsningen er sat til kvarter i enhedens indstillinger"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=dk-energy"
+          },
+          {
+            "type": "number",
+            "name": "price",
+            "placeholder": {
+              "en": "Price",
+              "da": "Pris"
+            },
+            "min": -50,
+            "max": 50,
+            "step": 0.01
           }
         ]
       }
@@ -2051,6 +2126,35 @@
           ]
         },
         {
+          "id": "resolution",
+          "type": "dropdown",
+          "value": "hour",
+          "label": {
+            "en": "Resolution",
+            "da": "Opløsning"
+          },
+          "hint": {
+            "en": "With quarter the device also gets the prices per 15 minutes and the cards for quarters. The cards for hours still use hourly prices.",
+            "da": "Med kvarter får enheden også priserne pr. 15 minutter og kortene for kvarterer. Kortene for timer bruger stadig timepriser."
+          },
+          "values": [
+            {
+              "id": "hour",
+              "label": {
+                "en": "Hour",
+                "da": "Time"
+              }
+            },
+            {
+              "id": "quarter",
+              "label": {
+                "en": "Quarter",
+                "da": "Kvarter"
+              }
+            }
+          ]
+        },
+        {
           "id": "forecast",
           "type": "checkbox",
           "value": false,
@@ -2259,6 +2363,40 @@
       "title": {
         "en": "Price + 7 hour",
         "da": "Pris + 7 time"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/tariff.svg",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "dkk",
+        "da": "kr"
+      },
+      "decimals": 2
+    },
+    "meter_price_quarter_next": {
+      "type": "number",
+      "title": {
+        "en": "Price next quarter",
+        "da": "Pris næste kvarter"
+      },
+      "uiComponent": "sensor",
+      "icon": "/assets/tariff.svg",
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "units": {
+        "en": "dkk",
+        "da": "kr"
+      },
+      "decimals": 2
+    },
+    "meter_price_quarter_now": {
+      "type": "number",
+      "title": {
+        "en": "Price this quarter",
+        "da": "Pris dette kvarter"
       },
       "uiComponent": "sensor",
       "icon": "/assets/tariff.svg",
